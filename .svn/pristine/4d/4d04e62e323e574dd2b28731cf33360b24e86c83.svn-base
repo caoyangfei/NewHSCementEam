@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="viberModes">
+        <item>DISPLACEMENT</item>
+        <item>VELOCITY</item>
+        <item>ACCELERATION</item>
+        <item>TEMPERATURE</item>
+        <item>ENVELOPE</item>
+    </string-array>
+
+</resources>

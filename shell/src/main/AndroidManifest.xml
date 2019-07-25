@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.supcon.mes.cementEam"
+    android:sharedUserId="com.supcon.mes.cementEam">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <application
+        android:name="com.supcon.mes.middleware.EamApplication"
+        android:allowBackup="true"
+        tools:replace="android:allowBackup"
+        android:icon="@mipmap/ic_app_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:largeHeap="true"
+        >
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="5cc69a110cafb29e9d0002df"/>
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="36af8a036b74676265df63bea6d182ea" />
+        <meta-data android:value="cementEam" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="CHANNEL_VALUE"
+            android:value="134" />
+        <!--<activity
+            android:name="com.supcon.mes.module_login.ui.MainActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppNoTitleBarTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+
+        <activity
+            android:name="com.supcon.mes.module_login.ui.WelcomeActivity"
+            android:theme="@style/LaunchAppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.supcon.mes.module_login.ui.LoginActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppBottomInTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <activity
+            android:name="com.supcon.mes.module_login.ui.SettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppBottomInTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <activity
+            android:name="com.supcon.mes.module_login.ui.WorkSettingActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppBottomInTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <activity
+            android:name="com.supcon.mes.module_login.ui.ImageViewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Transparent"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+
+        <service android:name="com.supcon.mes.module_login.service.HeartBeatService" />-->
+    </application>
+
+</manifest>

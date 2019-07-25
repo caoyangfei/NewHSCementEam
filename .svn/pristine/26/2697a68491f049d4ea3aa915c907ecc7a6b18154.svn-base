@@ -1,0 +1,160 @@
+package com.supcon.mes.module_acceptance.ui;
+
+import android.annotation.SuppressLint;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.app.annotation.BindByTag;
+import com.app.annotation.Presenter;
+import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
+import com.supcon.common.view.base.adapter.IListAdapter;
+import com.supcon.common.view.listener.OnRefreshListener;
+import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.mbap.utils.StatusBarUtils;
+import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomVerticalTextView;
+import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.util.EmptyAdapterHelper;
+import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_acceptance.R;
+import com.supcon.mes.module_acceptance.model.api.AcceptanceEditAPI;
+import com.supcon.mes.module_acceptance.model.bean.AcceptanceEditEntity;
+import com.supcon.mes.module_acceptance.model.bean.AcceptanceEntity;
+import com.supcon.mes.module_acceptance.model.contract.AcceptanceEditContract;
+import com.supcon.mes.module_acceptance.presenter.AcceptanceEditPresenter;
+import com.supcon.mes.module_acceptance.ui.adapter.AcceptanceEditceAdapter;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.functions.Consumer;
+
+/**
+ * @author yangfei.cao
+ * @ClassName hongShiCementEam
+ * @date 2019/6/27
+ * ------------- Description -------------
+ */
+@Router(value = Constant.Router.ACCEPTANCE_EDIT)
+@Presenter(value = AcceptanceEditPresenter.class)
+public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<AcceptanceEditEntity> implements AcceptanceEditContract.View {
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
+    @BindByTag("rightBtn")
+    ImageButton rightBtn;
+
+    @BindByTag("contentView")
+    RecyclerView contentView;
+
+    @BindByTag("eamCode")
+    CustomVerticalTextView eamCode;
+    @BindByTag("eamName")
+    CustomVerticalTextView eamName;
+    @BindByTag("acceptanceDept")
+    CustomVerticalTextView acceptanceDept;
+    @BindByTag("acceptanceArea")
+    CustomVerticalTextView acceptanceArea;
+    @BindByTag("acceptanceStaff")
+    CustomVerticalTextView acceptanceStaff;
+    @BindByTag("acceptanceTime")
+    CustomVerticalTextView acceptanceTime;
+    private AcceptanceEntity acceptanceEntity;
+
+    @Override
+    protected IListAdapter createAdapter() {
+        AcceptanceEditceAdapter acceptanceEditceAdapter = new AcceptanceEditceAdapter(this);
+        return acceptanceEditceAdapter;
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.ac_acceptance_edit;
+    }
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+        acceptanceEntity = (AcceptanceEntity) getIntent().getSerializableExtra(Constant.IntentKey.ACCEPTANCE_ENTITY);
+    }
+
+    @Override
+    protected void initView() {
+        super.initView();
+        StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
+        refreshListController.setAutoPullDownRefresh(true);
+        refreshListController.setPullDownRefreshEnabled(true);
+        refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
+        contentView.setLayoutManager(new LinearLayoutManager(context));
+
+        titleText.setText("临时验收");
+        rightBtn.setImageResource(R.drawable.sl_top_submit);
+    }
+
+
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initListener() {
+        super.initListener();
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        onBackPressed();
+                    }
+                });
+        RxView.clicks(rightBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> new CustomDialog(context)
+                        .twoButtonAlertDialog("确定提交设备评分吗?")
+                        .bindView(R.id.redBtn, "确定")
+                        .bindView(R.id.grayBtn, "取消")
+                        .bindClickListener(R.id.redBtn, v12 -> {
+//                            if (scoreEamEntity.beamId == null) {
+//                                ToastUtils.show(ScoreEamPerformanceActivity.this, "请选择设备进行评分!");
+//                                return;
+//                            }
+//                            onLoading("正在处理中...");
+//                            doSubmit();
+                        }, true)
+                        .bindClickListener(R.id.grayBtn, null, true)
+                        .show());
+        refreshListController.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenterRouter.create(AcceptanceEditAPI.class).getAcceptanceEdit(acceptanceEntity.id);
+            }
+        });
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        eamCode.setContent(Util.strFormat2(acceptanceEntity.getBeamID().code));
+        eamName.setContent(Util.strFormat2(acceptanceEntity.getBeamID().name));
+        acceptanceDept.setContent(Util.strFormat2(acceptanceEntity.getDept().name));
+        acceptanceArea.setContent(Util.strFormat2(acceptanceEntity.getArea().name));
+        acceptanceStaff.setContent(Util.strFormat2(acceptanceEntity.getCheckStaff().name));
+        acceptanceTime.setContent(DateUtil.dateFormat(acceptanceEntity.applyDate != null ? acceptanceEntity.applyDate : System.currentTimeMillis()));
+
+    }
+
+    @Override
+    public void getAcceptanceEditSuccess(List entity) {
+        refreshListController.refreshComplete(entity);
+    }
+
+    @Override
+    public void getAcceptanceEditFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
+        refreshListController.refreshComplete(null);
+    }
+
+}

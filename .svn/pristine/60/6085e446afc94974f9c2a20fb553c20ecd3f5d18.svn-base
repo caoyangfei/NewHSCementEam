@@ -1,0 +1,10 @@
+package com.supcon.mes.module_main.presenter;
+
+/**
+ * @author yangfei.cao
+ * @ClassName hongShiCementEam
+ * @date 2019/7/24
+ * ------------- Description -------------
+ */
+public class WaitDealtPresenter {
+}

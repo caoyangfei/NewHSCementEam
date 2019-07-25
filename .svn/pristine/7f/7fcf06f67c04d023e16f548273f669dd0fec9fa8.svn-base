@@ -1,0 +1,10 @@
+## This file must *NOT* be checked into Version Control Systems,
+# as it contains information specific to your local configuration.
+#
+# Location of the SDK. This is only used by Gradle.
+# For customization when using a Version Control System, please read the
+# header note.
+#Mon Jun 24 15:21:17 CST 2019
+UMENG_MESSAGE_SECRET=b884c2d96b0bda0442bc9158cccb06c4
+UMENG_APPKEY=5cbea853570df3300e000f4a
+sdk.dir=E\:\\sdk

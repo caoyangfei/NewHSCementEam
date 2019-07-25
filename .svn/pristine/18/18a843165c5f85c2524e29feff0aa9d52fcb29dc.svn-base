@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="5dp"
+            android:layout_height="13dp"
+            android:layout_centerVertical="true"
+            android:background="#e82941"
+            android:tag="contentTitleIc" />
+
+        <TextView
+            android:id="@+id/contentTitleLabel"
+            style="@style/TitleTextColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="13dp"
+            android:tag="contentTitleLabel"
+            android:textColor="#333333"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/contentTitleSettingIc"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/dp_10"
+            android:src="@drawable/ic_user_sz"
+            android:tag="contentTitleSettingIc"
+            android:visibility="gone" />
+    </RelativeLayout>
+
+    <!--<include-->
+    <!--layout="@layout/ly_line_light"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="@dimen/dp_1"-->
+    <!--android:layout_marginTop="@dimen/dp_5" />-->
+</LinearLayout>

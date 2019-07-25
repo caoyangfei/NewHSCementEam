@@ -1,0 +1,166 @@
+package com.supcon.mes.module_main.ui.fragment;
+
+import android.animation.ValueAnimator;
+import android.annotation.SuppressLint;
+import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.app.annotation.BindByTag;
+import com.supcon.common.com_http.util.RxSchedulers;
+import com.supcon.common.view.base.fragment.BaseControllerFragment;
+import com.supcon.mes.mbap.beans.GalleryBean;
+import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.view.CustomAdView;
+import com.supcon.mes.mbap.view.CustomSearchView;
+import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
+
+/**
+ * Created by wangshizhan on 2017/8/11.
+ */
+public class WorkFragment extends BaseControllerFragment {
+
+
+    @BindByTag("workCustomAd")
+    CustomAdView workCustomAd;
+
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+
+    @BindByTag("customSearchView")
+    CustomSearchView customSearchView;
+
+    @BindByTag("searchTitleBar")
+    CustomHorizontalSearchTitleBar searchTitleBar;
+
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.hs_frag_work;
+    }
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+    }
+
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initView() {
+        super.initView();
+        leftBtn.setImageResource(R.drawable.ic_top_menu);
+        searchTitleBar.disableRightBtn();
+
+        Flowable.timer(20, TimeUnit.MILLISECONDS)
+                .compose(RxSchedulers.io_main())
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        initAd();
+                    }
+                });
+        View waitTitle = rootView.findViewById(R.id.hs_wait_title);
+        ((TextView) waitTitle.findViewById(R.id.contentTitleLabel)).setText("工作提醒");
+        ImageView waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
+        waitMore.setVisibility(View.VISIBLE);
+        waitMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        View workTitle = rootView.findViewById(R.id.hs_work_title);
+        ((TextView) workTitle.findViewById(R.id.contentTitleLabel)).setText("我的工作");
+    }
+
+
+    private void initAd() {
+        List<GalleryBean> ads = new ArrayList<>();
+        GalleryBean galleryBean = new GalleryBean();
+        if (EamApplication.isHongshi()) {
+            galleryBean.resId = R.drawable.banner_hssn;
+        } else {
+            galleryBean.resId = R.drawable.banner_hailuo;
+        }
+        ads.add(galleryBean);
+        workCustomAd.setGalleryBeans(ads);
+    }
+
+
+    @SuppressLint("CheckResult")
+    private void refreshList() {
+
+
+    }
+
+    private void startAnimation(View v, int start, int end) {
+        ValueAnimator animator = ValueAnimator.ofInt(start, end).setDuration(500);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addUpdateListener(arg0 -> {
+            int value = (int) arg0.getAnimatedValue();
+            LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) v.getLayoutParams();
+            lp.height = value;
+            v.setLayoutParams(lp);
+//            if (value == end) {
+//                refreshListController.refreshComplete(defaultList);
+//            }
+
+        });
+
+        animator.start();
+    }
+
+
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initListener() {
+        super.initListener();
+
+    }
+
+
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initData() {
+        super.initData();
+
+    }
+
+    @SuppressLint("CheckResult")
+    @Override
+    public void onResume() {
+        super.onResume();
+        refreshList();
+
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLogin(LoginEvent loginEvent) {
+//        refreshListController.refreshBegin();
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+}

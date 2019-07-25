@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgGray">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnLayout"
+        android:orientation="vertical">
+
+        <com.supcon.mes.mbap.view.CustomTitleBar
+            android:id="@+id/titleBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="titleBar"
+            app:titlebar_bg_color="@color/themeColor"
+            app:titlebar_title_text="润滑部位" />
+
+        <include layout="@layout/ly_recyclerview" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/ensure"
+        style="@style/BlueButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_weight="1"
+        android:tag="ensure"
+        android:text="确认" />
+</RelativeLayout>

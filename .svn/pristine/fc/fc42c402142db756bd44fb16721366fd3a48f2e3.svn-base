@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="viberModes">
+        <item>位移模式</item>
+        <item>速度模式</item>
+        <item>加速度模式</item>
+        <item>温度模式</item>
+        <item>包络模式</item>
+    </string-array>
+
+</resources>

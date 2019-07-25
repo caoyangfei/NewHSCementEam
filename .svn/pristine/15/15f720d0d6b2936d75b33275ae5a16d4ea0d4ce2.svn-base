@@ -1,0 +1,130 @@
+package com.supcon.mes.module_acceptance.ui.adapter;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.text.InputType;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import com.app.annotation.BindByTag;
+import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
+import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
+import com.supcon.mes.mbap.listener.OnTextListener;
+import com.supcon.mes.mbap.view.CustomVerticalEditText;
+import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_acceptance.R;
+import com.supcon.mes.module_acceptance.model.bean.AcceptanceEditEntity;
+
+public class AcceptanceEditceAdapter extends BaseListDataRecyclerViewAdapter<AcceptanceEditEntity> {
+
+
+    public AcceptanceEditceAdapter(Context context) {
+        super(context);
+    }
+
+
+    @Override
+    protected BaseRecyclerViewHolder<AcceptanceEditEntity> getViewHolder(int viewType) {
+        return new ViewHolder(context);
+    }
+
+    @Override
+    public int getItemViewType(int position, AcceptanceEditEntity scoreEamPerformanceEntity) {
+        return scoreEamPerformanceEntity.viewType;
+    }
+
+
+    class ViewHolder extends BaseRecyclerViewHolder<AcceptanceEditEntity> {
+
+        @BindByTag("itemIndex")
+        TextView itemIndex;
+        @BindByTag("acceptanceItem")
+        TextView acceptanceItem;
+
+        @BindByTag("acceptanceRadioGroup")
+        RadioGroup acceptanceRadioGroup;
+        @BindByTag("acceptanceRadioBtn1")
+        RadioButton acceptanceRadioBtn1;
+        @BindByTag("acceptanceRadioBtn2")
+        RadioButton acceptanceRadioBtn2;
+
+        @BindByTag("acceptanceConclusion")
+        CustomVerticalEditText acceptanceConclusion;
+
+
+        public ViewHolder(Context context) {
+            super(context, parent);
+        }
+
+        @Override
+        protected int layoutId() {
+            return R.layout.item_acceptance_edit_content;
+        }
+
+        @Override
+        protected void initView() {
+            super.initView();
+
+        }
+
+        @Override
+        protected void initListener() {
+            super.initListener();
+            acceptanceRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(RadioGroup group, int checkedId) {
+                    if (acceptanceRadioBtn1.isPressed() || acceptanceRadioBtn2.isPressed()) {
+                        AcceptanceEditEntity item = getItem(getLayoutPosition());
+                        item.result = !item.result;
+                        if (item.result) {
+                            item.conclusion = item.isItemValue;
+                        } else {
+                            item.conclusion = item.noItemValue;
+                        }
+                    }
+                }
+            });
+            acceptanceConclusion.setTextListener(new OnTextListener() {
+                @Override
+                public void onText(String text) {
+                    AcceptanceEditEntity item = getItem(getLayoutPosition());
+                    if (!TextUtils.isEmpty(text) && text.equals(item.conclusion)) {
+                        return;
+                    }
+                    item.conclusion = Util.strFormat2(text);
+                }
+            });
+        }
+
+        @SuppressLint({"StringFormatMatches", "SetTextI18n"})
+        @Override
+        protected void update(AcceptanceEditEntity data) {
+            itemIndex.setText(getLayoutPosition() + 1 + ".");
+            acceptanceConclusion.setVisibility(View.VISIBLE);
+            acceptanceRadioGroup.setVisibility(View.VISIBLE);
+
+            acceptanceItem.setText(Util.strFormat2(data.item));
+
+            if (data.valueType() == AcceptanceEditEntity.EDITBOL) {
+                acceptanceConclusion.setVisibility(View.GONE);
+                acceptanceRadioBtn1.setText(data.isItemValue);
+                acceptanceRadioBtn2.setText(data.noItemValue);
+                acceptanceRadioBtn1.setChecked(data.result);
+                acceptanceRadioBtn2.setChecked(!data.result);
+            } else {
+                acceptanceRadioGroup.setVisibility(View.GONE);
+                if (data.valueType() == AcceptanceEditEntity.EDITNUM) {
+                    acceptanceConclusion.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                } else if (data.valueType() == AcceptanceEditEntity.EDITTEXT) {
+                    acceptanceConclusion.setInputType(InputType.TYPE_CLASS_TEXT);
+                }
+                acceptanceConclusion.setContent(Util.strFormat2(data.conclusion));
+            }
+
+        }
+
+    }
+}

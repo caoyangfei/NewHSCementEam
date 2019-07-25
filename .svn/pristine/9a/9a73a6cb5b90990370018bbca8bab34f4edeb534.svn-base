@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/line_gray"
+    android:orientation="vertical">
+
+    <com.supcon.mes.mbap.view.CustomAdView
+        android:id="@+id/workCustomAd"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:tag="workCustomAd" />
+
+    <com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar
+        android:id="@+id/searchTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_20"
+        android:tag="searchTitleBar"
+        app:title_background_color="@color/transparent"
+        app:title_right_btn_need="false"
+        app:title_text="移动设备管理" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:layout_below="@id/workCustomAd">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/hs_wait_title"
+                layout="@layout/hs_item_work_title" />
+
+            <include
+                android:id="@+id/hs_work_title"
+                layout="@layout/hs_item_work_title" />
+        </LinearLayout>
+
+
+    </ScrollView>
+
+</RelativeLayout>

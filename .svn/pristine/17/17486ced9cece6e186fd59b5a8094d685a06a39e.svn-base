@@ -1,0 +1,15 @@
+package com.supcon.mes.module_main.model.api;
+
+import com.app.annotation.apt.ContractFactory;
+
+import java.util.List;
+
+/**
+ * @author yangfei.cao
+ * @ClassName hongShiCementEam
+ * @date 2019/7/24
+ * ------------- Description -------------
+ */
+@ContractFactory(entites = {List.class})
+public interface WaitDealtAPI {
+}

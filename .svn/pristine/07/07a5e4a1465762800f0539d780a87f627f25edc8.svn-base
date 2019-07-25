@@ -1,0 +1,314 @@
+package com.supcon.mes.module_acceptance.ui;
+
+import android.annotation.SuppressLint;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
+
+import com.app.annotation.BindByTag;
+import com.app.annotation.Presenter;
+import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
+import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
+import com.supcon.common.view.base.adapter.IListAdapter;
+import com.supcon.common.view.listener.OnChildViewClickListener;
+import com.supcon.common.view.listener.OnRefreshListener;
+import com.supcon.common.view.util.ToastUtils;
+import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
+import com.supcon.mes.mbap.beans.WorkFlowEntity;
+import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.mbap.utils.StatusBarUtils;
+import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomVerticalTextView;
+import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.BapResultEntity;
+import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
+import com.supcon.mes.middleware.model.bean.Staff;
+import com.supcon.mes.middleware.model.event.CommonSearchEvent;
+import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.util.EmptyAdapterHelper;
+import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_acceptance.IntentRouter;
+import com.supcon.mes.module_acceptance.R;
+import com.supcon.mes.module_acceptance.model.api.AcceptanceEditAPI;
+import com.supcon.mes.module_acceptance.model.api.AcceptanceSubmitAPI;
+import com.supcon.mes.module_acceptance.model.bean.AcceptanceEditEntity;
+import com.supcon.mes.module_acceptance.model.bean.AcceptanceEntity;
+import com.supcon.mes.module_acceptance.model.contract.AcceptanceEditContract;
+import com.supcon.mes.module_acceptance.model.contract.AcceptanceSubmitContract;
+import com.supcon.mes.module_acceptance.presenter.AcceptanceEditPresenter;
+import com.supcon.mes.module_acceptance.presenter.AcceptanceSubmitPresenter;
+import com.supcon.mes.module_acceptance.ui.adapter.AcceptanceEditceAdapter;
+import com.supcon.mes.module_acceptance.ui.util.AcceptanceMapManager;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+
+/**
+ * @author yangfei.cao
+ * @ClassName hongShiCementEam
+ * @date 2019/6/27
+ * ------------- Description -------------
+ */
+@Router(value = Constant.Router.ACCEPTANCE_EDIT)
+@Presenter(value = {AcceptanceEditPresenter.class, AcceptanceSubmitPresenter.class})
+public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<AcceptanceEditEntity> implements AcceptanceEditContract.View, AcceptanceSubmitContract.View {
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
+    @BindByTag("rightBtn")
+    ImageButton rightBtn;
+
+    @BindByTag("contentView")
+    RecyclerView contentView;
+
+    @BindByTag("eamCode")
+    CustomVerticalTextView eamCode;
+    @BindByTag("eamName")
+    CustomVerticalTextView eamName;
+    @BindByTag("acceptanceDept")
+    CustomVerticalTextView acceptanceDept;
+    @BindByTag("acceptanceArea")
+    CustomVerticalTextView acceptanceArea;
+    @BindByTag("acceptanceStaff")
+    CustomVerticalTextView acceptanceStaff;
+    @BindByTag("acceptanceTime")
+    CustomVerticalTextView acceptanceTime;
+    private AcceptanceEntity acceptanceEntity;
+    private AcceptanceEditceAdapter acceptanceEditceAdapter;
+
+    @Override
+    protected IListAdapter createAdapter() {
+        acceptanceEditceAdapter = new AcceptanceEditceAdapter(this);
+        return acceptanceEditceAdapter;
+    }
+
+    @Override
+    protected int getLayoutID() {
+        return R.layout.ac_acceptance_edit;
+    }
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+        EventBus.getDefault().register(this);
+        acceptanceEntity = (AcceptanceEntity) getIntent().getSerializableExtra(Constant.IntentKey.ACCEPTANCE_ENTITY);
+    }
+
+    @Override
+    protected void initView() {
+        super.initView();
+        StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
+        refreshListController.setAutoPullDownRefresh(true);
+        refreshListController.setPullDownRefreshEnabled(true);
+        refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
+        contentView.setLayoutManager(new LinearLayoutManager(context));
+
+        titleText.setText("临时验收");
+        rightBtn.setImageResource(R.drawable.sl_top_submit);
+        rightBtn.setVisibility(View.VISIBLE);
+    }
+
+
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initListener() {
+        super.initListener();
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        onBackPressed();
+                    }
+                });
+        RxView.clicks(rightBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> new CustomDialog(context)
+                        .twoButtonAlertDialog("确定提交验收吗?")
+                        .bindView(R.id.redBtn, "确定")
+                        .bindView(R.id.grayBtn, "取消")
+                        .bindClickListener(R.id.redBtn, v12 -> {
+                            if (acceptanceEntity.checkStaff == null) {
+                                ToastUtils.show(this, "请选择验收人!");
+                                return;
+                            }
+                            onLoading("正在处理中...");
+                            doSubmit();
+                        }, true)
+                        .bindClickListener(R.id.grayBtn, null, true)
+                        .show());
+        refreshListController.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenterRouter.create(AcceptanceEditAPI.class).getAcceptanceEdit(acceptanceEntity.id);
+            }
+        });
+
+        acceptanceStaff.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                if (action == -1) {
+                    acceptanceEntity.checkStaff = null;
+                }
+                IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.STAFF);
+            }
+        });
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        eamCode.setContent(Util.strFormat2(acceptanceEntity.getBeamID().code));
+        eamName.setContent(Util.strFormat2(acceptanceEntity.getBeamID().name));
+        acceptanceDept.setContent(Util.strFormat2(acceptanceEntity.getDept().name));
+        acceptanceArea.setContent(Util.strFormat2(acceptanceEntity.getArea().name));
+        if (TextUtils.isEmpty(acceptanceEntity.getCheckStaff().name)) {
+            acceptanceEntity.checkStaff.name = EamApplication.getAccountInfo().staffName;
+            acceptanceEntity.checkStaff.code = EamApplication.getAccountInfo().staffCode;
+            acceptanceEntity.checkStaff.id = EamApplication.getAccountInfo().staffId;
+        }
+        acceptanceStaff.setContent(Util.strFormat2(acceptanceEntity.getCheckStaff().name));
+        acceptanceTime.setContent(DateUtil.dateFormat(acceptanceEntity.applyDate != null ? acceptanceEntity.applyDate : System.currentTimeMillis()));
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void search(CommonSearchEvent commonSearchEvent) {
+        if (commonSearchEvent.commonSearchEntity != null) {
+            if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
+                CommonSearchStaff searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
+                acceptanceStaff.setContent(Util.strFormat(searchStaff.name));
+                Staff staff = new Staff();
+                staff.id = searchStaff.id;
+                staff.name = searchStaff.name;
+                staff.code = searchStaff.code;
+                acceptanceEntity.checkStaff = staff;
+            }
+        }
+    }
+
+    @SuppressLint("CheckResult")
+    @Override
+    public void getAcceptanceEditSuccess(List entity) {
+        Map<String, AcceptanceEditEntity> acceptanceEditEntities = new HashMap<>();
+        Flowable.fromIterable((List<AcceptanceEditEntity>) entity)
+                .subscribe(new Consumer<AcceptanceEditEntity>() {
+                    @Override
+                    public void accept(AcceptanceEditEntity acceptanceEditEntity) throws Exception {
+
+                        AcceptanceEditEntity acceptanceEditEntityOld;
+                        if (acceptanceEditEntities.containsKey(acceptanceEditEntity.item)) {
+                            acceptanceEditEntityOld = acceptanceEditEntities.get(acceptanceEditEntity.item);
+
+                        } else {
+                            acceptanceEditEntityOld = acceptanceEditEntity;
+                        }
+                        if (!TextUtils.isEmpty(acceptanceEditEntity.category)) {
+                            acceptanceEditEntityOld.categorys.add(acceptanceEditEntity);
+                        }
+
+                        acceptanceEditEntities.put(acceptanceEditEntity.item, acceptanceEditEntityOld);
+
+                    }
+                }, throwable -> {
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        refreshListController.refreshComplete(new ArrayList<>(acceptanceEditEntities.values()));
+                    }
+                });
+
+    }
+
+    @Override
+    public void getAcceptanceEditFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
+        refreshListController.refreshComplete(null);
+    }
+
+    private void doSubmit() {
+        Map map = AcceptanceMapManager.createMap(acceptanceEntity);
+
+        generateWorkFlow(map);
+        List list1 = AcceptanceMapManager.dataChange(acceptanceEditceAdapter.getList());
+        map.put("dg1561532342588ModelCode", "BEAM2_1.0.0_checkApply_CheckApplyDetail");
+        map.put("dg1561532342588ListJson", list1.toString());
+        map.put("dgLists['dg1561532342588']", list1.toString());
+
+        map.put("operateType", Constant.Transition.SUBMIT);
+        presenterRouter.create(AcceptanceSubmitAPI.class).doSubmit(map);
+    }
+
+    private Map<String, Object> generateWorkFlow(Map<String, Object> map) {
+        map.put("workFlowVar.outcomeMapJson", generateWorkFlowMigrationLine().toString());
+        map.put("workFlowVar.outcome", "SequenceFlow_0qa646v");
+        map.put("workFlowVarStatus", "");
+        map.put("operateType", Constant.Transition.SUBMIT);
+
+        return map;
+    }
+
+    /**
+     * @param
+     * @return
+     * @description 工作流迁移线封装
+     * @author zhangwenshuai1 2018/9/4
+     */
+    private List<WorkFlowEntity> generateWorkFlowMigrationLine() {
+        WorkFlowEntity workFlowEntity = new WorkFlowEntity();
+        List<WorkFlowEntity> workFlowEntities = new ArrayList<>();
+        workFlowEntity.dec = "生效";
+        workFlowEntity.outcome = "SequenceFlow_0qa646v";
+        workFlowEntity.type = "normal";
+        workFlowEntities.add(workFlowEntity);
+        return workFlowEntities;
+    }
+
+
+    @Override
+    public void doSubmitSuccess(BapResultEntity entity) {
+        onLoadSuccessAndExit("验收成功", new OnLoaderFinishListener() {
+            @Override
+            public void onLoaderFinished() {
+                EventBus.getDefault().post(new RefreshEvent());
+                finish();
+            }
+        });
+    }
+
+    @Override
+    public void doSubmitFailed(String errorMsg) {
+        if ("本数据已经被其他人修改或删除，请刷页面后重试".equals(errorMsg)) {
+            loaderController.showMsgAndclose(ErrorMsgHelper.msgParse(errorMsg), false, 5000);
+        } else {
+            onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+
+}

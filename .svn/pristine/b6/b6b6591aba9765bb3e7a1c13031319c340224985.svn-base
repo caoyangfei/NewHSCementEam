@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgGray">
+
+    <include layout="@layout/ly_yh_table" />
+
+
+    <LinearLayout
+        android:id="@+id/yhDealBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/sh_white_stroke"
+        android:orientation="vertical"
+        android:tag="yhDealBar">
+
+        <com.supcon.mes.mbap.view.CustomEditText
+            android:id="@+id/yhEditCommentInput"
+            style="@style/HintTextColor"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:paddingLeft="@dimen/dp_10"
+            android:tag="yhEditCommentInput"
+            app:edit_hint="填写意见"
+            app:text_color="@color/textColorlightblack"
+            app:text_size="16" />
+
+        <!--<com.supcon.mes.mbap.view.CustomPopTransation
+            android:id="@+id/yhEditTransition"
+            android:tag="yhEditTransition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>-->
+        <com.supcon.mes.mbap.view.CustomWorkFlowView
+            android:id="@+id/yhEditTransition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="yhEditTransition"
+            app:commentable="false" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

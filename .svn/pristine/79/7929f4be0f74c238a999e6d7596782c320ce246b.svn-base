@@ -1,0 +1,58 @@
+apply plugin: 'com.android.library'
+
+    android {
+        compileSdkVersion           rootProject.ext.compileSdkVersion
+
+        defaultConfig {
+            minSdkVersion           rootProject.ext.minSdkVersion
+            targetSdkVersion        rootProject.ext.targetSdkVersion
+            versionCode             rootProject.ext.versionCode
+            versionName             rootProject.ext.versionName
+
+            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        }
+
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            }
+        }
+
+        //支持Java8
+        defaultConfig.javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath = true
+            }
+        }
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_1_8
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+    }
+
+    dependencies {
+        implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+        testImplementation 'junit:junit:4.12'
+        androidTestImplementation 'com.android.support.test:runner:1.0.2'
+        androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //    implementation "com.supcon.mes.common:com_view:$rootProject.ext.viewVersion"
+    //    implementation "com.supcon.mes.common:annotation:$rootProject.ext.annotationVersion"
+    //    implementation "com.supcon.mes.common:com_router:$rootProject.ext.routerVersion"
+    //    implementation "com.supcon.mes.common:com_http:$rootProject.ext.httpVersion"
+    //    implementation "com.supcon.mes.mbap:mbap:$rootProject.ext.mbapVersion"
+    //    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
+
+
+        implementation "com.github.jasonwang18.common:com_view:$rootProject.ext.commonVersion"
+        implementation "com.github.jasonwang18.common:com_router:$rootProject.ext.commonVersion"
+        implementation "com.github.jasonwang18.common:com_http:$rootProject.ext.commonVersion"
+        implementation "com.github.jasonwang18.common:annotation:$rootProject.ext.commonVersion"
+        implementation "com.github.jasonwang18:bapkit:$rootProject.ext.bapkitVersion"
+    //    annotationProcessor "com.github.jasonwang18.common:apt:$rootProject.ext.commonVersion@jar"
+    }
+apply from: '../library.gradle'

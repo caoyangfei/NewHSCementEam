@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/line_gray"
+    >
+
+    <com.supcon.mes.mbap.view.CustomScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
+            <com.supcon.mes.mbap.view.CustomAdView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/workCustomAd"
+                android:tag="workCustomAd"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                android:id="@+id/workLayout"
+                android:tag="workLayout"
+                >
+                <include layout="@layout/ly_recyclerview"/>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </com.supcon.mes.mbap.view.CustomScrollView>
+    <include layout="@layout/ly_titlebar_transparent"
+        android:layout_marginTop="@dimen/dp_20"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dp_50"/>
+</RelativeLayout>
+
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:orientation="vertical" android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@color/bgGray2"-->
+    <!--&gt;-->
+    <!--<include layout="@layout/ly_titlebar"/>-->
+    <!--<com.supcon.mes.mbap.view.CustomScrollView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="vertical">-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:orientation="vertical"-->
+            <!--android:paddingBottom="@dimen/dp_10"-->
+            <!--android:layout_marginTop="@dimen/dp_1">-->
+            <!--<com.supcon.mes.mbap.view.CustomAdView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="80dp"-->
+                <!--android:layout_marginTop="@dimen/dp_1"-->
+                <!--android:id="@+id/workCustomAd"-->
+                <!--android:tag="workCustomAd"/>-->
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@color/white"-->
+                <!--android:orientation="vertical"-->
+                <!--android:id="@+id/workLayout"-->
+                <!--android:tag="workLayout"-->
+                <!--android:paddingBottom="@dimen/dp_10">-->
+                <!--<include layout="@layout/ly_recyclerview"/>-->
+
+            <!--</LinearLayout>-->
+
+        <!--</LinearLayout>-->
+
+    <!--</com.supcon.mes.mbap.view.CustomScrollView>-->
+<!--</LinearLayout>-->

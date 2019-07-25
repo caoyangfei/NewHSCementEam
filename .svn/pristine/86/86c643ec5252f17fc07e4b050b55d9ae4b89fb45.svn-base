@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgGray">
+
+    <include layout="@layout/ly_yh_table" />
+
+
+    <LinearLayout
+        android:id="@+id/yhDealBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/sh_white_stroke"
+        android:orientation="vertical"
+        android:tag="yhDealBar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/dp_3">
+
+            <CheckBox
+                android:id="@+id/yhEditSolve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:checked="false"
+                android:drawableRight="@drawable/sl_checkbox_selector_small"
+                android:drawablePadding="@dimen/dp_10"
+                android:paddingLeft="10dp"
+                android:paddingRight="@dimen/dp_5"
+                android:tag="yhEditSolve"
+                android:text="直接消缺"
+                android:textColor="@drawable/tvbg_tag_item"
+                android:textSize="@dimen/fontSize_14sp" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/dp_5"
+                android:layout_marginBottom="@dimen/dp_5"
+                android:background="@color/line_gray" />
+
+            <com.supcon.mes.mbap.view.CustomEditText
+                android:id="@+id/yhEditCommentInput"
+                style="@style/HintTextColor"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="@dimen/dp_10"
+                android:tag="yhEditCommentInput"
+                app:edit_hint="填写意见"
+                app:text_color="@color/textColorlightblack"
+                app:text_size="16" />
+        </LinearLayout>
+
+        <!--<com.supcon.mes.mbap.view.CustomPopTransation
+            android:id="@+id/yhEditTransition"
+            android:tag="yhEditTransition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>-->
+        <com.supcon.mes.mbap.view.CustomWorkFlowView
+            android:id="@+id/yhEditTransition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:tag="yhEditTransition"
+            app:commentable="false" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

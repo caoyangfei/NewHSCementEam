@@ -1,0 +1,130 @@
+{
+  "aew": [
+    {
+      "name": "计划巡检",
+      "viewType": 1,
+      "num": 0,
+      "type": 13
+    },
+    {
+      "name": "临时巡检",
+      "viewType": 0,
+      "num": 0,
+      "type": 14
+    },
+    {
+      "name": "巡检记录",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "巡检手册",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "零部件预警",
+      "viewType": 0,
+      "num": 0,
+      "type": 23
+    },
+    {
+      "name": "运维预警",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "隐患清单",
+      "viewType": 0,
+      "num": 0,
+      "type": 4
+    }
+  ],
+  "lubricate": [
+    {
+      "name": "计划润滑",
+      "viewType": 1,
+      "num": 0
+    },
+    {
+      "name": "临时润滑",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "润滑预警",
+      "viewType": 0,
+      "num": 0,
+      "type": 24
+    },
+    {
+      "name": "润滑隐患",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "润滑记录",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "润滑手册",
+      "viewType": 0,
+      "num": 0
+    }
+  ],
+  "repair": [
+    {
+      "name": "日常维修",
+      "viewType": 1,
+      "num": 0
+    },
+    {
+      "name": "周期维修",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "年底大修",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "维修记录",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "关联表单",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "维修手册",
+      "viewType": 0,
+      "num": 0
+    }
+  ],
+  "form": [
+    {
+      "name": "巡检日报",
+      "viewType": 1,
+      "num": 0
+    },
+    {
+      "name": "巡检月报",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "隐患统计",
+      "viewType": 0,
+      "num": 0
+    },
+    {
+      "name": "工单统计",
+      "viewType": 0,
+      "num": 0
+    }
+  ]
+}
