@@ -23,7 +23,7 @@ public interface MainService {
      *
      * @return
      */
-    @GET("/BEAM2/personWork/personworkinfo/personWorkList-query.action")
+    @GET("/BEAM2/personWork/personworkinfo/personWorkInfoList-query.action")
     Flowable<CommonBAPListEntity<WaitDealtEntity>> getWaitDealt(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 
 }

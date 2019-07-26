@@ -29,7 +29,6 @@
         android:layout_below="@id/workCustomAd"
         android:background="@color/white"
         android:fillViewport="true"
-        android:paddingBottom="@dimen/dp_10"
         android:scrollbars="none">
 
         <LinearLayout

@@ -18,6 +18,8 @@ import android.widget.TextView;
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
+import com.supcon.common.view.listener.OnItemChildViewClickListener;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.module_main.R;
 
 import java.util.List;
@@ -55,12 +57,12 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
         // 设置SelectPicPopupWindow的View
         this.setContentView(conentView);
         // 设置SelectPicPopupWindow弹出窗体的宽
-        this.setWidth(w * 2 / 3);
+        this.setWidth(w * 3 / 4);
         // 设置SelectPicPopupWindow弹出窗体的高
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         // 设置SelectPicPopupWindow弹出窗体可点击
-        this.setFocusable(false);
-        this.setOutsideTouchable(false);
+        this.setFocusable(true);
+        this.setOutsideTouchable(true);
         // 刷新状态
         this.update();
         // 实例化一个ColorDrawable颜色为半透明
@@ -74,10 +76,8 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
         setOnDismissListener(this::onDismiss);
     }
 
-
-    @Override
-    public void setOnDismissListener(OnDismissListener onDismissListener) {
-        super.setOnDismissListener(onDismissListener);
+    public void setOnItemChildViewClickListener(OnItemChildViewClickListener onItemChildViewClickListener) {
+        myAdapter.setOnItemChildViewClickListener(onItemChildViewClickListener);
     }
 
     @Override
@@ -161,41 +161,37 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
             int[] location = new int[2];
             parent.getLocationOnScreen(location);
             //优先进行计算
-            this.getContentView().measure(0, 0);
+            this.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             //之后通过此方法回去就可以了
             int measuredHeight = this.getContentView().getMeasuredHeight();
-            int measuredWidth = this.getContentView().getMeasuredWidth();
-            int width = context.getWindowManager().getDefaultDisplay().getWidth();
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) popwinBackView.getLayoutParams();
-
+            int w = context.getWindowManager().getDefaultDisplay().getWidth();
             int margin;
-            int x;
+            int x = 0;
             if (gravity == left) {
-
                 if (mark == 1) {
-                    margin = measuredWidth / 10;
-                    x = parent.getWidth() + location[0] - measuredWidth * 9 / 10;
+                    margin = w * 3 / 40;
+                    x = location[0] - w * 3 / 4 + w * 3 / 40 + parent.getWidth() / 2;
                 } else {
-                    margin = measuredWidth / 6;
-                    x = parent.getWidth() + location[0] - measuredWidth * 5 / 6;
+                    margin = w * 3 / 16;
+                    x = location[0] - w * 3 / 4 + w * 3 / 16 + parent.getWidth() / 2;
                 }
-                this.showAtLocation(parent, Gravity.NO_GRAVITY, x, location[1] - measuredHeight);
                 layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_LEFT);
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 layoutParams.rightMargin = margin;
             } else if (gravity == right) {
                 if (mark == 1) {
-                    margin = measuredWidth / 10;
-                    x = location[0] + parent.getWidth() / 2 - measuredWidth / 10;
+                    margin = w * 3 / 40;
+                    x = location[0] + parent.getWidth() / 2 - w * 3 / 40;
                 } else {
-                    margin = measuredWidth / 6;
-                    x = location[0] + parent.getWidth() / 2 - measuredWidth / 6;
+                    margin = w * 3 / 16;
+                    x = location[0] + parent.getWidth() / 2 - w * 3 / 16;
                 }
-                this.showAtLocation(parent, Gravity.NO_GRAVITY, x, location[1] - measuredHeight);
                 layoutParams.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                 layoutParams.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
                 layoutParams.leftMargin = margin;
             }
+            this.showAtLocation(parent, Gravity.NO_GRAVITY, x, location[1] - measuredHeight);
             popwinBackView.setLayoutParams(layoutParams);
         } else {
             this.dismiss();

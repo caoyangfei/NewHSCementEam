@@ -6,7 +6,7 @@ import com.supcon.common.view.base.fragment.BaseControllerFragment;
 import com.supcon.mes.module_main.R;
 
 /**
- * 联系人
+ * 设备
  */
 public class EamFragment extends BaseControllerFragment {
 

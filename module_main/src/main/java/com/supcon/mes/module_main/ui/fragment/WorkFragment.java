@@ -60,7 +60,6 @@ import io.reactivex.functions.Consumer;
 @Presenter(value = WaitDealtPresenter.class)
 public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View {
 
-
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
 
@@ -206,9 +205,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-                if (menuPopwindow.isShowing()) {
-                    menuPopwindow.dismiss();
-                }
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 if (oldPosition == position) {
@@ -240,15 +236,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 oldPosition = position;
             }
         });
-//        menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
-//            @Override
-//            public void onDismiss() {
-//                super.onDismiss();
-//                if (oldPosition != -1)
-//                    workRecycler.getChildAt(oldPosition).setSelected(false);
-//                oldPosition = -1;
-//            }
-//        });
+        menuPopwindow.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
+            @Override
+            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                menuPopwindow.dismiss();
+
+            }
+        });
+        menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
+            @Override
+            public void onDismiss() {
+                super.onDismiss();
+                if (oldPosition != -1)
+                    workRecycler.getChildAt(oldPosition).setSelected(false);
+                oldPosition = -1;
+            }
+        });
     }
 
     /**
