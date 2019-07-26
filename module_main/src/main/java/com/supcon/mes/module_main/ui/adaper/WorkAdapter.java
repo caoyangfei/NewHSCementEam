@@ -10,8 +10,8 @@ import com.bumptech.glide.Glide;
 import com.supcon.common.view.base.adapter.HeaderRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.mes.middleware.util.RequestOptionUtil;
-import com.supcon.mes.module_login.R;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
+import com.supcon.mes.module_main.R;
 
 
 public class WorkAdapter extends HeaderRecyclerViewAdapter<WorkInfo> {
@@ -65,7 +65,7 @@ public class WorkAdapter extends HeaderRecyclerViewAdapter<WorkInfo> {
 
         @Override
         protected int layoutId() {
-            return R.layout.item_work;
+            return R.layout.hs_item_work;
         }
 
         @Override

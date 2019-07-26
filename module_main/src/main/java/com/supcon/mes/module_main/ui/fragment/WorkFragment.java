@@ -1,9 +1,11 @@
 package com.supcon.mes.module_main.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
+import com.supcon.common.BaseConstant;
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.fragment.BaseControllerFragment;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
@@ -40,6 +43,7 @@ import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
 import com.supcon.mes.module_main.ui.util.MenuHelper;
 import com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.module_main.ui.view.MenuPopwindow;
+import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -240,6 +244,11 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
                 menuPopwindow.dismiss();
+                MenuPopwindowBean menuPopwindowBean = (MenuPopwindowBean) obj;
+
+                if (!TextUtils.isEmpty(menuPopwindowBean.getRouter())) {
+                    IntentRouter.go(getContext(), menuPopwindowBean.getRouter());
+                }
 
             }
         });

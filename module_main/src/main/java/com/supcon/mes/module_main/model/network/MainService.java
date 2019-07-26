@@ -3,6 +3,7 @@ package com.supcon.mes.module_main.model.network;
 import com.app.annotation.apt.ApiFactory;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
+import com.supcon.mes.module_main.model.bean.EamEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 
 import java.util.Map;
@@ -25,5 +26,9 @@ public interface MainService {
      */
     @GET("/BEAM2/personWork/personworkinfo/personWorkInfoList-query.action")
     Flowable<CommonBAPListEntity<WaitDealtEntity>> getWaitDealt(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
+
+    //档案查看
+    @GET("/BEAM/baseInfo/baseInfo/baseInfoPartForview-query.action")
+    Flowable<CommonBAPListEntity<EamEntity>> getEams(@Query("staffID") String staffID, @Query("mobileFlag") String mobileFlag, @QueryMap Map<String, Object> pageQueryMap);
 
 }

@@ -4,7 +4,9 @@ import android.content.Context;
 
 import com.supcon.mes.mbap.MBapApp;
 import com.supcon.mes.mbap.utils.GsonUtil;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
 
 import org.json.JSONArray;
@@ -23,6 +25,23 @@ public class MenuHelper {
         try {
             worksArray = new JSONObject(Util.getJson(MBapApp.getAppContext(), "hswork.json")).getJSONArray("aew");
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
+            for (MenuPopwindowBean menuPopwindowBean : works) {
+                switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.JHXJ:
+                        menuPopwindowBean.setRouter(Constant.Router.JHXJ_LIST);
+                        break;
+                    case Constant.HSWorkType.LSXJ:
+                        menuPopwindowBean.setRouter(Constant.Router.LSXJ_LIST);
+                        break;
+
+                    case Constant.HSWorkType.SPARE_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.SPARE_EARLY_WARN);
+                        break;
+                    case Constant.HSWorkType.YHGL:
+                        menuPopwindowBean.setRouter(Constant.Router.YH_LIST);
+                        break;
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -35,6 +54,13 @@ public class MenuHelper {
         try {
             worksArray = new JSONObject(Util.getJson(MBapApp.getAppContext(), "hswork.json")).getJSONArray("lubricate");
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
+            for (MenuPopwindowBean menuPopwindowBean : works) {
+                switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.LUBRICATION_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.LUBRICATION_EARLY_WARN);
+                        break;
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

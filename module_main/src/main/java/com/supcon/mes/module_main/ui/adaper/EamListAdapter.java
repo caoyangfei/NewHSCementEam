@@ -1,4 +1,4 @@
-package com.supcon.mes.module_sbda_online.ui.adapter;
+package com.supcon.mes.module_main.ui.adaper;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -14,27 +14,27 @@ import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
-import com.supcon.mes.module_sbda_online.IntentRouter;
-import com.supcon.mes.module_sbda_online.R;
-import com.supcon.mes.module_sbda_online.model.bean.SBDAOnlineEntity;
+import com.supcon.mes.module_main.IntentRouter;
+import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.model.bean.EamEntity;
 
 /**
  * Environment: hongruijun
  * Created by Xushiyun on 2018/4/2.
  */
 
-public class SBDAOnlineListAdapter extends BaseListDataRecyclerViewAdapter<SBDAOnlineEntity> {
+public class EamListAdapter extends BaseListDataRecyclerViewAdapter<EamEntity> {
 
-    public SBDAOnlineListAdapter(Context context) {
+    public EamListAdapter(Context context) {
         super(context);
     }
 
     @Override
-    protected BaseRecyclerViewHolder<SBDAOnlineEntity> getViewHolder(int viewType) {
+    protected BaseRecyclerViewHolder<EamEntity> getViewHolder(int viewType) {
         return new ViewHolder(context);
     }
 
-    class ViewHolder extends BaseRecyclerViewHolder<SBDAOnlineEntity> implements View.OnClickListener {
+    class ViewHolder extends BaseRecyclerViewHolder<EamEntity> implements View.OnClickListener {
 
         ImageView itemSBDADeviceIc;
 
@@ -76,9 +76,9 @@ public class SBDAOnlineListAdapter extends BaseListDataRecyclerViewAdapter<SBDAO
             eamFraction.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SBDAOnlineEntity item = getItem(getAdapterPosition());
+                    EamEntity item = getItem(getAdapterPosition());
                     if (item != null) {
-                        SBDAOnlineEntity.ScoreMerity scoreMerity = item.getScoreMerity();
+                        EamEntity.ScoreMerity scoreMerity = item.getScoreMerity();
                         if (TextUtils.isEmpty(scoreMerity.scoreTableNo)) {
                             ToastUtils.show(context, "当前设备暂未评分!");
                             return;
@@ -99,11 +99,11 @@ public class SBDAOnlineListAdapter extends BaseListDataRecyclerViewAdapter<SBDAO
 
         @Override
         protected int layoutId() {
-            return R.layout.item_online_sbda;           //获取列表自视图布局
+            return R.layout.item_hs_eam;           //获取列表自视图布局
         }
 
         @Override
-        protected void update(SBDAOnlineEntity entity) {
+        protected void update(EamEntity entity) {
             itemSBDADeviceIc.setImageResource(R.drawable.ic_default_pic3);
 
             new EamPicController().initEamPic(itemSBDADeviceIc, entity.id);

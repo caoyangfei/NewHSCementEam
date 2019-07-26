@@ -1,6 +1,7 @@
 package com.supcon.mes.module_main.ui.adaper;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -70,6 +71,28 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             waitDealtEamName.setText(Util.strFormat(data.eamname));
             waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "");
             waitDealtEamState.setText(Util.strFormat(data.soucretype));
+
+            if (data.overdateflag.equals("1")) {
+                waitDealtEamState.setTextColor(context.getResources().getColor(R.color.orange));
+            } else {
+                if (!TextUtils.isEmpty(data.state)) {
+                    if (data.state.equals("待处理")) {
+                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
+                    } else if (data.state.equals("处理中")) {
+                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
+                    } else if (data.state.equals("待验收")) {
+                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.green));
+                    }
+                } else {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
+                }
+            }
+
+            if (TextUtils.isEmpty(data.processkey)) {
+                waitDealtEntrust.setVisibility(View.GONE);
+            } else {
+                waitDealtEntrust.setVisibility(View.VISIBLE);
+            }
         }
     }
 

@@ -4,13 +4,13 @@
       "name": "计划巡检",
       "viewType": 1,
       "num": 0,
-      "type": 13
+      "type": 1
     },
     {
       "name": "临时巡检",
       "viewType": 0,
       "num": 0,
-      "type": 14
+      "type": 2
     },
     {
       "name": "巡检记录",
@@ -26,7 +26,7 @@
       "name": "零部件预警",
       "viewType": 0,
       "num": 123,
-      "type": 23
+      "type": 5
     },
     {
       "name": "运维预警",
@@ -55,7 +55,7 @@
       "name": "润滑预警",
       "viewType": 0,
       "num": 0,
-      "type": 24
+      "type": 10
     },
     {
       "name": "润滑隐患",

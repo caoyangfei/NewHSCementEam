@@ -10,6 +10,8 @@ import com.supcon.common.com_http.BaseEntity;
  */
 public class WaitDealtEntity extends BaseEntity {
 
+    public Long dataid;     //dataid
+
     public String eamcode;     //设备编码
 
     public String eamname;   //设备名
@@ -20,6 +22,10 @@ public class WaitDealtEntity extends BaseEntity {
 
     public Long nextduration;  //下次执行时长
 
-    public String overdateflag;//是否超期
+    public String overdateflag;//是否超期 1 超期  0 正常
+
+    public String state;//状态  派工  执行  验收
+
+    public String processkey;//工作流编码
 
 }

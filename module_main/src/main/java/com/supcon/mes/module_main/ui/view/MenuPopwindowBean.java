@@ -11,6 +11,7 @@ public class MenuPopwindowBean {
     private String name;
     private int num;
     private int type;
+    private String router;
 
     public String getName() {
         return name;
@@ -34,5 +35,13 @@ public class MenuPopwindowBean {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public String getRouter() {
+        return router;
+    }
+
+    public void setRouter(String router) {
+        this.router = router;
     }
 }
