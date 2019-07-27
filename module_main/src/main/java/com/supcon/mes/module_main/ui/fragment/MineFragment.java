@@ -91,8 +91,6 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     @Override
     protected void initView() {
         super.initView();
-        mineUserName.setText(EamApplication.getAccountInfo().getStaffName());
-        mingUserDepart.setText(EamApplication.getAccountInfo().getDepartmentName());
     }
 
     @Override
@@ -136,6 +134,8 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     public void onResume() {
         super.onResume();
         updateCacheSize();
+        mineUserName.setText(EamApplication.getAccountInfo().getStaffName());
+        mingUserDepart.setText(EamApplication.getAccountInfo().getDepartmentName());
     }
 
     @Override

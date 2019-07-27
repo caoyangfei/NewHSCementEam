@@ -88,7 +88,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     LinearLayout waitDealtLayout;
     @BindByTag("waitDealtRecycler")
     RecyclerView waitDealtRecycler;
-
     @BindByTag("workRecycler")
     RecyclerView workRecycler;
 
@@ -148,6 +147,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
         waitDealtRecycler.setLayoutManager(new LinearLayoutManager(context));
         waitDealtAdapter = new WaitDealtAdapter(getActivity());
+        waitDealtRecycler.setAdapter(waitDealtAdapter);
 
         GridLayoutManager layoutManager = new GridLayoutManager(context, 4);
         workRecycler.setLayoutManager(layoutManager);
@@ -301,11 +301,11 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
         if (entity.result.size() > 0) {
             waitDealtLayout.setVisibility(View.GONE);
-            waitDealtAdapter.setList(entity.result);
-            waitDealtRecycler.setAdapter(waitDealtAdapter);
         } else {
             waitDealtLayout.setVisibility(View.VISIBLE);
         }
+        waitDealtAdapter.setList(entity.result);
+        waitDealtAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -315,7 +315,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
             SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         }
         waitDealtLayout.setVisibility(View.VISIBLE);
-
+        waitDealtAdapter.setList(new ArrayList<>());
+        waitDealtAdapter.notifyDataSetChanged();
     }
 
 
