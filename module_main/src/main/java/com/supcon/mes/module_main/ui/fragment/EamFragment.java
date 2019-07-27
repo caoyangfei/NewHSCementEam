@@ -1,8 +1,11 @@
 package com.supcon.mes.module_main.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
@@ -11,10 +14,12 @@ import com.supcon.common.view.base.fragment.BaseControllerFragment;
 import com.supcon.common.view.base.fragment.BaseRefreshRecyclerFragment;
 import com.supcon.common.view.listener.OnRefreshPageListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.api.EamAPI;
 import com.supcon.mes.module_main.model.bean.EamEntity;
@@ -34,6 +39,9 @@ public class EamFragment extends BaseRefreshRecyclerFragment<EamEntity> implemen
 
     @BindByTag("contentView")
     RecyclerView contentView;
+    @BindByTag("more")
+    TextView more;
+    private EamListAdapter eamListAdapter;
 
     @Override
     protected int getLayoutID() {
@@ -42,7 +50,7 @@ public class EamFragment extends BaseRefreshRecyclerFragment<EamEntity> implemen
 
     @Override
     protected IListAdapter<EamEntity> createAdapter() {
-        EamListAdapter eamListAdapter = new EamListAdapter(getActivity());
+        eamListAdapter = new EamListAdapter(getActivity());
         return eamListAdapter;
     }
 
@@ -75,6 +83,21 @@ public class EamFragment extends BaseRefreshRecyclerFragment<EamEntity> implemen
             @Override
             public void onRefresh(int pageIndex) {
                 presenterRouter.create(EamAPI.class).getEams(pageIndex);
+            }
+        });
+
+        //点击触发事件跳转界面
+        eamListAdapter.setOnItemChildViewClickListener((childView, position, action, obj) -> {
+            EamEntity eamEntity = (EamEntity) obj;
+            Bundle bundle = new Bundle();
+            bundle.putLong(Constant.IntentKey.SBDA_ONLINE_EAMID, eamEntity.id);
+            bundle.putString(Constant.IntentKey.SBDA_ONLINE_EAMCODE, eamEntity.code);
+            IntentRouter.go(context, Constant.Router.SBDA_ONLINE_VIEW, bundle);
+        });
+        more.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentRouter.go(context, Constant.Router.SBDA_ONLINE_LIST);
             }
         });
     }

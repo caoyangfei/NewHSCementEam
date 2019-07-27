@@ -6,22 +6,35 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/themeColor"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_10">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/dp_25"
             android:gravity="center"
-            android:padding="@dimen/dp_10"
             android:text="我的设备"
             android:textColor="@color/white"
             android:textSize="@dimen/fontSize_20sp" />
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/dp_25"
+            android:gravity="center"
+            android:tag="more"
+            android:text="更多"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fontSize_16sp" />
+    </RelativeLayout>
 
     <include layout="@layout/ly_recyclerview" />
 </LinearLayout>

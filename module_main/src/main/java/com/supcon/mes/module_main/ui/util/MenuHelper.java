@@ -37,6 +37,9 @@ public class MenuHelper {
                     case Constant.HSWorkType.SPARE_EARLY_WARN:
                         menuPopwindowBean.setRouter(Constant.Router.SPARE_EARLY_WARN);
                         break;
+                    case Constant.HSWorkType.MAINTENANCE_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.MAINTENANCE_EARLY_WARN);
+                        break;
                     case Constant.HSWorkType.YHGL:
                         menuPopwindowBean.setRouter(Constant.Router.YH_LIST);
                         break;
@@ -56,6 +59,12 @@ public class MenuHelper {
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
             for (MenuPopwindowBean menuPopwindowBean : works) {
                 switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.PLAN_LUBRICATION_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.PLAN_LUBRICATION_EARLY_WARN);
+                        break;
+                    case Constant.HSWorkType.TEMPORARY_LUBRICATION_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.TEMPORARY_LUBRICATION_EARLY_WARN);
+                        break;
                     case Constant.HSWorkType.LUBRICATION_EARLY_WARN:
                         menuPopwindowBean.setRouter(Constant.Router.LUBRICATION_EARLY_WARN);
                         break;

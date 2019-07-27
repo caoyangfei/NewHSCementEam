@@ -151,7 +151,9 @@ public interface Constant {
         String STOP_POLICE = "STOP_POLICE";//停机报警
         String SPARE_EARLY_WARN = "SPARE_EARLY_WARN";//备件更换预警
         String LUBRICATION_EARLY_WARN = "LUBRICATION_EARLY_WARN";//润滑预警
-        String DAILY_LUBRICATION_EARLY_WARN = "DAILY_LUBRICATION_EARLY_WARN";//日常润滑预警
+        String DAILY_LUBRICATION_EARLY_WARN = "DAILY_LUBRICATION_EARLY_WARN";//日常润滑
+        String PLAN_LUBRICATION_EARLY_WARN = "PLAN_LUBRICATION_EARLY_WARN";//计划润滑
+        String TEMPORARY_LUBRICATION_EARLY_WARN = "TEMPORARY_LUBRICATION_EARLY_WARN";//临时润滑
         String DAILY_LUBRICATION_EARLY_PART_WARN = "DAILY_LUBRICATION_EARLY_PART_WARN";//日常润滑部位
         String DAILY_LUBRICATION_EARLY_PART_ENSURE_WARN = "DAILY_LUBRICATION_EARLY_PART_ENSURE_WARN";//日常润滑部位确认
         String MAINTENANCE_EARLY_WARN = "MAINTENANCE_EARLY_WARN";//维保预警
@@ -333,9 +335,10 @@ public interface Constant {
         int LSXJ = 2;  //临时巡检
 
         int SPARE_EARLY_WARN = 5;//备件更换预警
+        int MAINTENANCE_EARLY_WARN = 6;//维保预警
         int YHGL = 7;  //隐患管理
-
-
+        int PLAN_LUBRICATION_EARLY_WARN = 8;//计划润滑
+        int TEMPORARY_LUBRICATION_EARLY_WARN = 9;//临时润滑
         int LUBRICATION_EARLY_WARN = 10;//润滑预警
 
         int SBDA = 13;  //设备档案
@@ -361,7 +364,6 @@ public interface Constant {
         int DXJH = 22;
         int JXJH = 21;
         //        int SPARE_EARLY_WARN = 23;//备件更换预警
-        int MAINTENANCE_EARLY_WARN = 26;//维保预警
         int SCORE_EAM_LIST = 27;//设备评分
         int SCORE_INSPECTOR_PERSON_LIST = 28;//巡检人员评分
         int SCORE_MECHANIC_PERSON_LIST = 29;//巡检人员评分

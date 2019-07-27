@@ -75,7 +75,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
-
+    @BindByTag("titleText")
+    TextView titleText;
     @BindByTag("customSearchView")
     CustomSearchView customSearchView;
 
@@ -130,7 +131,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     protected void initView() {
         super.initView();
-        leftBtn.setImageResource(R.drawable.ic_top_menu);
+        leftBtn.setVisibility(View.GONE);
+        titleText.setPadding(Util.dpToPx(getActivity(), 15), 0, 0, 0);
         searchTitleBar.disableRightBtn();
 
         Flowable.timer(20, TimeUnit.MILLISECONDS)
@@ -298,12 +300,11 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
         if (entity.result.size() > 0) {
-//            waitDealtLayout.setVisibility(View.VISIBLE);
+            waitDealtLayout.setVisibility(View.GONE);
             waitDealtAdapter.setList(entity.result);
             waitDealtRecycler.setAdapter(waitDealtAdapter);
         } else {
-//            waitDealtLayout.setVisibility(View.GONE);
-            waitDealtRecycler.setAdapter((RecyclerView.Adapter) EmptyAdapterHelper.getRecyclerEmptyAdapter(getActivity(), "暂无待办"));
+            waitDealtLayout.setVisibility(View.VISIBLE);
         }
     }
 
@@ -313,8 +314,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         if (errorMsg.contains("401")) {
             SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         }
-//        waitDealtLayout.setVisibility(View.GONE);
-        waitDealtRecycler.setAdapter((RecyclerView.Adapter) EmptyAdapterHelper.getRecyclerEmptyAdapter(getActivity(), "暂无待办"));
+        waitDealtLayout.setVisibility(View.VISIBLE);
 
     }
 

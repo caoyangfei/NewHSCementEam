@@ -132,8 +132,6 @@
             custom:arrow_icon="@drawable/ic_user_jcgx"
             custom:arrow_text="检查更新" />
 
-        <include layout="@layout/ly_line" />
-
         <com.supcon.mes.mbap.view.CustomArrowView
             android:id="@+id/mineShare"
             android:layout_width="match_parent"

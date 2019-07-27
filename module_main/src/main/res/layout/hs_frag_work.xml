@@ -38,26 +38,44 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <include
+                android:id="@+id/hs_wait_title"
+                layout="@layout/hs_item_work_title" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/waitDealtRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:tag="waitDealtRecycler"
+                tools:ignore="UnusedAttribute" />
+
             <LinearLayout
                 android:id="@+id/waitDealtLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:tag="waitDealtLayout">
+                android:padding="@dimen/dp_30"
+                android:tag="waitDealtLayout"
+                android:visibility="gone">
 
-                <include
-                    android:id="@+id/hs_wait_title"
-                    layout="@layout/hs_item_work_title" />
+                <ImageView
+                    android:id="@+id/emptyIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_nodata_notext"
+                    android:visibility="visible" />
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/waitDealtRecycler"
+                <TextView
+                    android:id="@+id/emptyContent"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:nestedScrollingEnabled="false"
-                    android:overScrollMode="never"
-                    android:tag="waitDealtRecycler"
-                    tools:ignore="UnusedAttribute" />
-
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_10"
+                    android:gravity="center_horizontal"
+                    android:text="暂无待办"
+                    android:visibility="visible" />
             </LinearLayout>
 
             <include
