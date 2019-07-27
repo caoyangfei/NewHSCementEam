@@ -22,7 +22,7 @@
             android:padding="@dimen/dp_10"
             android:text="通讯录"
             android:textColor="@color/white"
-            android:textSize="@dimen/fontSize_20sp" />
+            android:textSize="@dimen/fontSize_18sp" />
 
         <ImageView
             android:layout_width="@dimen/dp_40"

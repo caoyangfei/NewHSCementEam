@@ -10,6 +10,7 @@ import com.supcon.common.view.base.activity.BasePresenterActivity;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomCircleTextImageView;
 import com.supcon.mes.mbap.view.CustomTextView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.module_main.R;
 
@@ -44,24 +45,25 @@ public class MineActivity extends BasePresenterActivity {
     CustomTextView mineUserWork;
     @BindByTag("mineUserMail")
     CustomTextView mineUserMail;
-    
+
     @Override
     protected int getLayoutID() {
         return R.layout.ac_mine;
     }
-    
-    
+
+
     @Override
     protected void initListener() {
         super.initListener();
         leftBtn.setOnClickListener(v -> back());
     }
-    
+
     @Override
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
         titleText.setText("个人信息");
-        
+        mineUserName.setContent(EamApplication.getAccountInfo().getStaffName());
+        mineUserDepart.setContent(EamApplication.getAccountInfo().getDepartmentName());
     }
 }

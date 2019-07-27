@@ -26,11 +26,11 @@ import com.supcon.mes.middleware.controller.StaffPicController;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.module_login.model.api.MineAPI;
 import com.supcon.mes.module_login.model.contract.MineContract;
 import com.supcon.mes.module_login.presenter.MinePresenter;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
-import com.supcon.mes.module_main.model.api.MineAPI;
 
 
 /**
@@ -135,9 +135,7 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     @Override
     public void onResume() {
         super.onResume();
-
         updateCacheSize();
-
     }
 
     @Override
@@ -190,12 +188,8 @@ public class MineFragment extends BaseControllerFragment implements MineContract
             IntentRouter.go(getContext(), Constant.Router.SETTING);
         } else if (view.getId() == R.id.mineAbout) {
             LogUtil.d("mineAbout");
-//            SnackbarHelper.showError(rootView, "暂未实现");
             IntentRouter.go(context, Constant.Router.ABOUT);
         }
-
-
-//        ((MainActivity)getActivity()).toggleDrawer();
     }
 
 
@@ -212,7 +206,6 @@ public class MineFragment extends BaseControllerFragment implements MineContract
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constant.IntentKey.FIRST_LOGIN, false);
             IntentRouter.go(getContext(), Constant.Router.LOGIN, bundle);
-//            getActivity()).toggleDrawer();
         });
 
     }
