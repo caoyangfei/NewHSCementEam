@@ -20,6 +20,7 @@ import com.supcon.mes.mbap.view.CustomCacheView;
 import com.supcon.mes.mbap.view.CustomCircleTextImageView;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomPotraitView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.StaffPicController;
 import com.supcon.mes.middleware.util.ChannelUtil;
@@ -90,6 +91,8 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     @Override
     protected void initView() {
         super.initView();
+        mineUserName.setText(EamApplication.getAccountInfo().getStaffName());
+        mingUserDepart.setText(EamApplication.getAccountInfo().getDepartmentName());
     }
 
     @Override

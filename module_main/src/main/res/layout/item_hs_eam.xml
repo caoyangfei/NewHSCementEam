@@ -73,7 +73,7 @@
                 android:layout_gravity="left|center_vertical"
                 android:paddingLeft="3dp"
                 android:tag="itemSBDADeviceArea"
-                android:textColor="@color/color_A"
+                android:textColor="#a1a1a1"
                 android:textSize="12sp"
                 tools:ignore="RtlHardcoded"
                 tools:text="开发部" />

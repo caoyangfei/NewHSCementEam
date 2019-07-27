@@ -161,7 +161,7 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
             int[] location = new int[2];
             parent.getLocationOnScreen(location);
             //优先进行计算
-            this.getContentView().measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+            this.getContentView().measure(0, 0);
             //之后通过此方法回去就可以了
             int measuredHeight = this.getContentView().getMeasuredHeight();
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) popwinBackView.getLayoutParams();

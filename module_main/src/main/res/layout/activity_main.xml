@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/tabRadioGroup"
-        android:paddingBottom="@dimen/dp_10"
         android:tag="fragmentLayout" />
 
     <RadioGroup
@@ -59,9 +58,9 @@
         android:id="@+id/logo"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:layout_marginBottom="@dimen/dp_9"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/dp_9"
         android:padding="@dimen/dp_10"
         android:src="@mipmap/tabbar_logo"
         android:tag="logo" />

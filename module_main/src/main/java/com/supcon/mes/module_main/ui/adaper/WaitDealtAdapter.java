@@ -76,12 +76,14 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 waitDealtEamState.setTextColor(context.getResources().getColor(R.color.orange));
             } else {
                 if (!TextUtils.isEmpty(data.state)) {
-                    if (data.state.equals("待处理")) {
+                    if (data.state.equals("编辑") || data.state.equals("派工")) {
                         waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
-                    } else if (data.state.equals("处理中")) {
+                    } else if (data.state.equals("执行") || data.state.contains("接单")) {
                         waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
-                    } else if (data.state.equals("待验收")) {
-                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.green));
+                    } else if (data.state.equals("验收")) {
+                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.blue));
+                    } else {
+                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
                     }
                 } else {
                     waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));

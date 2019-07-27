@@ -26,8 +26,13 @@ import com.supcon.mes.mbap.view.CustomAdView;
 import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.api.EamAPI;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonListEntity;
+import com.supcon.mes.middleware.model.bean.EamType;
+import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.NFCEvent;
+import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
@@ -50,6 +55,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -61,8 +67,8 @@ import io.reactivex.functions.Consumer;
 /**
  * Created by wangshizhan on 2017/8/11.
  */
-@Presenter(value = WaitDealtPresenter.class)
-public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View {
+@Presenter(value = {WaitDealtPresenter.class, EamPresenter.class})
+public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View, EamContract.View {
 
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
@@ -129,22 +135,12 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
         Flowable.timer(20, TimeUnit.MILLISECONDS)
                 .compose(RxSchedulers.io_main())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        initAd();
-                    }
-                });
+                .subscribe(aLong -> initAd());
         View waitTitle = rootView.findViewById(R.id.hs_wait_title);
         ((TextView) waitTitle.findViewById(R.id.contentTitleLabel)).setText("工作提醒");
         ImageView waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
         waitMore.setVisibility(View.VISIBLE);
-        waitMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                IntentRouter.go(getActivity(), Constant.Router.WAIT_DEALT);
-            }
-        });
+        waitMore.setOnClickListener(v -> IntentRouter.go(getActivity(), Constant.Router.WAIT_DEALT));
         View workTitle = rootView.findViewById(R.id.hs_work_title);
         ((TextView) workTitle.findViewById(R.id.contentTitleLabel)).setText("我的工作");
 
@@ -248,8 +244,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
                 if (!TextUtils.isEmpty(menuPopwindowBean.getRouter())) {
                     IntentRouter.go(getContext(), menuPopwindowBean.getRouter());
+                } else {
+                    ToastUtils.show(getActivity(), menuPopwindowBean.getName());
                 }
-
             }
         });
         menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
@@ -259,6 +256,14 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 oldPosition = -1;
+            }
+        });
+        waitDealtAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
+            @Override
+            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                if (childView.getId() == R.id.waitDealtEntrust) {
+
+                }
             }
         });
     }
@@ -279,7 +284,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 return;
             }
             customSearchView.setInput((String) nfcJson.get("textRecord"));
-//            doDeal((String) nfcJson.get("textRecord"));
+            Map<String, Object> params = new HashMap<>();
+            params.put(Constant.IntentKey.EAM_CODE, (String) nfcJson.get("textRecord"));
+            presenterRouter.create(EamAPI.class).getEam(params, 1);
         }
     }
 
@@ -311,9 +318,25 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     }
 
+
+    @Override
+    public void getEamSuccess(CommonListEntity entity) {
+        if (entity.result.size() > 0) {
+            EamType eamType = (EamType) entity.result.get(0);
+            return;
+        }
+        SnackbarHelper.showError(rootView, "未查询到设备");
+    }
+
+    @Override
+    public void getEamFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
 }

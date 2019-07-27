@@ -55,7 +55,7 @@ public class EamListAdapter extends BaseListDataRecyclerViewAdapter<EamEntity> {
 
 
         public ViewHolder(Context context) {
-            super(context);
+            super(context, parent);
         }
 
         @Override

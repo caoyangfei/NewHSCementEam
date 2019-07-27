@@ -34,7 +34,7 @@
                 android:id="@+id/waitDealtEamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/dp_5"
+                android:padding="@dimen/dp_3"
                 android:tag="waitDealtEamName"
                 android:textColor="#333333"
                 tools:text="制成三线水泥" />
@@ -43,31 +43,37 @@
                 android:id="@+id/waitDealtTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/dp_5"
+                android:padding="@dimen/dp_3"
                 android:tag="waitDealtTime"
                 android:textColor="#757575"
                 tools:text="2019-07-24  09:27" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/waitDealtEamState"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/dp_10"
-            android:layout_toLeftOf="@+id/waitDealtEntrust"
-            android:padding="@dimen/dp_5"
-            android:tag="waitDealtEamState"
-            tools:text="待验收" />
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
 
-        <ImageView
-            android:id="@+id/waitDealtEntrust"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:src="@mipmap/btn_entrust"
-            android:tag="waitDealtEntrust" />
+            <TextView
+                android:id="@+id/waitDealtEamState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dp_10"
+                android:layout_toLeftOf="@+id/waitDealtEntrust"
+                android:padding="@dimen/dp_5"
+                android:tag="waitDealtEamState"
+                tools:text="待验收" />
+
+            <ImageView
+                android:id="@+id/waitDealtEntrust"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/btn_entrust"
+                android:tag="waitDealtEntrust" />
+        </RelativeLayout>
+
 
         <View
             android:layout_width="match_parent"

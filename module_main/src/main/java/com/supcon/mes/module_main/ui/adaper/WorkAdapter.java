@@ -2,6 +2,7 @@ package com.supcon.mes.module_main.ui.adaper;
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,9 +45,8 @@ public class WorkAdapter extends HeaderRecyclerViewAdapter<WorkInfo> {
         @BindByTag("workNum")
         TextView workNum;
 
-
         public ContentViewHolder(Context context) {
-            super(context);
+            super(context, parent);
         }
 
         @Override

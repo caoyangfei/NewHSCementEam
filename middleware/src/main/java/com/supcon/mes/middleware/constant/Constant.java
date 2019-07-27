@@ -360,13 +360,17 @@ public interface Constant {
         int STOP_POLICE = 20;  //停机报警
         int DXJH = 22;
         int JXJH = 21;
-//        int SPARE_EARLY_WARN = 23;//备件更换预警
-        int DAILY_LUBRICATION_EARLY_WARN = 25;//日常润滑预警
+        //        int SPARE_EARLY_WARN = 23;//备件更换预警
         int MAINTENANCE_EARLY_WARN = 26;//维保预警
         int SCORE_EAM_LIST = 27;//设备评分
         int SCORE_INSPECTOR_PERSON_LIST = 28;//巡检人员评分
         int SCORE_MECHANIC_PERSON_LIST = 29;//巡检人员评分
         int ACCEPTANCE_LIST = 30;//验收
+    }
+
+    interface HSProcesskey {
+        String faultInfoFW = "faultInfoFW";//隐患单
+        String work = "work";//工单
     }
 
     interface SPKey {
