@@ -19,7 +19,6 @@ import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
-import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.module_main.R;
 
 import java.util.List;
@@ -61,7 +60,7 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
         // 设置SelectPicPopupWindow弹出窗体的高
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
         // 设置SelectPicPopupWindow弹出窗体可点击
-        this.setFocusable(true);
+        this.setFocusable(false);
         this.setOutsideTouchable(true);
         // 刷新状态
         this.update();

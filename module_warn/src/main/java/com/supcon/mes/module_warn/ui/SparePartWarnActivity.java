@@ -216,6 +216,10 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
                             .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v12) {
+                                    if(!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)){
+                                        ToastUtils.show(context,"未选择单据!");
+                                        return;
+                                    }else
                                     IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
                                 }
                             }, true)

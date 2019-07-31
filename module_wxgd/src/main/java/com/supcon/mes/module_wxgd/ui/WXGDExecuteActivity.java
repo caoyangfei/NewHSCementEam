@@ -21,6 +21,7 @@ import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.common.view.view.picker.SinglePicker;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.beans.WorkFlowEntity;
 import com.supcon.mes.mbap.beans.WorkFlowVar;
 import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.utils.DateUtil;
@@ -511,7 +512,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
                             @Override
                             public void onClick(View v12) {
                                 if (TextUtils.isEmpty(reason)) {
-                                    ToastUtils.show(WXGDExecuteActivity.this, "请输入暂停原因!");
+                                    ToastUtils.show(WXGDExecuteActivity.this, "请输入终止原因!");
                                     return;
                                 }
                                 customDialog.dismiss();
@@ -626,6 +627,10 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 //        workFlowEntities.add(workFlowEntity);
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
         map.put("operateType", Constant.Transition.SUBMIT);
+
+        List<WorkFlowEntity> outcomeMapJson = workFlowVar.outcomeMapJson;
+        outcomeMapJson.get(0).assignUser = "\"\"".equals(outcomeMapJson.get(0).assignUser) ? null : outcomeMapJson.get(0).assignUser;
+
         map.put("workFlowVar.outcomeMapJson", workFlowVar.outcomeMapJson.toString());
         map.put("workFlowVar.outcome", workFlowVar.outCome);
         map.put("workFlowVarStatus", "");
@@ -645,7 +650,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
         map.put("datagridKey", "BEAM2_workList_workRecord_workExecuteEdit_datagrids");
         map.put("viewCode", "BEAM2_1.0.0_workList_workExecuteEdit");
         map.put("taskDescription", "BEAM2_1.0.0.work.task1838");
-        map.put("workRecord.workType.id", (mWXGDEntity.workType != null && mWXGDEntity.workType.id != null) ? mWXGDEntity.workType.id : null);
+        map.put("workRecord.workType.id", (mWXGDEntity.workType != null && mWXGDEntity.workType.id != null) ? mWXGDEntity.workType.id : "");
         map.put("workFlowVar.comment", commentInput.getInput());
 
         List<SparePartEntityDto> sparePartEntityDtos = WXGDMapManager.translateSparePartDto(mSparePartController.getSparePartEntities());

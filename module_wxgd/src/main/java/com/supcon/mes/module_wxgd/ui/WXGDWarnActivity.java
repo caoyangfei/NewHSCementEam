@@ -223,7 +223,7 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
      * @author zhangwenshuai1 2018/9/1
      */
     private void initLink() {
-        mLinkController.setCancelShow(mWXGDEntity.workSource != null ? mWXGDEntity.faultInfo != null && TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo) ? true : false : false);
+        mLinkController.setCancelShow(mWXGDEntity.workSource != null && (mWXGDEntity.faultInfo != null && TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo)));
         mLinkController.initStartTransition(transition, "work");
     }
 

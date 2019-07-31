@@ -2,6 +2,7 @@ package com.supcon.mes.module_main.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.widget.RadioGroup;
 
 import com.app.annotation.BindByTag;
@@ -69,6 +70,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
     private String initIp = ""; // 记录原超时IP
 
     private NFCHelper nfcHelper;
+    private WorkFragment workFragment;
 
     @Override
     protected int getLayoutID() {
@@ -165,7 +167,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
 
     @Override
     public void createFragments() {
-        WorkFragment workFragment = new WorkFragment();
+        workFragment = new WorkFragment();
         TxlListFragment txlListFragment = new TxlListFragment();
         EamFragment eamFragment = new EamFragment();
         MineFragment mineFragment = new MineFragment();
@@ -173,6 +175,12 @@ public class MainActivity extends BaseMultiFragmentActivity {
         fragments.add(txlListFragment);
         fragments.add(eamFragment);
         fragments.add(mineFragment);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        workFragment.onTouch(ev);
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override
@@ -263,4 +271,8 @@ public class MainActivity extends BaseMultiFragmentActivity {
         }
     }
 
+    //1.触摸事件接口
+    public interface WorkOnTouchListener {
+        boolean onTouch(MotionEvent ev);
+    }
 }

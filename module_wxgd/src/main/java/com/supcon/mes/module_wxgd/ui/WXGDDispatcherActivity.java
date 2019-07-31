@@ -376,7 +376,10 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
                     @Override
                     public void onClick(View v12) {
                         onLoading("正在处理中...");
-                        presenterRouter.create(WXGDDispatcherAPI.class).translateRepair(mWXGDEntity.faultInfo.id, Constant.YHWXType.DX_SYSCODE);
+                        // 产品
+//                        presenterRouter.create(WXGDDispatcherAPI.class).translateRepair(mWXGDEntity.faultInfo.id, Constant.YHWXType.DX_SYSCODE);
+                        // 水泥(红狮/海螺)项目
+                        doSave(Constant.YHWXType.DX_SYSCODE);
                     }
                 }, true)
                 .bindClickListener(R.id.grayBtn, null, true)
@@ -389,7 +392,9 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
                     @Override
                     public void onClick(View v12) {
                         onLoading("正在处理中...");
-                        presenterRouter.create(WXGDDispatcherAPI.class).translateRepair(mWXGDEntity.faultInfo.id, Constant.YHWXType.JX_SYSCODE);
+//                        presenterRouter.create(WXGDDispatcherAPI.class).translateRepair(mWXGDEntity.faultInfo.id, Constant.YHWXType.JX_SYSCODE);
+
+                        doSave(Constant.YHWXType.JX_SYSCODE);
                     }
                 }, true)
                 .bindClickListener(R.id.grayBtn, null, true)
@@ -467,7 +472,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
                 WorkFlowVar workFlowVar = (WorkFlowVar) obj;
                 switch (action) {
                     case 0:
-                        doSave();
+                        doSave("");
                         break;
                     case 1:
                         doSubmit(workFlowVar);
@@ -543,7 +548,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
                     .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            doSave();
+                            doSave("");
                         }
                     }, true)
                     .show();
@@ -560,10 +565,17 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
      * @description 单据保存
      * @author zhangwenshuai1 2018/9/6
      */
-    private void doSave() {
+    private void doSave(String str) {
 
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
+        // 水泥(红狮/海螺)项目
+        if (Constant.YHWXType.DX_SYSCODE.equals(str)){
+            map.put("workRecord.repairType.id", Constant.YHWXType.DX_SYSCODE);
+        }else if (Constant.YHWXType.JX_SYSCODE.equals(str)){
+            map.put("workRecord.repairType.id", Constant.YHWXType.JX_SYSCODE);
+        }
+
         map.put("operateType", Constant.Transition.SAVE);
 
         onLoading("工单保存中...");

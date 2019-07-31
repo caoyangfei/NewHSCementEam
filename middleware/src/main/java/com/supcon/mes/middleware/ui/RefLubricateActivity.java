@@ -93,7 +93,7 @@ public class RefLubricateActivity extends BaseRefreshRecyclerActivity<RefLubrica
     @Override
     protected void initView() {
         super.initView();
-        searchTitleBar.setTitleText("润滑油业务参照");
+        searchTitleBar.setTitleText(isSparePartRef?"润滑油业务参照":"润滑油参照");
         searchTitleBar.disableRightBtn();
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setLoadMoreEnable(true);

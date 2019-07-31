@@ -217,6 +217,10 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
                             .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v12) {
+                                    if(!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)){
+                                        ToastUtils.show(context,"未选择单据!");
+                                        return;
+                                    }else
                                     IntentRouter.go(LubricationWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
                                 }
                             }, true)

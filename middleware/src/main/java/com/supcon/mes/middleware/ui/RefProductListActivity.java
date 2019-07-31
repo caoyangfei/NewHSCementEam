@@ -100,7 +100,7 @@ public class RefProductListActivity extends BaseRefreshRecyclerActivity<SparePar
     @Override
     protected void initView() {
         super.initView();
-        searchTitleBar.setTitleText("备件业务参照");
+        searchTitleBar.setTitleText(isSparePartRef?"常用备件参照":"备件参照");
         searchTitleBar.disableRightBtn();
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, "列表为空"));
         customSearchView.setHint("搜索");

@@ -1,6 +1,7 @@
 package com.supcon.mes.module_main.model.bean;
 
 import com.supcon.common.com_http.BaseEntity;
+import com.supcon.mes.middleware.model.bean.Staff;
 
 /**
  * @author yangfei.cao
@@ -28,4 +29,12 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String processkey;//工作流编码
 
+    public Staff staffid;
+
+    public Staff getStaffid() {
+        if (staffid == null) {
+            staffid = new Staff();
+        }
+        return staffid;
+    }
 }

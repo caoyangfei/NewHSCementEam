@@ -309,6 +309,15 @@ public class BAPQueryParamsHelper {
                 subcondEntity.paramStr = LIKE_OPT_BLUR;
                 subcondEntity.value = String.valueOf(value);
                 break;
+            case Constant.BAPQuery.EAMCODE:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = key;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = Constant.BAPQuery.BAPCODE;
+                subcondEntity.operator = Constant.BAPQuery.LIKE;
+                subcondEntity.paramStr = LIKE_OPT_BLUR;
+                subcondEntity.value = String.valueOf(value);
+                break;
             case Constant.BAPQuery.IS_MAIN_EQUIP:
                 subcondEntity = new SubcondEntity();
                 subcondEntity.columnName = key;

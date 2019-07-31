@@ -431,7 +431,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
                     @Override
                     public void onClick(View v12) {
                         if (TextUtils.isEmpty(reason)) {
-                            ToastUtils.show(context, "请输入暂停原因!");
+                            ToastUtils.show(context, "请输入终止原因!");
                             return;
                         }
                         onLoading("正在终止任务...");

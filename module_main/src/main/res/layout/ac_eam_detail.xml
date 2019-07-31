@@ -1,64 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical">
 
-    <com.supcon.mes.mbap.view.CustomAdView
-        android:id="@+id/workCustomAd"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:tag="workCustomAd" />
-
-    <com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar
-        android:id="@+id/searchTitleBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
-        android:tag="searchTitleBar"
-        app:title_background_color="@color/transparent"
-        app:title_right_btn_need="false"
-        app:title_text="移动设备管理" />
-
-    <ScrollView
-        android:id="@+id/workScrollView"
+    <com.supcon.mes.module_main.ui.view.HeadZoomScrollView
+        android:id="@+id/eamScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/workCustomAd"
         android:background="@color/white"
         android:fillViewport="true"
-        android:scrollbars="none"
-        android:tag="workScrollView">
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
             android:orientation="vertical">
 
+            <ImageView
+                android:id="@+id/eamPic"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:scaleType="centerInside" />
+
+            <com.supcon.mes.module_main.ui.view.TrapezoidView
+                android:id="@+id/eamName"
+                android:layout_width="140dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:tag="eamName"
+                android:text="ces"
+                android:textColor="@color/black" />
+
             <include
-                android:id="@+id/hs_wait_title"
+                android:id="@+id/hs_anomaly_title"
                 layout="@layout/hs_item_title" />
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/waitDealtRecycler"
+                android:id="@+id/anomalyRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never"
-                android:tag="waitDealtRecycler"
+                android:tag="anomalyRecycler"
                 tools:ignore="UnusedAttribute" />
 
             <LinearLayout
-                android:id="@+id/waitDealtLayout"
+                android:id="@+id/anomalyLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="@dimen/dp_30"
-                android:tag="waitDealtLayout"
+                android:tag="anomalyLayout"
                 android:visibility="gone">
 
                 <ImageView
@@ -67,6 +64,7 @@
                     android:layout_height="100dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/icon_empty"
+                    android:tag="emptyIcon"
                     android:visibility="visible" />
 
                 <TextView
@@ -75,12 +73,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
                     android:gravity="center_horizontal"
+                    android:tag="emptyContent"
                     android:text="暂无工作提醒"
                     android:visibility="visible" />
             </LinearLayout>
 
             <include
-                android:id="@+id/hs_work_title"
+                android:id="@+id/hs_eam_work_title"
                 layout="@layout/hs_item_title" />
 
             <RelativeLayout
@@ -93,44 +92,44 @@
                 android:gravity="center">
 
                 <TextView
-                    android:id="@+id/rankTitle"
+                    android:id="@+id/eamStarTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:tag="rankTitle"
-                    android:text="绩效排名"
+                    android:tag="eamStarTitle"
+                    android:text="设备星级"
                     android:textColor="#849ea4"
                     android:textSize="@dimen/fontSize_16sp" />
 
                 <TextView
-                    android:id="@+id/rank"
+                    android:id="@+id/starLevel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dp_20"
-                    android:layout_toRightOf="@id/rankTitle"
-                    android:tag="rank"
+                    android:layout_toRightOf="@id/eamStarTitle"
+                    android:tag="starLevel"
                     android:textColor="#5b959e"
                     android:textSize="@dimen/fontSize_18sp"
                     android:textStyle="bold"
                     tools:text="1" />
 
                 <TextView
-                    android:id="@+id/scoreTitle"
+                    android:id="@+id/eamScoreTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dp_30"
-                    android:layout_toRightOf="@id/rank"
-                    android:tag="scoreTitle"
-                    android:text="个人绩效"
+                    android:layout_toRightOf="@id/starLevel"
+                    android:tag="eamScoreTitle"
+                    android:text="设备评分"
                     android:textColor="#849ea4"
                     android:textSize="@dimen/fontSize_16sp" />
 
                 <TextView
-                    android:id="@+id/score"
+                    android:id="@+id/eamScore"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/dp_20"
-                    android:layout_toRightOf="@id/scoreTitle"
-                    android:tag="score"
+                    android:layout_toRightOf="@id/eamScoreTitle"
+                    android:tag="eamScore"
                     android:textColor="#5b959e"
                     android:textSize="@dimen/fontSize_18sp"
                     android:textStyle="bold"
@@ -142,17 +141,17 @@
                 android:layout_height="wrap_content">
 
                 <android.support.v7.widget.RecyclerView
-                    android:id="@+id/workRecycler"
+                    android:id="@+id/eamWorkRecycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never"
-                    android:tag="workRecycler"
+                    android:tag="eamWorkRecycler"
                     tools:ignore="UnusedAttribute" />
             </RelativeLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </com.supcon.mes.module_main.ui.view.HeadZoomScrollView>
 
-</RelativeLayout>
+</LinearLayout>

@@ -19,6 +19,7 @@ import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
@@ -27,13 +28,14 @@ import com.supcon.mes.module_main.model.api.WaitDealtAPI;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
-import com.supcon.mes.module_main.ui.adaper.WaitDealtAdapter;
+import com.supcon.mes.module_main.ui.adaper.AnomalyAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Consumer;
@@ -45,8 +47,8 @@ import io.reactivex.functions.Consumer;
  * ------------- Description -------------
  */
 @Presenter(value = WaitDealtPresenter.class)
-@Router(value = Constant.Router.WAIT_DEALT)
-public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEntity> implements WaitDealtContract.View {
+@Router(value = Constant.Router.ANOMALY)
+public class AnomalyActivity extends BaseRefreshRecyclerActivity<WaitDealtEntity> implements WaitDealtContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -56,23 +58,25 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     @BindByTag("titleText")
     TextView titleText;
 
-    private WaitDealtAdapter waitDealtAdapter;
+    private AnomalyAdapter anomalyAdapter;
+    private EamType eamType;
 
     @Override
     protected IListAdapter<WaitDealtEntity> createAdapter() {
-        waitDealtAdapter = new WaitDealtAdapter(this);
-        return waitDealtAdapter;
+        anomalyAdapter = new AnomalyAdapter(this);
+        return anomalyAdapter;
     }
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_wait_dealt;
+        return R.layout.activity_anomaly;
     }
 
     @Override
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
+        eamType = (EamType) getIntent().getSerializableExtra(Constant.IntentKey.EAM);
     }
 
     @Override
@@ -83,7 +87,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
         contentView.setLayoutManager(new LinearLayoutManager(context));
-        titleText.setText("工作提醒");
+        titleText.setText("异常记录");
     }
 
     @SuppressLint("CheckResult")
@@ -101,7 +105,9 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
             public void onRefresh(int pageIndex) {
-                presenterRouter.create(WaitDealtAPI.class).getWaitDealt(pageIndex, 20, new HashMap<>());
+                Map<String, Object> param = new HashMap<>();
+                param.put(Constant.BAPQuery.EAMCODE, eamType.code);
+                presenterRouter.create(WaitDealtAPI.class).getWaitDealt(pageIndex, 20, param);
             }
         });
     }

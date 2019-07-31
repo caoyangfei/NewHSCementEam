@@ -2,6 +2,7 @@ package com.supcon.mes.module_main.presenter;
 
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.JoinSubcondEntity;
@@ -24,13 +25,16 @@ import io.reactivex.functions.Function;
  */
 public class WaitDealtPresenter extends WaitDealtContract.Presenter {
     @Override
-    public void getWaitDealt(int page,int pageSize) {
-        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createJoinFastQueryCond(new HashMap<>());
+    public void getWaitDealt(int page, int pageSize, Map<String, Object> params) {
+        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createJoinFastQueryCond(params);
 
-        Map<String, Object> paramsName = new HashMap<>();
-        paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
-        JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PERSONWORKINFO,STAFFID");
-        fastQueryCond.subconds.add(joinSubcondEntity);
+        if (params.size() == 0) {
+            Map<String, Object> paramsName = new HashMap<>();
+            paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
+            JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PERSONWORKINFO,STAFFID");
+            fastQueryCond.subconds.add(joinSubcondEntity);
+        }
+
         fastQueryCond.modelAlias = "personworkinfo";
 
         Map<String, Object> pageQueryParams = new HashMap<>();
@@ -53,6 +57,36 @@ public class WaitDealtPresenter extends WaitDealtContract.Presenter {
                             getView().getWaitDealtSuccess(waitDealtEntity);
                         } else {
                             getView().getWaitDealtFailed(waitDealtEntity.errMsg);
+                        }
+                    }
+                }));
+    }
+
+    @Override
+    public void proxyPending(int pendingId, int proxyUserId) {
+
+        Map<String, Object> pageQueryParams = new HashMap<>();
+        pageQueryParams.put("pendingId", pendingId);
+        pageQueryParams.put("proxyUsers", proxyUserId);
+        pageQueryParams.put("proxyType", 2);
+        pageQueryParams.put("proxyUsers_MultiIDs", proxyUserId);
+        pageQueryParams.put("proxyUsers_AddIds", proxyUserId);
+
+        mCompositeSubscription.add(MainClient.proxyPending(pageQueryParams)
+                .onErrorReturn(new Function<Throwable, BapResultEntity>() {
+                    @Override
+                    public BapResultEntity apply(Throwable throwable) throws Exception {
+                        BapResultEntity bapResultEntity = new BapResultEntity();
+                        bapResultEntity.errMsg = throwable.toString();
+                        return bapResultEntity;
+                    }
+                }).subscribe(new Consumer<BapResultEntity>() {
+                    @Override
+                    public void accept(BapResultEntity bapResultEntity) throws Exception {
+                        if (bapResultEntity.dealSuccessFlag) {
+                            getView().proxyPendingSuccess(bapResultEntity);
+                        } else {
+                            getView().proxyPendingFailed(bapResultEntity.errMsg);
                         }
                     }
                 }));

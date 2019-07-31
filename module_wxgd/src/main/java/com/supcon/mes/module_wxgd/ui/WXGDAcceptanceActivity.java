@@ -19,6 +19,7 @@ import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.beans.WorkFlowEntity;
 import com.supcon.mes.mbap.beans.WorkFlowVar;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
@@ -320,6 +321,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planEndDate));
+        realEndTime.setDate(mWXGDEntity.realEndDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
 
         workContext.setContent(mWXGDEntity.workOrderContext);
     }
@@ -518,6 +520,8 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
 //        workFlowEntities.add(workFlowEntity);
 
         map.put("operateType", Constant.Transition.SUBMIT);
+        List<WorkFlowEntity> outcomeMapJson = workFlowVar.outcomeMapJson;
+        outcomeMapJson.get(0).assignUser = "\"\"".equals(outcomeMapJson.get(0).assignUser) ? null : outcomeMapJson.get(0).assignUser;
         map.put("workFlowVar.outcomeMapJson", workFlowVar.outcomeMapJson.toString());
         map.put("workFlowVar.outcome", workFlowVar.outCome);
         map.put("workFlowVarStatus", "");

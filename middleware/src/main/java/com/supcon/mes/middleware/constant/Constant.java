@@ -57,6 +57,8 @@ public interface Constant {
         String ABOUT = "ABOUT";
 
         String WAIT_DEALT = "WAIT_DEALT";//待办
+        String ANOMALY = "ANOMALY";//设备异常
+        String EAM_DETAIL = "EAM_DETAIL";//设备详情
 
         String XJGL_LIST = "XJGL_LIST";
 
@@ -274,6 +276,7 @@ public interface Constant {
         String WARN_PEROID_TYPE = "WARN_PEROID_TYPE";//周期类型
         String WARN_SOURCE_URL = "WARN_SOURCE_URL";//URL
 
+        String EAM = "EAM";//EAM设备
         String EAM_CODE = "EAM_CODE";//EAM_CODE
         String AREA_NAME = "AREA_NAME";//AREA_NAME
         String isEdit = "isEdit";//是否能编辑
@@ -538,6 +541,7 @@ public interface Constant {
 
         String EAM_EXACT_CODE = "EAM_EXACT_CODE";//精确设备编码
         String EAM_CODE = "EAM_CODE";//设备编码
+        String EAMCODE = "EAMCODE";//设备编码
         String EAM_STATE = "EAM_STATE";//设备状态
         String EAM_TYPE = "EAM_TYPE";//设备类型
         String EAM_AREA = "EAM_AREA";//区域类型

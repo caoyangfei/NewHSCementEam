@@ -51,7 +51,7 @@ public class WXGDMapManager {
         map.put("bap_validate_user_id", EamApplication.getAccountInfo().userId);
         map.put("workRecord.createStaffId", EamApplication.getAccountInfo().staffId);
         map.put("workRecord.createTime", format.format(mWXGDEntity.createTime));
-
+//DealInfo di = taskService.take(pendingId, deploymentId, workRecord.getId(), creatorService.getStaffFromSession(), workFlowVar);
         map.put("workRecord.version", mWXGDEntity.version);
         map.put("workRecord.workOrderContext", Util.strFormat2(mWXGDEntity.workOrderContext));
         map.put("deploymentId", mWXGDEntity.pending != null ? Util.strFormat2(mWXGDEntity.pending.deploymentId) : "");
@@ -63,6 +63,7 @@ public class WXGDMapManager {
             map.put("id", Util.strFormat2(mWXGDEntity.id));
             map.put("workRecord.id", Util.strFormat2(mWXGDEntity.id));
         }
+//        DealInfo di = taskService.take(pendingId, deploymentId, workRecord.getId(), creatorService.getStaffFromSession(), workFlowVar);
         map.put("workRecord.chargeStaff.id", mWXGDEntity.chargeStaff != null ? Util.strFormat2(mWXGDEntity.chargeStaff.id) : "");
         map.put("workRecord.eamID.id", (mWXGDEntity.eamID != null && mWXGDEntity.eamID.id != null) ? Util.strFormat2(mWXGDEntity.eamID.id) : "");
         map.put("workRecord.planStartDate", mWXGDEntity.planStartDate == null ? "" : format.format(mWXGDEntity.planStartDate));
