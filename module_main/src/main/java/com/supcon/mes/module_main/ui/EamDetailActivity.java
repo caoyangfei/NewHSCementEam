@@ -1,10 +1,12 @@
 package com.supcon.mes.module_main.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseControllerActivity;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
@@ -41,6 +44,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.functions.Consumer;
 
 /**
  * @author yangfei.cao
@@ -52,6 +58,9 @@ import java.util.Map;
 @Router(Constant.Router.EAM_DETAIL)
 @Presenter(value = {WaitDealtPresenter.class})
 public class EamDetailActivity extends BaseControllerActivity implements WaitDealtContract.View {
+
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
 
     ImageView eamPic;
     //待办
@@ -105,6 +114,20 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         eamWorkRecycler.setAdapter(workAdapter);
     }
 
+    @SuppressLint("CheckResult")
+    @Override
+    protected void initListener() {
+        super.initListener();
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        back();
+                    }
+                });
+    }
+
     @Override
     protected void initData() {
         super.initData();
@@ -119,11 +142,11 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         workInfos.add(workInfo2);
         WorkInfo workInfo3 = new WorkInfo();
         workInfo3.name = "验收评分";
-        workInfo3.iconResId = R.drawable.menu_repair_selector;
+        workInfo3.iconResId = R.drawable.menu_score_selector;
         workInfos.add(workInfo3);
         WorkInfo workInfo4 = new WorkInfo();
         workInfo4.name = "文档记录";
-        workInfo4.iconResId = R.drawable.menu_form_selector;
+        workInfo4.iconResId = R.drawable.menu_print_selector;
         workInfos.add(workInfo4);
         workAdapter.setList(workInfos);
         workAdapter.notifyDataSetChanged();
