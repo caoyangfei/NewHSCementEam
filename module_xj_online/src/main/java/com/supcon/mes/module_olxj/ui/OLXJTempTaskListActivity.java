@@ -722,6 +722,7 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
 
     private void goXL() {
         if (deploymentId == null) {
+            ToastUtils.show(context, "没有创建巡检任务的权限！");
             return;
         }
 

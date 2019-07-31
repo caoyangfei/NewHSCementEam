@@ -187,7 +187,7 @@ public class YHGLLubricateOilListActivity extends BaseRefreshRecyclerActivity<Lu
                                 .listener((index, item) -> {
                                     lubricateOilsEntity.oilType = oilTypeList.get(index);
                                     mLubricateOilsAdapter.notifyItemChanged(position);
-                                }).show(lubricateOilsEntity.oilType == null ? "" : lubricateOilsEntity.oilType.value);
+                                }).show((lubricateOilsEntity.oilType == null || lubricateOilsEntity.oilType.id == null) ? "" : lubricateOilsEntity.oilType.value);
                     }
                     break;
                 default:
@@ -219,7 +219,8 @@ public class YHGLLubricateOilListActivity extends BaseRefreshRecyclerActivity<Lu
     public void addLuricateOil(RefLubricateEntity refLubricateEntity) {
 
         for (LubricateOilsEntity lubricateOilsEntity : mEntities) {
-            if (lubricateOilsEntity.id.equals(refLubricateEntity.id)) {
+            // 润滑参照判断重复，非参照添加无判断
+            if (lubricateOilsEntity.id != null && lubricateOilsEntity.id.equals(refLubricateEntity.id)) {
                 ToastUtils.show(context, "请勿重复添加润滑油!");
                 refreshListController.refreshComplete(mEntities);
                 return;

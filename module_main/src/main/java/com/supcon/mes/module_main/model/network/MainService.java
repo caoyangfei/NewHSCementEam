@@ -48,6 +48,10 @@ public interface MainService {
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getPersonScoreInfo.action")
     Flowable<CommonEntity<ScoreEntity>> getPersonScore(@Query("staffID") String staffID);
 
+    //个人评分
+    @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getEamScoreInfo.action")
+    Flowable<CommonEntity<String>> getEamScore(@Query("deviceID ") long deviceID);
+
 
     //首页待办数量
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getMainButtonWorkCount.action")

@@ -23,17 +23,22 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.model.api.ScoreEamAPI;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
+import com.supcon.mes.module_main.model.contract.ScoreEamContract;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
+import com.supcon.mes.module_main.presenter.ScoreEamPresenter;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
 import com.supcon.mes.module_main.ui.adaper.AnomalyAdapter;
 import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
+import com.supcon.mes.module_main.ui.view.SimpleRatingBar;
 import com.supcon.mes.module_main.ui.view.TrapezoidView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -56,8 +61,8 @@ import io.reactivex.functions.Consumer;
  * 设备详情
  */
 @Router(Constant.Router.EAM_DETAIL)
-@Presenter(value = {WaitDealtPresenter.class})
-public class EamDetailActivity extends BaseControllerActivity implements WaitDealtContract.View {
+@Presenter(value = {WaitDealtPresenter.class, ScoreEamPresenter.class})
+public class EamDetailActivity extends BaseControllerActivity implements WaitDealtContract.View, ScoreEamContract.View {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -73,13 +78,18 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     @BindByTag("eamName")
     TrapezoidView eamName;
 
+    @BindByTag("starLevel")
+    SimpleRatingBar starLevel;
+    @BindByTag("eamScore")
+    TextView eamScore;
+
     private EamType eamType;
     private AnomalyAdapter anomalyAdapter;
     private WorkAdapter workAdapter;
 
     @Override
     protected int getLayoutID() {
-        return R.layout.ac_eam_detail;
+        return R.layout.hs_ac_eam_detail;
     }
 
     @Override
@@ -155,7 +165,7 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         Map<String, Object> param = new HashMap<>();
         param.put(Constant.BAPQuery.EAMCODE, eamType.code);
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, param);
-
+        presenterRouter.create(ScoreEamAPI.class).getEamScore(eamType.id);
         new EamPicController().initEamPic(eamPic, eamType.id);
     }
 
@@ -202,8 +212,22 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     }
 
     @Override
+    public void getEamScoreSuccess(CommonEntity entity) {
+        eamScore.setText(((String) entity.result));
+        float star = Float.valueOf((String) entity.result) / 20;
+        starLevel.setRating(star);
+    }
+
+    @Override
+    public void getEamScoreFailed(String errorMsg) {
+        LogUtil.e(errorMsg);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
+
 }

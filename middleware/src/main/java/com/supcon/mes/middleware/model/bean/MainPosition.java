@@ -12,4 +12,10 @@ public class MainPosition extends BaseEntity {
     public Department department;
     public String name;
 
+    public Department getDepartment() {
+        if (department == null) {
+            department = new Department();
+        }
+        return department;
+    }
 }

@@ -48,7 +48,7 @@ public class MineActivity extends BasePresenterActivity {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.ac_mine;
+        return R.layout.hs_ac_mine;
     }
 
 

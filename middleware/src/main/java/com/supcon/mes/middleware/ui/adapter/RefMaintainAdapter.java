@@ -10,6 +10,7 @@ import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
 import com.supcon.mes.mbap.view.CustomVerticalTextView;
 import com.supcon.mes.middleware.R;
@@ -42,10 +43,14 @@ public class RefMaintainAdapter extends BaseListDataRecyclerViewAdapter<RefMaint
         CustomVerticalTextView sparePartName;
         @BindByTag("attachEam")
         CustomVerticalTextView attachEam;
+        @BindByTag("lastExeTime")
+        CustomTextView lastExeTime;
+        @BindByTag("nextExeTime")
+        CustomTextView nextExeTime;
         @BindByTag("claim")
-        CustomVerticalEditText claim;
+        CustomTextView claim;
         @BindByTag("content")
-        CustomVerticalEditText content;
+        CustomTextView content;
 
 
         public RefProductViewHolder(Context context) {

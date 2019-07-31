@@ -2,7 +2,7 @@ package com.supcon.mes.module_main.presenter;
 
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
-import com.supcon.mes.module_main.model.contract.ScoreContract;
+import com.supcon.mes.module_main.model.contract.ScoreStaffContract;
 import com.supcon.mes.module_main.model.network.MainClient;
 
 import io.reactivex.functions.Consumer;
@@ -14,7 +14,7 @@ import io.reactivex.functions.Function;
  * @date 2019/7/29
  * ------------- Description -------------
  */
-public class ScorePresenter extends ScoreContract.Presenter {
+public class ScoreStaffPresenter extends ScoreStaffContract.Presenter {
     @Override
     public void getPersonScore(String staffID) {
         mCompositeSubscription.add(MainClient.getPersonScore(staffID)

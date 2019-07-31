@@ -185,12 +185,7 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         super.initListener();
         RxView.clicks(leftBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
-                .subscribe(new Consumer<Object>() {
-                    @Override
-                    public void accept(Object o) throws Exception {
-                        onBackPressed();
-                    }
-                });
+                .subscribe(o -> onBackPressed());
         RxView.clicks(rightBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> new CustomDialog(context)
@@ -219,59 +214,44 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
                         }, true)
                         .bindClickListener(R.id.grayBtn, null, true)
                         .show());
-        refreshListController.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (TextUtils.isEmpty(eamCodeStr)) {
-                    presenterRouter.create(AcceptanceEditAPI.class).getAcceptanceEdit(acceptanceEntity.getBeamID().id);
-                } else {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(Constant.IntentKey.EAM_CODE, eamCodeStr);
-                    presenterRouter.create(EamAPI.class).getEam(params, 1);
-                    eamCodeStr = null;
-                }
+        refreshListController.setOnRefreshListener(() -> {
+            if (TextUtils.isEmpty(eamCodeStr)) {
+                presenterRouter.create(AcceptanceEditAPI.class).getAcceptanceEdit(acceptanceEntity.getBeamID().id);
+            } else {
+                Map<String, Object> params = new HashMap<>();
+                params.put(Constant.IntentKey.EAM_CODE, eamCodeStr);
+                presenterRouter.create(EamAPI.class).getEam(params, 1);
+                eamCodeStr = null;
             }
         });
 
-        eamCode.setOnChildViewClickListener(new OnChildViewClickListener() {
-            @Override
-            public void onChildViewClick(View childView, int action, Object obj) {
-                if (action == -1) {
-                    acceptanceEntity.beamID = null;
-                }
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
-                IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.EAM, bundle);
+        eamCode.setOnChildViewClickListener((childView, action, obj) -> {
+            if (action == -1) {
+                acceptanceEntity.beamID = null;
             }
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+            IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.EAM, bundle);
         });
-        eamName.setOnChildViewClickListener(new OnChildViewClickListener() {
-            @Override
-            public void onChildViewClick(View childView, int action, Object obj) {
-                if (action == -1) {
-                    acceptanceEntity.beamID = null;
-                }
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
-                IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.EAM, bundle);
+        eamName.setOnChildViewClickListener((childView, action, obj) -> {
+            if (action == -1) {
+                acceptanceEntity.beamID = null;
             }
+            Bundle bundle = new Bundle();
+            bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+            IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.EAM, bundle);
         });
-        acceptanceItem.setTextListener(new OnTextListener() {
-            @Override
-            public void onText(String text) {
-                if (!TextUtils.isEmpty(text) && text.equals(acceptanceEntity.checkItem)) {
-                    return;
-                }
-                acceptanceEntity.checkItem = Util.strFormat2(text);
+        acceptanceItem.setTextListener(text -> {
+            if (!TextUtils.isEmpty(text) && text.equals(acceptanceEntity.checkItem)) {
+                return;
             }
+            acceptanceEntity.checkItem = Util.strFormat2(text);
         });
-        acceptanceStaff.setOnChildViewClickListener(new OnChildViewClickListener() {
-            @Override
-            public void onChildViewClick(View childView, int action, Object obj) {
-                if (action == -1) {
-                    acceptanceEntity.checkStaff = null;
-                }
-                IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.STAFF);
+        acceptanceStaff.setOnChildViewClickListener((childView, action, obj) -> {
+            if (action == -1) {
+                acceptanceEntity.checkStaff = null;
             }
+            IntentRouter.go(AcceptanceEditActivity.this, Constant.Router.STAFF);
         });
     }
 
@@ -300,18 +280,11 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         acceptanceItem.setContent(Util.strFormat2(acceptanceEntity.checkItem));
 
         ModulePermissonCheckController mModulePermissonCheckController = new ModulePermissonCheckController();
-        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "checkApplyFW", new OnSuccessListener<Long>() {
-            @Override
-            public void onSuccess(Long result) {
-                deploymentId = result;
-                ModulePowerController modulePowerController = new ModulePowerController();
-                modulePowerController.checkModulePermission(deploymentId, new OnSuccessListener<BapResultEntity>() {
-                    @Override
-                    public void onSuccess(BapResultEntity result) {
-                        powerCode = result.powerCode;
-                    }
-                });
-            }
+        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "checkApplyFW",
+                result -> {
+            deploymentId = result;
+            ModulePowerController modulePowerController = new ModulePowerController();
+            modulePowerController.checkModulePermission(deploymentId, result1 -> powerCode = result1.powerCode);
         }, null);
 
         mLinkController = new LinkController();
@@ -396,31 +369,23 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
             return;
         }
         Flowable.fromIterable((List<AcceptanceEditEntity>) entity)
-                .subscribe(new Consumer<AcceptanceEditEntity>() {
-                    @Override
-                    public void accept(AcceptanceEditEntity acceptanceEditEntity) throws Exception {
+                .subscribe(acceptanceEditEntity -> {
 
-                        AcceptanceEditEntity acceptanceEditEntityOld;
-                        if (acceptanceEditEntities.containsKey(acceptanceEditEntity.item)) {
-                            acceptanceEditEntityOld = acceptanceEditEntities.get(acceptanceEditEntity.item);
+                    AcceptanceEditEntity acceptanceEditEntityOld;
+                    if (acceptanceEditEntities.containsKey(acceptanceEditEntity.item)) {
+                        acceptanceEditEntityOld = acceptanceEditEntities.get(acceptanceEditEntity.item);
 
-                        } else {
-                            acceptanceEditEntityOld = acceptanceEditEntity;
-                        }
-                        if (!TextUtils.isEmpty(acceptanceEditEntity.category)) {
-                            acceptanceEditEntityOld.categorys.add(acceptanceEditEntity);
-                        }
-
-                        acceptanceEditEntities.put(acceptanceEditEntity.item, acceptanceEditEntityOld);
-
+                    } else {
+                        acceptanceEditEntityOld = acceptanceEditEntity;
                     }
+                    if (!TextUtils.isEmpty(acceptanceEditEntity.category)) {
+                        acceptanceEditEntityOld.categorys.add(acceptanceEditEntity);
+                    }
+
+                    acceptanceEditEntities.put(acceptanceEditEntity.item, acceptanceEditEntityOld);
+
                 }, throwable -> {
-                }, new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        refreshListController.refreshComplete(new ArrayList<>(acceptanceEditEntities.values()));
-                    }
-                });
+                }, () -> refreshListController.refreshComplete(new ArrayList<>(acceptanceEditEntities.values())));
 
     }
 
@@ -497,12 +462,9 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
 
     @Override
     public void doSubmitSuccess(BapResultEntity entity) {
-        onLoadSuccessAndExit("验收成功", new OnLoaderFinishListener() {
-            @Override
-            public void onLoaderFinished() {
-                EventBus.getDefault().post(new RefreshEvent());
-                finish();
-            }
+        onLoadSuccessAndExit("验收成功", () -> {
+            EventBus.getDefault().post(new RefreshEvent());
+            finish();
         });
     }
 

@@ -140,6 +140,7 @@ public class OLXJWorkItemEntity extends BaseEntity implements Comparable<OLXJWor
         }
 
         if (this.eamID.id.equals(o.eamID.id) && this.part != null) {
+            if(o.part == null) return 1;
             return this.part.compareTo(o.part);
         }
 

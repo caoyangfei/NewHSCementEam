@@ -191,7 +191,7 @@ public interface ApiService {
     /**
      * @param
      * @return
-     * @description 隐患管理维保
+     * @description 生成验收单
      * @author wnagshizhan 2018/8/28
      */
     @GET("/BEAM2/checkApply/checkApply/generateCheckApply.action")

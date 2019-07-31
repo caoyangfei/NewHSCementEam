@@ -10,6 +10,6 @@ import com.supcon.mes.middleware.model.bean.CommonEntity;
  * ------------- Description -------------
  */
 @ContractFactory(entites = {CommonEntity.class})
-public interface ScoreAPI {
+public interface ScoreStaffAPI {
     void getPersonScore(String staffID);
 }

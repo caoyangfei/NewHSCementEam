@@ -33,7 +33,7 @@ public class WXGDWarnManager {
                 + "滑部位为" + lubricationWarnEntity.lubricatePart + "的润滑预警";
         wxgdEntity.createTime = System.currentTimeMillis();
         PendingEntity pendingEntity = new PendingEntity();
-        pendingEntity.deploymentId = 1203l;
+//        pendingEntity.deploymentId = 1203l;
         pendingEntity.activityName = "预警";
         wxgdEntity.pending = pendingEntity;
 
@@ -78,7 +78,7 @@ public class WXGDWarnManager {
                 + "维保内容为" + maintenanceWarnEntity.content + "的维保预警";
         wxgdEntity.createTime = System.currentTimeMillis();
         PendingEntity pendingEntity = new PendingEntity();
-        pendingEntity.deploymentId = 1203l;
+//        pendingEntity.deploymentId = 1203l;
         pendingEntity.activityName = "预警";
         wxgdEntity.pending = pendingEntity;
 
@@ -120,7 +120,7 @@ public class WXGDWarnManager {
                 + sparePartWarnEntity.getProductID().productName + "的零部件更换预警";
         wxgdEntity.createTime = System.currentTimeMillis();
         PendingEntity pendingEntity = new PendingEntity();
-        pendingEntity.deploymentId = 1203l;
+//        pendingEntity.deploymentId = 1203l;
         pendingEntity.activityName = "预警";
         wxgdEntity.pending = pendingEntity;
 

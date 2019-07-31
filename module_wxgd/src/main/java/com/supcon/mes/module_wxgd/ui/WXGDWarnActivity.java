@@ -83,7 +83,10 @@ import java.util.concurrent.TimeUnit;
  * 预警工单
  */
 @Router(value = Constant.Router.WXGD_WARN)
-@Controller(value = {SparePartController.class, RepairStaffController.class, MaintenanceController.class, LubricateOilsController.class})
+@Controller(value = {SparePartController.class,
+        RepairStaffController.class,
+        MaintenanceController.class,
+        LubricateOilsController.class})
 public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubmitController.OnSubmitResultListener {
 
     @BindByTag("leftBtn")

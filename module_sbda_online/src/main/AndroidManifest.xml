@@ -18,11 +18,6 @@
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
 
         <activity
-            android:name="com.supcon.mes.module_sbda_online.ui.ScoreActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppNoTitleBarTheme"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
-        <activity
             android:name="com.supcon.mes.module_sbda_online.ui.SparePartLedgerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"

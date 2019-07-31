@@ -25,9 +25,12 @@ import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.mbap.view.CustomSearchView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.KeyExpandHelper;
@@ -96,6 +99,8 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
     private String selecStr;
     private String url;
     private long nextTime = 0;
+    private ModulePermissonCheckController mModulePermissonCheckController;
+    private Long deploymentId;
 
 
     @Override
@@ -152,6 +157,13 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
     protected void initData() {
         super.initData();
         url = "/BEAM/baseInfo/sparePart/data-dg1535424823416.action";
+        mModulePermissonCheckController = new ModulePermissonCheckController();
+        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work", new OnSuccessListener<Long>() {
+            @Override
+            public void onSuccess(Long result) {
+                deploymentId = result;
+            }
+        }, null);
     }
 
     @SuppressLint("CheckResult")
@@ -203,6 +215,7 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
                             .filter(sparePartWarnEntity -> sparePartWarnEntity.isCheck)
                             .map(sparePartWarnEntity -> {
                                 WXGDEntity spare = WXGDWarnManager.spare(sparePartWarnEntity);
+                                spare.pending.deploymentId = deploymentId;
                                 return spare;
                             })
                             .observeOn(AndroidSchedulers.mainThread())

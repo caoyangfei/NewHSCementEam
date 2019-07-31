@@ -67,6 +67,7 @@
                     android:layout_height="100dp"
                     android:scaleType="centerInside"
                     android:src="@drawable/icon_empty"
+                    android:tag="emptyIcon"
                     android:visibility="visible" />
 
                 <TextView
@@ -75,6 +76,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
                     android:gravity="center_horizontal"
+                    android:tag="emptyContent"
                     android:text="暂无工作提醒"
                     android:visibility="visible" />
             </LinearLayout>
@@ -84,13 +86,15 @@
                 layout="@layout/hs_item_title" />
 
             <RelativeLayout
+                android:id="@+id/scoreLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/dp_15"
                 android:layout_marginTop="@dimen/dp_10"
                 android:layout_marginRight="@dimen/dp_15"
                 android:background="@mipmap/score_bg"
-                android:gravity="center">
+                android:gravity="center"
+                android:tag="scoreLayout">
 
                 <TextView
                     android:id="@+id/rankTitle"
@@ -108,10 +112,10 @@
                     android:layout_marginLeft="@dimen/dp_20"
                     android:layout_toRightOf="@id/rankTitle"
                     android:tag="rank"
+                    android:text="--"
                     android:textColor="#5b959e"
                     android:textSize="@dimen/fontSize_18sp"
-                    android:textStyle="bold"
-                    tools:text="1" />
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/scoreTitle"
@@ -131,10 +135,10 @@
                     android:layout_marginLeft="@dimen/dp_20"
                     android:layout_toRightOf="@id/scoreTitle"
                     android:tag="score"
+                    android:text="--"
                     android:textColor="#5b959e"
                     android:textSize="@dimen/fontSize_18sp"
-                    android:textStyle="bold"
-                    tools:text="100" />
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <RelativeLayout

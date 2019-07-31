@@ -254,6 +254,7 @@ public class DailyLubricationPartActivity extends BaseRefreshRecyclerActivity<Da
 
     @Override
     public void dailyCompleteSuccess(DelayEntity entity) {
+        EventBus.getDefault().post(new RefreshEvent());
         onLoadSuccessAndExit("任务完成", () -> refreshListController.refreshBegin());
     }
 

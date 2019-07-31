@@ -25,9 +25,12 @@ import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.mbap.view.CustomSearchView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.KeyExpandHelper;
@@ -97,6 +100,8 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
     private final Map<String, Object> queryParam = new HashMap<>();
     private String selecStr;
     private String url;
+    private ModulePermissonCheckController mModulePermissonCheckController;
+    private Long deploymentId;
 
 
     @Override
@@ -153,6 +158,13 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
     protected void initData() {
         super.initData();
         url = "/BEAM/baseInfo/jWXItem/data-dg1530747504994.action";
+        mModulePermissonCheckController = new ModulePermissonCheckController();
+        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work", new OnSuccessListener<Long>() {
+            @Override
+            public void onSuccess(Long result) {
+                deploymentId = result;
+            }
+        }, null);
     }
 
     @SuppressLint("CheckResult")
@@ -204,6 +216,7 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
                             .filter(lubricationWarnEntity -> lubricationWarnEntity.isCheck)
                             .map(lubricationWarnEntity -> {
                                 WXGDEntity lubri = WXGDWarnManager.lubri(lubricationWarnEntity);
+                                lubri.pending.deploymentId = deploymentId;
                                 return lubri;
                             })
                             .observeOn(AndroidSchedulers.mainThread())

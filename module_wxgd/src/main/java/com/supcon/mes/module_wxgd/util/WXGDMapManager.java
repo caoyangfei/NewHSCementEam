@@ -63,7 +63,6 @@ public class WXGDMapManager {
             map.put("id", Util.strFormat2(mWXGDEntity.id));
             map.put("workRecord.id", Util.strFormat2(mWXGDEntity.id));
         }
-//        DealInfo di = taskService.take(pendingId, deploymentId, workRecord.getId(), creatorService.getStaffFromSession(), workFlowVar);
         map.put("workRecord.chargeStaff.id", mWXGDEntity.chargeStaff != null ? Util.strFormat2(mWXGDEntity.chargeStaff.id) : "");
         map.put("workRecord.eamID.id", (mWXGDEntity.eamID != null && mWXGDEntity.eamID.id != null) ? Util.strFormat2(mWXGDEntity.eamID.id) : "");
         map.put("workRecord.planStartDate", mWXGDEntity.planStartDate == null ? "" : format.format(mWXGDEntity.planStartDate));

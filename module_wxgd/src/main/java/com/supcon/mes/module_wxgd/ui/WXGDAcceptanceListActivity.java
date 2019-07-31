@@ -230,7 +230,7 @@ public class WXGDAcceptanceListActivity extends BaseRefreshRecyclerActivity<Acce
 
     @Override
     public void onBackPressed() {
-        EventBus.getDefault().post(new AcceptanceEvent(mEntities, dgDeletedIds));
+//        EventBus.getDefault().post(new AcceptanceEvent(mEntities, dgDeletedIds));
         super.onBackPressed();
     }
 

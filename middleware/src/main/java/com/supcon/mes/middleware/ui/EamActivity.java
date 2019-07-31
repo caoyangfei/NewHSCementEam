@@ -52,7 +52,6 @@ import java.util.concurrent.TimeUnit;
 public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity> implements EamContract.View {
     @BindByTag("contentView")
     RecyclerView recyclerView;
-
     /**
      * 顶部模糊搜索栏
      */

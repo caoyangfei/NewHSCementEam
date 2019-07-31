@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -43,16 +44,16 @@ import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.api.EamAnomalyAPI;
-import com.supcon.mes.module_main.model.api.ScoreAPI;
+import com.supcon.mes.module_main.model.api.ScoreStaffAPI;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.bean.WorkNumEntity;
 import com.supcon.mes.module_main.model.contract.EamAnomalyContract;
-import com.supcon.mes.module_main.model.contract.ScoreContract;
+import com.supcon.mes.module_main.model.contract.ScoreStaffContract;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
 import com.supcon.mes.module_main.presenter.EamAnomalyPresenter;
-import com.supcon.mes.module_main.presenter.ScorePresenter;
+import com.supcon.mes.module_main.presenter.ScoreStaffPresenter;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
 import com.supcon.mes.module_main.ui.MainActivity;
 import com.supcon.mes.module_main.ui.adaper.WaitDealtAdapter;
@@ -81,8 +82,8 @@ import io.reactivex.functions.Predicate;
 /**
  * Created by wangshizhan on 2017/8/11.
  */
-@Presenter(value = {WaitDealtPresenter.class, EamPresenter.class, ScorePresenter.class, EamAnomalyPresenter.class})
-public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View, EamContract.View, ScoreContract.View
+@Presenter(value = {WaitDealtPresenter.class, EamPresenter.class, ScoreStaffPresenter.class, EamAnomalyPresenter.class})
+public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View, EamContract.View, ScoreStaffContract.View
         , MainActivity.WorkOnTouchListener, EamAnomalyContract.View {
 
     @BindByTag("workCustomAd")
@@ -105,6 +106,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     RecyclerView waitDealtRecycler;
     @BindByTag("workRecycler")
     RecyclerView workRecycler;
+    @BindByTag("scoreLayout")
+    RelativeLayout scoreLayout;
 
     @BindByTag("rank")
     TextView rank;
@@ -121,6 +124,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private List<MenuPopwindowBean> repairMenu;
     private List<MenuPopwindowBean> formMenu;
     private ArrayList<WorkInfo> workInfos;
+    private ScoreEntity scoreEntity;
 
     @Override
     protected int getLayoutID() {
@@ -149,7 +153,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     public void onResume() {
         super.onResume();
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(ScoreAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
     }
 
@@ -307,6 +311,18 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     presenterRouter.create(EamAPI.class).getEam(params, 1);
                 }
         );
+        scoreLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Bundle bundle = new Bundle();
+                if (scoreEntity != null) {
+                    bundle.putInt(Constant.IntentKey.RANKING, scoreEntity.ranking != null ? scoreEntity.ranking : -1);
+                    bundle.putString(Constant.IntentKey.TYPE, scoreEntity.type);
+                }
+                IntentRouter.go(getActivity(), Constant.Router.RANKING, bundle);
+            }
+        });
     }
 
     @Override
@@ -416,9 +432,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getPersonScoreSuccess(CommonEntity entity) {
-        ScoreEntity result = (ScoreEntity) entity.result;
-        rank.setText(String.valueOf(result.ranking));
-        score.setText(Util.big0(result.score));
+        scoreEntity = (ScoreEntity) entity.result;
+        rank.setText(Util.strFormat(scoreEntity.ranking));
+        score.setText(Util.big2(scoreEntity.score));
     }
 
     @Override

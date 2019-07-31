@@ -74,7 +74,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_main;
+        return R.layout.hs_ac_main;
     }
 
 

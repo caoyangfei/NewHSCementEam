@@ -58,6 +58,7 @@ public interface Constant {
 
         String WAIT_DEALT = "WAIT_DEALT";//待办
         String ANOMALY = "ANOMALY";//设备异常
+        String RANKING = "RANKING";//人员评分
         String EAM_DETAIL = "EAM_DETAIL";//设备详情
 
         String XJGL_LIST = "XJGL_LIST";
@@ -105,7 +106,6 @@ public interface Constant {
 
         String SBDA_ONLINE_LIST = "SBDA_ONLINE_LIST";            //设备档案在线列表页面
         String SBDA_ONLINE_VIEW = "SBDA_ONLINE_VIEW";            //设备档案在线详细信息界面
-        String SCORE = "SCORE";            //评分
         String SPARE_PART_LEDGER = "SPARE_PART_LEDGER";            //备件台账
 
         String SBDA_LIST = "SBDAList";            //设备档案列表页面
@@ -287,6 +287,11 @@ public interface Constant {
         String ACCEPTANCE_ENTITY = "ACCEPTANCE_ENTITY";//验收记录
         String SCORETABLENO = "SCORETABLENO";//评分单据
         String TXL_ENTITY = "TXL_ENTITY";
+
+
+        String RANKING = "RANKING";//排名
+        String TYPE = "TYPE";//人员类型:机修工,巡检工
+
     }
 
     interface FilterSearchParam {

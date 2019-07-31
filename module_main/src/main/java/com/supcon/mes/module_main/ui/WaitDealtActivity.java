@@ -66,7 +66,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_wait_dealt;
+        return R.layout.hs_ac_dealt;
     }
 
     @Override

@@ -20,7 +20,8 @@
             android:drawableStart="@drawable/ic_update"
             android:paddingStart="@dimen/dp_40"
             android:paddingEnd="@dimen/dp_40"/>
-        <include layout="@layout/ly_yhgl_vertical_line"/>
+        <include layout="@layout/ly_yhgl_vertical_line"
+            android:id="@+id/verticalSeparatorLine"/>
         <Button
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -69,7 +69,7 @@ public class AnomalyActivity extends BaseRefreshRecyclerActivity<WaitDealtEntity
 
     @Override
     protected int getLayoutID() {
-        return R.layout.activity_anomaly;
+        return R.layout.hs_ac_anomaly;
     }
 
     @Override

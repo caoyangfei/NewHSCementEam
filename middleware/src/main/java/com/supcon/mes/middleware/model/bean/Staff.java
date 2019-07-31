@@ -5,11 +5,9 @@ import android.text.TextUtils;
 import com.supcon.common.com_http.BaseEntity;
 
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.ToOne;
-import org.greenrobot.greendao.annotation.Transient;
 import org.greenrobot.greendao.annotation.Generated;
-import org.greenrobot.greendao.DaoException;
+import org.greenrobot.greendao.annotation.Id;
+import org.greenrobot.greendao.annotation.Transient;
 
 /**
  * Created by wangshizhan on 2018/7/12
@@ -20,6 +18,9 @@ public class Staff extends BaseEntity implements CheckNil {
 
     public String code;
     public String name;
+
+    @Transient
+    public MainPosition mainPosition;
 
     @Override
     public boolean checkNil(){
@@ -64,5 +65,10 @@ public class Staff extends BaseEntity implements CheckNil {
         this.id = id;
     }
 
-
+    public MainPosition getMainPosition() {
+        if (mainPosition==null) {
+            mainPosition = new MainPosition();
+        }
+        return mainPosition;
+    }
 }

@@ -10,8 +10,9 @@ import com.supcon.common.com_http.BaseEntity;
  */
 public class ScoreEntity extends BaseEntity {
 
-    public int ranking;
-    public float score;
+    public Integer ranking;
+    public Float score;
     public String type;
     public int staffID;
+
 }

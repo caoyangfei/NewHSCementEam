@@ -164,6 +164,8 @@ public class YHGLSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
             findViewById(R.id.includeSparePartLy).setVisibility(View.GONE);
         }
 
+        deliveryOutStorageBtn.setVisibility(View.GONE);// PC未实现 暂隐藏
+
         initEmptyView();
 
     }

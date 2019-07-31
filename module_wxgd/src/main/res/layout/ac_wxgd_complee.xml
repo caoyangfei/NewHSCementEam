@@ -45,7 +45,7 @@
                     android:layout_marginBottom="@dimen/dp_1"
                     android:tag="sparePartListWidget"
                     app:icon_res="@drawable/ic_bj"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="备件" />
 
@@ -56,7 +56,7 @@
                     android:layout_marginBottom="@dimen/dp_1"
                     android:tag="repairStaffListWidget"
                     app:icon_res="@drawable/ic_wxry"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="维修人员" />
 
@@ -67,7 +67,7 @@
                     android:layout_marginBottom="@dimen/dp_1"
                     android:tag="lubricateOilsListWidget"
                     app:icon_res="@drawable/ic_rhy"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="润滑" />
 
@@ -80,7 +80,7 @@
                     app:icon_res="@drawable/ic_maintain"
                     app:is_addable="false"
                     app:is_editable="false"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="维保" />
 
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:tag="acceptanceCheckListWidget"
                     app:icon_res="@drawable/ic_ys"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="验收" />
 

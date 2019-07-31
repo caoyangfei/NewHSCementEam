@@ -32,6 +32,7 @@ import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntityDao;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.model.event.LubricateOilsEvent;
@@ -195,7 +196,7 @@ public class WXGDLubricateOilListActivity extends BaseRefreshRecyclerActivity<Lu
 
                                         mLubricateOilsAdapter.notifyItemChanged(position);
 
-                                    }).show(lubricateOilsEntity.oilType == null ? "" : lubricateOilsEntity.oilType.value);
+                                    }).show((lubricateOilsEntity.oilType == null || lubricateOilsEntity.oilType.id == null) ? "" : lubricateOilsEntity.oilType.value);
                         }
                         break;
                     default:
@@ -228,7 +229,8 @@ public class WXGDLubricateOilListActivity extends BaseRefreshRecyclerActivity<Lu
     public void addLuricateOil(RefLubricateEntity refLubricateEntity) {
 
         for (LubricateOilsEntity lubricateOilsEntity : mEntities) {
-            if (lubricateOilsEntity.id.equals(refLubricateEntity.id)) {
+            // 润滑参照判断重复，非参照添加无判断
+            if (lubricateOilsEntity.id != null && lubricateOilsEntity.id.equals(refLubricateEntity.id)) {
                 ToastUtils.show(context, "请勿重复添加润滑油!");
                 refreshListController.refreshComplete(mEntities);
                 return;

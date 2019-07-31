@@ -39,6 +39,7 @@ import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.controller.LinkController;
 import com.supcon.mes.middleware.controller.RoleController;
 import com.supcon.mes.middleware.model.bean.AcceptanceCheckEntity;
+import com.supcon.mes.middleware.model.bean.AccountInfo;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
 import com.supcon.mes.middleware.model.bean.Staff;
@@ -545,12 +546,13 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
         map.put("workFlowVar.comment", commentInput.getInput());
 
         List<AcceptanceCheckEntityDto> acceptanceCheckEntityDtos = WXGDMapManager.translateAcceptChkDto(getCurrentAcceptChk());
-        map = WXGDMapManager.dgDeleted(map, dgDeletedIds_acceptance, "dg1531695961597");
+//        map = WXGDMapManager.dgDeleted(map, dgDeletedIds_acceptance, "dg1531695961597");
         map.put("dg1531695961597ModelCode", "BEAM2_1.0.0_workList_AccceptanceCheck");
         map.put("dgLists['dg1531695961597']", acceptanceCheckEntityDtos.toString());
 
         //表头检验结论
         map.put("workRecord.checkResult.id", currentAcceptChkEntity.checkResult == null ? "" : currentAcceptChkEntity.checkResult.id);
+        map.put("workRecord.repairSum", mWXGDEntity.repairSum + 1);
         wxgdSubmitController.doAcceptChkSubmit(map);
 
     }
@@ -613,11 +615,22 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     public void receiveList(ListEvent listEvent) {
         if ("acceptanceCheckEntity".equals(listEvent.getFlag())) {
             List list = listEvent.getList();
-            if (list.size() == 1) {
-                currentAcceptChkEntity = (AcceptanceCheckEntity) list.get(0);
-                setView();
-                dgDeletedIds_acceptance.add(currentAcceptChkEntity.id);
+            if (list.size() > 0 && list.size() == mWXGDEntity.repairSum) {
+                // 已存在保存数据
+                currentAcceptChkEntity = (AcceptanceCheckEntity) list.get(list.size()-1); // 获取最后一个为当前可编辑
+            }else {
+                // 未存在保存数据
+                currentAcceptChkEntity.checkTime = new Date().getTime();
+
+                AccountInfo accountInfo = EamApplication.getAccountInfo();
+                Staff staff = new Staff();
+                staff.id = accountInfo.staffId;
+                staff.name = accountInfo.staffName;
+                staff.code = accountInfo.staffCode;
+                currentAcceptChkEntity.checkStaff = staff;
+
             }
+            setView();
             acceptanceCheckEntities = listEvent.getList().toString();
         }
     }
@@ -651,13 +664,26 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
 //        if (currentAcceptChkEntity.checkApplyId != null) {
 //            acceptApplyBtn.setVisibility(View.GONE);
 //        }
+        if (currentAcceptChkEntity.checkStaff == null){
+            AccountInfo accountInfo = EamApplication.getAccountInfo();
+            Staff staff = new Staff();
+            staff.id = accountInfo.staffId;
+            staff.name = accountInfo.staffName;
+            staff.code = accountInfo.staffCode;
+            currentAcceptChkEntity.checkStaff = staff;
+        }
+        if (currentAcceptChkEntity.checkTime == null){
+            currentAcceptChkEntity.checkTime = new Date().getTime();
+        }
+
         acceptChkStaff.setValue(currentAcceptChkEntity.getCheckStaff().name);
         acceptChkStaffCode.setValue(currentAcceptChkEntity.getCheckStaff().code);
-        if (currentAcceptChkEntity.getCheckResult().value.equals("不合格")) {
-            currentAcceptChkEntity.checkTime = System.currentTimeMillis();
-        }
-        acceptChkTime.setDate(currentAcceptChkEntity.checkTime == null ? "" : DateUtil.dateFormat(currentAcceptChkEntity.checkTime, "yyyy-MM-dd HH:mm:ss"));
+//        if (currentAcceptChkEntity.getCheckResult().value.equals("不合格")) {
+//            currentAcceptChkEntity.checkTime = System.currentTimeMillis();
+//        }
+        acceptChkTime.setDate(DateUtil.dateFormat(currentAcceptChkEntity.checkTime, "yyyy-MM-dd HH:mm:ss"));
         acceptChkResult.setContent(currentAcceptChkEntity.getCheckResult().value);
+        currentAcceptChkDateTime = acceptChkTime.getDate();
     }
 
     /**

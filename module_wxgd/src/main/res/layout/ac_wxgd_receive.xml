@@ -103,7 +103,7 @@
                     app:icon_res="@drawable/ic_maintain"
                     app:is_addable="false"
                     app:is_editable="false"
-                    app:text_size="15"
+                    app:text_size="14"
                     app:title_bg_color="@color/white"
                     app:widget_name="维保" />
             </LinearLayout>
