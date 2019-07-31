@@ -6,6 +6,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
-import com.supcon.common.BaseConstant;
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.fragment.BaseControllerFragment;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
@@ -27,22 +27,34 @@ import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.api.EamAPI;
+import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.presenter.EamPresenter;
-import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.KeyExpandHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.model.api.EamAnomalyAPI;
+import com.supcon.mes.module_main.model.api.ScoreAPI;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
+import com.supcon.mes.module_main.model.bean.ScoreEntity;
+import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
+import com.supcon.mes.module_main.model.bean.WorkNumEntity;
+import com.supcon.mes.module_main.model.contract.EamAnomalyContract;
+import com.supcon.mes.module_main.model.contract.ScoreContract;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
+import com.supcon.mes.module_main.presenter.EamAnomalyPresenter;
+import com.supcon.mes.module_main.presenter.ScorePresenter;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
+import com.supcon.mes.module_main.ui.MainActivity;
 import com.supcon.mes.module_main.ui.adaper.WaitDealtAdapter;
 import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
 import com.supcon.mes.module_main.ui.util.MenuHelper;
@@ -53,6 +65,7 @@ import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,13 +75,15 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 
 /**
  * Created by wangshizhan on 2017/8/11.
  */
-@Presenter(value = {WaitDealtPresenter.class, EamPresenter.class})
-public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View, EamContract.View {
+@Presenter(value = {WaitDealtPresenter.class, EamPresenter.class, ScorePresenter.class, EamAnomalyPresenter.class})
+public class WorkFragment extends BaseControllerFragment implements WaitDealtContract.View, EamContract.View, ScoreContract.View
+        , MainActivity.WorkOnTouchListener, EamAnomalyContract.View {
 
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
@@ -91,11 +106,21 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @BindByTag("workRecycler")
     RecyclerView workRecycler;
 
+    @BindByTag("rank")
+    TextView rank;
+    @BindByTag("score")
+    TextView score;
+
     private boolean hidden;
     private WorkAdapter workAdapter;
     private MenuPopwindow menuPopwindow;
     private WaitDealtAdapter waitDealtAdapter;
 
+    private List<MenuPopwindowBean> aewMenu;
+    private List<MenuPopwindowBean> lubricateMenu;
+    private List<MenuPopwindowBean> repairMenu;
+    private List<MenuPopwindowBean> formMenu;
+    private ArrayList<WorkInfo> workInfos;
 
     @Override
     protected int getLayoutID() {
@@ -123,7 +148,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     public void onResume() {
         super.onResume();
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3);
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(ScoreAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
     }
 
     @SuppressLint("CheckResult")
@@ -160,29 +187,30 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     protected void initData() {
         super.initData();
-        ArrayList<WorkInfo> workInfos = new ArrayList<>();
+        workInfos = new ArrayList<>();
         WorkInfo workInfo1 = new WorkInfo();
         workInfo1.name = "巡检预警";
-        workInfo1.num = 12;
         workInfo1.iconResId = R.drawable.menu_aew_selector;
         workInfos.add(workInfo1);
         WorkInfo workInfo2 = new WorkInfo();
         workInfo2.name = "设备润滑";
-        workInfo2.num = 2;
         workInfo2.iconResId = R.drawable.menu_lubricate_selector;
         workInfos.add(workInfo2);
         WorkInfo workInfo3 = new WorkInfo();
         workInfo3.name = "维修执行";
-        workInfo3.num = 7;
         workInfo3.iconResId = R.drawable.menu_repair_selector;
         workInfos.add(workInfo3);
         WorkInfo workInfo4 = new WorkInfo();
         workInfo4.name = "工作报表";
-        workInfo4.num = 19;
         workInfo4.iconResId = R.drawable.menu_form_selector;
         workInfos.add(workInfo4);
         workAdapter.setList(workInfos);
         workAdapter.notifyDataSetChanged();
+
+        aewMenu = MenuHelper.getAewMenu(getActivity());
+        lubricateMenu = MenuHelper.getLubricateMenu(getActivity());
+        repairMenu = MenuHelper.getRepairMenu(getActivity());
+        formMenu = MenuHelper.getFormMenu(getActivity());
     }
 
 
@@ -200,7 +228,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     int oldPosition = -1;
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "ClickableViewAccessibility"})
     @Override
     protected void initListener() {
         super.initListener();
@@ -215,22 +243,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 }
                 switch (position) {
                     case 0:
-                        menuPopwindow.refreshList(MenuHelper.getAewMenu(getActivity()));
+                        menuPopwindow.refreshList(aewMenu);
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 1);
                         childView.setSelected(true);
                         break;
                     case 1:
-                        menuPopwindow.refreshList(MenuHelper.getLubricateMenu(getActivity()));
+                        menuPopwindow.refreshList(lubricateMenu);
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 0);
                         childView.setSelected(true);
                         break;
                     case 2:
-                        menuPopwindow.refreshList(MenuHelper.getRepairMenu(getActivity()));
+                        menuPopwindow.refreshList(repairMenu);
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.left, 0);
                         childView.setSelected(true);
                         break;
                     case 3:
-                        menuPopwindow.refreshList(MenuHelper.getFormMenu(getActivity()));
+                        menuPopwindow.refreshList(formMenu);
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.left, 1);
                         childView.setSelected(true);
                         break;
@@ -238,6 +266,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 oldPosition = position;
             }
         });
+
         menuPopwindow.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
@@ -251,23 +280,60 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 }
             }
         });
+
+
         menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
             @Override
             public void onDismiss() {
                 super.onDismiss();
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
-                oldPosition = -1;
             }
         });
+
         waitDealtAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-                if (childView.getId() == R.id.waitDealtEntrust) {
-
-                }
+                WaitDealtEntity waitDealtEntity = (WaitDealtEntity) obj;
+//                if (childView.getId() == R.id.waitDealtEntrust) {
+//                    presenterRouter.create(WaitDealtAPI.class).proxyPending(waitDealtEntity.dataid,);
+//                }
             }
         });
+
+        KeyExpandHelper.doActionSearch(customSearchView.editText(), true, () -> {
+                    Map<String, Object> params = new HashMap<>();
+                    params.put(Constant.IntentKey.EAM_CODE, customSearchView.getInput());
+                    presenterRouter.create(EamAPI.class).getEam(params, 1);
+                }
+        );
+    }
+
+    @Override
+    public boolean onTouch(MotionEvent ev) {
+        boolean isClickWorkRecycler = inRangeOfView(workRecycler, ev);
+        if (!isClickWorkRecycler) {
+            oldPosition = -1;
+        }
+        return false;
+    }
+
+    /**
+     * 判断是不是点击在控件上
+     *
+     * @param view
+     * @param ev
+     * @return
+     */
+    public boolean inRangeOfView(View view, MotionEvent ev) {
+        int[] location = new int[2];
+        view.getLocationOnScreen(location);
+        int x = location[0];
+        int y = location[1];
+        if (ev.getX() < x || ev.getX() > (x + view.getWidth()) || ev.getY() < y || ev.getY() > (y + view.getHeight())) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -287,14 +353,14 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
             }
             customSearchView.setInput((String) nfcJson.get("textRecord"));
             Map<String, Object> params = new HashMap<>();
-            params.put(Constant.IntentKey.EAM_CODE, (String) nfcJson.get("textRecord"));
+            params.put(Constant.IntentKey.EAM_CODE, nfcJson.get("textRecord"));
             presenterRouter.create(EamAPI.class).getEam(params, 1);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3);
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
     }
 
     @Override
@@ -319,11 +385,25 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         waitDealtAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void proxyPendingSuccess(BapResultEntity entity) {
+        ToastUtils.show(getActivity(), "待办委托成功");
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+    }
+
+    @Override
+    public void proxyPendingFailed(String errorMsg) {
+        ToastUtils.show(getActivity(), ErrorMsgHelper.msgParse(errorMsg));
+    }
+
 
     @Override
     public void getEamSuccess(CommonListEntity entity) {
         if (entity.result.size() > 0) {
             EamType eamType = (EamType) entity.result.get(0);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(Constant.IntentKey.EAM, eamType);
+            IntentRouter.go(getActivity(), Constant.Router.EAM_DETAIL, bundle);
             return;
         }
         SnackbarHelper.showError(rootView, "未查询到设备");
@@ -335,9 +415,63 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     }
 
     @Override
+    public void getPersonScoreSuccess(CommonEntity entity) {
+        ScoreEntity result = (ScoreEntity) entity.result;
+        rank.setText(String.valueOf(result.ranking));
+        score.setText(Util.big0(result.score));
+    }
+
+    @Override
+    public void getPersonScoreFailed(String errorMsg) {
+        LogUtil.e(errorMsg);
+    }
+
+    @Override
+    public void getMainWorkCountSuccess(CommonBAPListEntity entity) {
+        List result = entity.result;
+        if (result.size() > 0) {
+            updateNum(aewMenu, result, workInfos.get(0));
+            updateNum(lubricateMenu, result, workInfos.get(1));
+            updateNum(repairMenu, result, workInfos.get(2));
+            updateNum(formMenu, result, workInfos.get(3));
+            workAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void getMainWorkCountFailed(String errorMsg) {
+        LogUtil.e(errorMsg);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
 
+
+    @SuppressLint("CheckResult")
+    private void updateNum(List<MenuPopwindowBean> menuPopwindowBeans, List<WorkNumEntity> workNumEntities, WorkInfo workInfo) {
+        workInfo.num = 0;
+        Flowable.fromIterable(workNumEntities).flatMap(new Function<WorkNumEntity, Publisher<?>>() {
+            @Override
+            public Publisher<?> apply(WorkNumEntity workNumEntity) throws Exception {
+                Flowable<MenuPopwindowBean> filter = Flowable.fromIterable(menuPopwindowBeans)
+                        .filter(new Predicate<MenuPopwindowBean>() {
+                            @Override
+                            public boolean test(MenuPopwindowBean menuPopwindowBean) throws Exception {
+                                if (TextUtils.isEmpty(menuPopwindowBean.getTag()) || TextUtils.isEmpty(workNumEntity.tagName)) {
+                                    return false;
+                                }
+                                if (menuPopwindowBean.getTag().equals(workNumEntity.tagName)) {
+                                    menuPopwindowBean.setNum(workNumEntity.num);
+                                    workInfo.num += workNumEntity.num;
+                                }
+                                return true;
+                            }
+                        });
+                return filter;
+            }
+        }).subscribe();
+    }
 }
