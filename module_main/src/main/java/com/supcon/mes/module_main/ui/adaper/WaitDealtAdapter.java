@@ -69,7 +69,11 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         @Override
         protected void update(WaitDealtEntity data) {
             waitDealtEamName.setText(Util.strFormat(data.eamname));
-            waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "");
+            if (data.nextduration != null) {
+                waitDealtTime.setText(Util.strFormat2(data.nextduration));
+            } else {
+                waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "--");
+            }
             waitDealtEamState.setText(Util.strFormat(data.soucretype));
 
             if (data.overdateflag.equals("1")) {

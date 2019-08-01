@@ -33,6 +33,7 @@ import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.IDEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.controller.OLXJWorkItemListRefController;
@@ -72,7 +73,7 @@ import io.reactivex.schedulers.Schedulers;
 @Router(Constant.Router.XJLX_LIST)
 @Presenter(value = {OLXJGroupPresenter.class, OLXJTaskCreatePresenter.class, OLXJTaskStatusPresenter.class})
 public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroupEntity> implements
-        OLXJGroupContract.View, OLXJTaskCreateContract.View, OLXJTaskStatusContract.View{
+        OLXJGroupContract.View, OLXJTaskCreateContract.View, OLXJTaskStatusContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -108,7 +109,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
         refreshListController.setPullDownRefreshEnabled(true);
 
         isTemp = getIntent().getBooleanExtra(Constant.IntentKey.XJ_IS_TEMP, false);
-        if(isTemp){//临时巡检
+        if (isTemp) {//临时巡检
             mOLXJWorkItemListRefController = new OLXJWorkItemListRefController(context);
             registerController(OLXJWorkItemListRefController.class.getSimpleName(), mOLXJWorkItemListRefController);
             deploymentId = getIntent().getLongExtra(Constant.IntentKey.DEPLOYMENT_ID, 0);
@@ -122,16 +123,14 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
     protected void initView() {
         super.initView();
         setStatusBarColor(R.color.themeColor);
-        ((ViewGroup)titleText.getParent()).setBackgroundResource(R.color.themeColor);
+        ((ViewGroup) titleText.getParent()).setBackgroundResource(R.color.themeColor);
         if (isTemp) {
-
             titleText.setText("选择路线生成临时任务");
-        }
-        else
-        titleText.setText("巡检路线");
+        } else
+            titleText.setText("巡检路线");
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(DisplayUtil.dip2px(5, context)));
-
+        initEmptyView();
     }
 
     @SuppressLint("CheckResult")
@@ -168,7 +167,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
                 mGroupEntity = olxjGroupEntity;
                 Map<String, Object> map = new HashMap<>();
                 map.put("tempStartTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-                map.put("tempEndTime", DateUtil.dateFormat(System.currentTimeMillis()+1000*60*60*24, "yyyy-MM-dd HH:mm:ss"));
+                map.put("tempEndTime", DateUtil.dateFormat(System.currentTimeMillis() + 1000 * 60 * 60 * 24, "yyyy-MM-dd HH:mm:ss"));
                 map.put("tempWorkGroupId", mGroupEntity.id);
                 map.put("tempStaffId", EamApplication.getAccountInfo().staffId);
                 presenterRouter.create(OLXJTaskCreateAPI.class).createTempTaskNew(map);
@@ -198,7 +197,14 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
 
     }
 
-
+    /**
+     * @author zhangwenshuai1
+     * @date 2018/3/27
+     * @description 初始化无数据
+     */
+    private void initEmptyView() {
+        refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, ""));
+    }
 
     @Override
     public void queryGroupListSuccess(CommonBAPListEntity entity) {
@@ -224,7 +230,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
 
 
     @SuppressLint("CheckResult")
-    private void submit(List<OLXJWorkItemEntity> workItems){
+    private void submit(List<OLXJWorkItemEntity> workItems) {
         Map<String, Object> params = new HashMap<>();
         params.put("bap_validate_user_id", EamApplication.getAccountInfo().userId);
         params.put("potrolTaskWF.createPositionId", EamApplication.getAccountInfo().getPositionId());
@@ -237,7 +243,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
         params.put("id", "");
         List<WorkFlowEntity> workFlowEntities = new ArrayList<>();
         WorkFlowEntity submitEntity = null;
-        for(LinkEntity linkEntity: mLinkController.getLinkEntities()) {
+        for (LinkEntity linkEntity : mLinkController.getLinkEntities()) {
 
             WorkFlowEntity workFlowEntity = new WorkFlowEntity();
             workFlowEntity.dec = linkEntity.description;
@@ -246,14 +252,14 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
 
             workFlowEntities.add(workFlowEntity);
 
-            if("生效".equals(linkEntity.description)){
+            if ("生效".equals(linkEntity.description)) {
                 submitEntity = workFlowEntity;
             }
         }
 
         params.put("operateType", Constant.Transition.SUBMIT);
         params.put("workFlowVar.outcomeMapJson", workFlowEntities.toString());
-        params.put("workFlowVar.outcome", submitEntity!=null?submitEntity.outcome:"");
+        params.put("workFlowVar.outcome", submitEntity != null ? submitEntity.outcome : "");
         params.put("deploymentId", deploymentId);
 
         params.put("taskDescription", "mobileEAM_1.0.0.tempWF.task333");
@@ -262,7 +268,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
         params.put("potrolTaskWF.workGroupID.id", mGroupEntity.id);
         params.put("potrolTaskWF.resstaffID.id", EamApplication.getAccountInfo().staffId);
         params.put("potrolTaskWF.starTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-        params.put("potrolTaskWF.endTime", DateUtil.dateFormat(System.currentTimeMillis()+1000*60*60*24, "yyyy-MM-dd HH:mm:ss"));//默认加一天
+        params.put("potrolTaskWF.endTime", DateUtil.dateFormat(System.currentTimeMillis() + 1000 * 60 * 60 * 24, "yyyy-MM-dd HH:mm:ss"));//默认加一天
         params.put("potrolTaskWF.valueType.id", mGroupEntity.valueType.id);
         params.put("potrolTaskWF.valueType.value", mGroupEntity.valueType.value);
         params.put("potrolTaskWF.isTemp", true);
@@ -296,7 +302,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
                         params.put("dg1489026057217ModelCode", "mobileEAM_1.0.0_potrolTaskNew_PotrolTPartWF");
                         params.put("dg1489026057217ListJson", olxjWorkItemDtos.toString());
 
-                        LogUtil.d(""+GsonUtil.gsonString(params));
+                        LogUtil.d("" + GsonUtil.gsonString(params));
                         presenterRouter.create(OLXJTaskCreateAPI.class).createTempTask(params);
                     }
                 });
@@ -317,7 +323,7 @@ public class OLXJGroupListActivity extends BaseRefreshRecyclerActivity<OLXJGroup
     @Override
     public void createTempTaskNewSuccess(CommonEntity entity) {
         String id = (String) entity.result;
-        if(TextUtils.isEmpty(id)){
+        if (TextUtils.isEmpty(id)) {
             onLoadFailed("生成任务ID为空！");
             return;
         }

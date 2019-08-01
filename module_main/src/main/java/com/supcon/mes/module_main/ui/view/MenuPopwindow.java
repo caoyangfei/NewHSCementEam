@@ -155,7 +155,7 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
      */
     public void showPopupWindow(View parent, int gravity, int mark) {
         if (!isShowing()) {
-            changeWindowAlfa(0.7f);//改变窗口透明度
+            changeWindowAlfa(0.6f);//改变窗口透明度
             parent.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
             int[] location = new int[2];
             parent.getLocationOnScreen(location);
@@ -210,10 +210,12 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
     /*
        更改屏幕窗口透明度
     */
-    void changeWindowAlfa(float alfa) {
+    public void changeWindowAlfa(float alfa) {
         WindowManager.LayoutParams params = context.getWindow().getAttributes();
-        params.alpha = alfa;
-        context.getWindow().setAttributes(params);
+        if (params.alpha != alfa) {
+            params.alpha = alfa;
+            context.getWindow().setAttributes(params);
+        }
     }
 }
 

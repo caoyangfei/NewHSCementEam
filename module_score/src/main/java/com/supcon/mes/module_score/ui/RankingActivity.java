@@ -1,13 +1,11 @@
 package com.supcon.mes.module_score.ui;
 
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.Build;
+import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,16 +17,20 @@ import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
+import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.utils.controllers.DatePickController;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.util.AnimatorUtil;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.module_score.IntentRouter;
 import com.supcon.mes.module_score.R;
+import com.supcon.mes.module_score.controller.DatePickController;
 import com.supcon.mes.module_score.model.api.ScoreStaffListAPI;
+import com.supcon.mes.module_score.model.bean.ScoreStaffEntity;
 import com.supcon.mes.module_score.model.contract.ScoreStaffListContract;
 import com.supcon.mes.module_score.presenter.ScoreStaffListPresenter;
 import com.supcon.mes.module_score.ui.adapter.RankingAdapter;
@@ -102,24 +104,26 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(15));
         if (type.equals("BEAM_065/03")) {
-            titleText.setText("巡检工排名");
-        } else {
             titleText.setText("机修工排名");
+        } else {
+            titleText.setText("巡检工排名");
         }
-
         datePickController = new DatePickController(this);
+
         datePickController.setCycleDisable(true);
         datePickController.setCanceledOnTouchOutside(true);
         datePickController.setSecondVisible(false);
         datePickController.textSize(18);
 
         dateTv.setText(DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
+        queryParam.put(Constant.BAPQuery.SCORE_DATA_START, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd 00:00:00"));
+        queryParam.put(Constant.BAPQuery.SCORE_DATA_STOP, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd 23:59:59"));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        rotationExpandIcon(180, 0);
+        AnimatorUtil.rotationExpandIcon(expend, 180, 0);
     }
 
     @SuppressLint("CheckResult")
@@ -139,14 +143,21 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                rotationExpandIcon(0, 180);
+                AnimatorUtil.rotationExpandIcon(expend, 0, 180);
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     dateTv.setText(year + "-" + month + "-" + day);
-                    rotationExpandIcon(180, 0);
-                }).show(System.currentTimeMillis());
+                    queryParam.put(Constant.BAPQuery.SCORE_DATA_START, year + "-" + month + "-" + day + " 00:00:00");
+                    queryParam.put(Constant.BAPQuery.SCORE_DATA_STOP, year + "-" + month + "-" + day + " 23:59:59");
+                    refreshListController.refreshBegin();
+                }).show(DateUtil.dateFormat(dateTv.getText().toString()));
             }
         });
-
+        datePickController.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                AnimatorUtil.rotationExpandIcon(expend, 180, 0);
+            }
+        });
         refreshListController.setOnRefreshPageListener(pageIndex -> {
             String url;
             if (type.equals("BEAM_065/03")) {
@@ -155,6 +166,21 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
                 url = "/BEAM/patrolWorkerScore/workerScoreHead/patrolScore-query.action";
             }
             presenterRouter.create(ScoreStaffListAPI.class).patrolScore(url, queryParam, pageIndex);
+        });
+        rankingAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
+            @Override
+            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                if (childView.getId() == R.id.score) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(Constant.IntentKey.SCORE_ENTITY, ((ScoreStaffEntity) obj));
+                    bundle.putBoolean(Constant.IntentKey.isEdit, false);
+                    if (type.equals("BEAM_065/03")) {
+                        IntentRouter.go(context, Constant.Router.SCORE_MECHANIC_STAFF_PERFORMANCE, bundle);
+                    } else {
+                        IntentRouter.go(context, Constant.Router.SCORE_INSPECTOR_STAFF_PERFORMANCE, bundle);
+                    }
+                }
+            }
         });
     }
 
@@ -168,17 +194,4 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
         SnackbarHelper.showError(rootView, errorMsg);
         refreshListController.refreshComplete(null);
     }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void rotationExpandIcon(float from, float to) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ValueAnimator valueAnimator = ValueAnimator.ofFloat(from, to);//属性动画
-            valueAnimator.setDuration(500);
-            valueAnimator.setInterpolator(new DecelerateInterpolator());
-            valueAnimator.addUpdateListener(valueAnimator1 -> expend.setRotation((Float) valueAnimator1.getAnimatedValue()));
-            valueAnimator.start();
-        }
-    }
-
-
 }

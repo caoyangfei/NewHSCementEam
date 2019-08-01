@@ -481,10 +481,11 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                 .bindClickListener(R.id.grayBtn, null, true)
                                 .bindClickListener(R.id.redBtn, v -> {
                                     try {
-
                                         for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
                                             if (set.contains(xjWorkItemEntity.id)) {
-                                                doFinish(xjWorkItemEntity, true);
+                                                if (!doFinish(xjWorkItemEntity)) {
+                                                    return;
+                                                }
                                             }
                                         }
                                         onLoading("正在打包并上传巡检数据，请稍后...");
@@ -582,8 +583,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
                                         for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
                                             if (set.contains(xjWorkItemEntity.id)) {
-                                                boolean b = doFinish(xjWorkItemEntity, false);
-                                                if (!b) {
+                                                if (!doFinish(xjWorkItemEntity)) {
                                                     return;
                                                 }
                                             }
@@ -621,19 +621,15 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
      * @description 一键完成巡检项
      * @author zhangwenshuai1 2018/12/29
      */
-    private boolean doFinish(OLXJWorkItemEntity xjWorkItemEntity, boolean oneFinish) {
+    private boolean doFinish(OLXJWorkItemEntity xjWorkItemEntity) {
         if (/*!OLXJConstant.MobileWiLinkState.EXEMPTION_STATE.equals(xjWorkItemEntity.linkState) && */!xjWorkItemEntity.isFinished) { //免检项过滤掉，因为在后续的循环中被免检的项没有从当前列表中移除
-            if (xjWorkItemEntity.isphone && xjWorkItemEntity.isPhonere == false) {
-                if (!oneFinish) {
-                    SnackbarHelper.showError(rootView, "该巡检项要求拍照");
-                }
+            if (xjWorkItemEntity.isphone && !xjWorkItemEntity.isPhonere) {
+                SnackbarHelper.showError(rootView, "该巡检项要求拍照");
                 return false;
             }
             xjWorkItemEntity.result = TextUtils.isEmpty(xjWorkItemEntity.result) ? xjWorkItemEntity.defaultVal : xjWorkItemEntity.result; //若列表无滚动直接一键完成，默认值不会回填到结果
             if (TextUtils.isEmpty(xjWorkItemEntity.result)) {
-                if (!oneFinish) {
-                    SnackbarHelper.showError(rootView, "请填写结果");
-                }
+                SnackbarHelper.showError(rootView, "巡检部位“" + xjWorkItemEntity.part + "”需要填写结果");
                 return false;
             }
             xjWorkItemEntity.endTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");

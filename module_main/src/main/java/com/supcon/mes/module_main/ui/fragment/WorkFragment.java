@@ -243,6 +243,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 if (oldPosition == position) {
                     oldPosition = -1;
+                    menuPopwindow.changeWindowAlfa(1f);
                     return;
                 }
                 switch (position) {
@@ -275,8 +276,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
                 menuPopwindow.dismiss();
+                menuPopwindow.changeWindowAlfa(1f);
+                oldPosition = -1;
                 MenuPopwindowBean menuPopwindowBean = (MenuPopwindowBean) obj;
-
                 if (!TextUtils.isEmpty(menuPopwindowBean.getRouter())) {
                     IntentRouter.go(getContext(), menuPopwindowBean.getRouter());
                 } else {
@@ -289,7 +291,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
             @Override
             public void onDismiss() {
-                super.onDismiss();
+                //在ontouch中切换透明度 防止点击图标闪动
+//                super.onDismiss();
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
             }
@@ -314,22 +317,28 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         scoreLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Bundle bundle = new Bundle();
-                if (scoreEntity != null) {
+                if (scoreEntity != null && !TextUtils.isEmpty(scoreEntity.type)) {
+                    Bundle bundle = new Bundle();
                     bundle.putInt(Constant.IntentKey.RANKING, scoreEntity.ranking != null ? scoreEntity.ranking : -1);
                     bundle.putString(Constant.IntentKey.TYPE, scoreEntity.type);
+                    IntentRouter.go(getActivity(), Constant.Router.RANKING, bundle);
+                } else {
+                    ToastUtils.show(getActivity(), "未获取到当前用户评分，不能查看排名！");
                 }
-                IntentRouter.go(getActivity(), Constant.Router.RANKING, bundle);
             }
         });
     }
 
     @Override
     public boolean onTouch(MotionEvent ev) {
-        boolean isClickWorkRecycler = inRangeOfView(workRecycler, ev);
-        if (!isClickWorkRecycler) {
-            oldPosition = -1;
+        switch (ev.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                boolean isClickWorkRecycler = inRangeOfView(workRecycler, ev);
+                if (!isClickWorkRecycler) {
+                    menuPopwindow.changeWindowAlfa(1f);
+                    oldPosition = -1;
+                }
+                break;
         }
         return false;
     }

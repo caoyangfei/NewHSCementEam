@@ -25,9 +25,8 @@
             <ImageView
                 android:id="@+id/eamPic"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:scaleType="fitXY"
-                android:tag="eamPic" />
+                android:layout_height="180dp"
+                android:scaleType="centerCrop" />
 
             <com.supcon.mes.module_main.ui.view.TrapezoidView
                 android:id="@+id/eamName"
@@ -104,7 +103,6 @@
                     android:textColor="#849ea4"
                     android:textSize="@dimen/fontSize_16sp" />
 
-
                 <com.supcon.mes.module_main.ui.view.SimpleRatingBar
                     android:id="@+id/starLevel"
                     android:layout_width="wrap_content"
@@ -113,6 +111,7 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="@dimen/dp_10"
                     android:layout_toRightOf="@id/eamStarTitle"
+                    android:tag="starLevel"
                     app:srb_borderColor="@color/transparent"
                     app:srb_fillColor="@color/color_ffa000"
                     app:srb_isIndicator="true"
@@ -120,8 +119,7 @@
                     app:srb_starBackgroundColor="@color/color_dddddd"
                     app:srb_starSize="15dp"
                     app:srb_starsSeparation="3dp"
-                    app:srb_stepSize="0.1"
-                    android:tag="starLevel" />
+                    app:srb_stepSize="0.1" />
 
 
                 <TextView
@@ -172,6 +170,7 @@
         android:id="@+id/leftBtn"
         android:layout_width="60dp"
         android:layout_height="50dp"
+        android:layout_marginTop="@dimen/dp_10"
         android:background="@null"
         android:scaleType="center"
         android:src="@drawable/sl_top_back"

@@ -25,7 +25,7 @@
             android:name=".ui.EamDetailActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppNoTitleBarTheme"
+            android:theme="@style/TranslucentTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name=".ui.AnomalyActivity"

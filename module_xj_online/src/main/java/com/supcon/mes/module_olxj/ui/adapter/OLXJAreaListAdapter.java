@@ -70,7 +70,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
         protected void initListener() {
             super.initListener();
             itemView.setOnClickListener(v -> {
-                OLXJAreaEntity xjAreaEntity = getItem(getAdapterPosition());
+                        OLXJAreaEntity xjAreaEntity = getItem(getAdapterPosition());
                         onItemChildViewClick(itemView, 0, xjAreaEntity);
                     }
             );
@@ -104,24 +104,25 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
             AtomicInteger finishedNum = new AtomicInteger();
             Flowable.fromIterable(data.workItemEntities)
                     .compose(RxSchedulers.io_main())
-                    .subscribe(xjWorkItemEntity ->{
-                        if(xjWorkItemEntity.isFinished) {
-                            finishedNum.getAndIncrement();
-                        } },
-                        throwable -> {
-                        },
-                        () -> {
-                            itemAreaProgress.setText(String.format("%d/%d", finishedNum.get(), data.workItemEntities.size()));
-                            if(finishedNum.get() == data.workItemEntities.size()) {
-                                itemAreaName.setTextColor(Color.GRAY);
-                                itemAreaProgress.setTextColor(Color.GRAY);
-                                data.finishType = "1";
-                            }else {
-                                data.finishType = "0";
-                                itemAreaName.setTextColor(Color.parseColor("#366CBC"));
-                                itemAreaProgress.setTextColor(Color.parseColor("#366CBC"));
-                            }
-                        });
+                    .subscribe(xjWorkItemEntity -> {
+                                if (xjWorkItemEntity.isFinished) {
+                                    finishedNum.getAndIncrement();
+                                }
+                            },
+                            throwable -> {
+                            },
+                            () -> {
+                                itemAreaProgress.setText(String.format("%d/%d", finishedNum.get(), data.workItemEntities.size()));
+                                if (finishedNum.get() == data.workItemEntities.size()) {
+                                    itemAreaName.setTextColor(Color.GRAY);
+                                    itemAreaProgress.setTextColor(Color.GRAY);
+                                    data.finishType = "1";
+                                } else {
+                                    data.finishType = "0";
+                                    itemAreaName.setTextColor(Color.parseColor("#366CBC"));
+                                    itemAreaProgress.setTextColor(Color.parseColor("#366CBC"));
+                                }
+                            });
         }
     }
 }
