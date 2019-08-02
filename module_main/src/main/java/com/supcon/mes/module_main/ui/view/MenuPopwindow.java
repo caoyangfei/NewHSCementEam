@@ -212,10 +212,8 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
     */
     public void changeWindowAlfa(float alfa) {
         WindowManager.LayoutParams params = context.getWindow().getAttributes();
-        if (params.alpha != alfa) {
-            params.alpha = alfa;
-            context.getWindow().setAttributes(params);
-        }
+        params.alpha = alfa;
+        context.getWindow().setAttributes(params);
     }
 }
 

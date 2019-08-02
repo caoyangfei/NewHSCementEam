@@ -16,22 +16,33 @@ import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseControllerActivity;
+import com.supcon.common.view.listener.OnChildViewClickListener;
+import com.supcon.common.view.listener.OnItemChildViewClickListener;
+import com.supcon.common.view.util.DisplayUtil;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.listener.OnTextListener;
+import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
+import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
+import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
 import com.supcon.mes.middleware.model.bean.EamType;
+import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.api.ScoreEamAPI;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
+import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.contract.ScoreEamContract;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
 import com.supcon.mes.module_main.presenter.ScoreEamPresenter;
@@ -52,6 +63,8 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Consumer;
+
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 /**
  * @author yangfei.cao
@@ -86,6 +99,9 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     private EamType eamType;
     private AnomalyAdapter anomalyAdapter;
     private WorkAdapter workAdapter;
+    private CustomDialog customDialog;
+    private CommonSearchStaff proxyStaff;
+    private String reason;
 
     @Override
     protected int getLayoutID() {
@@ -136,6 +152,15 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
                         back();
                     }
                 });
+        anomalyAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
+            @Override
+            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                WaitDealtEntity waitDealtEntity = (WaitDealtEntity) obj;
+                if (childView.getId() == R.id.waitDealtEntrust) {
+                    proxyDialog(waitDealtEntity);
+                }
+            }
+        });
     }
 
     @Override
@@ -176,6 +201,64 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, param);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void search(CommonSearchEvent commonSearchEvent) {
+        if (commonSearchEvent.commonSearchEntity != null) {
+            if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
+                proxyStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
+                CustomTextView person = customDialog.getDialog().findViewById(R.id.proxyPerson);
+                person.setContent(Util.strFormat(proxyStaff.name));
+            }
+        }
+    }
+
+    /**
+     * 委托代办
+     *
+     * @param waitDealtEntity
+     */
+    private void proxyDialog(WaitDealtEntity waitDealtEntity) {
+        customDialog = new CustomDialog(this).layout(R.layout.proxy_dialog,
+                DisplayUtil.getScreenWidth(context) * 2 / 3, WRAP_CONTENT)
+                .bindView(R.id.blueBtn, "确定")
+                .bindView(R.id.grayBtn, "取消")
+                .bindChildListener(R.id.proxyPerson, new OnChildViewClickListener() {
+                    @Override
+                    public void onChildViewClick(View childView, int action, Object obj) {
+                        if (action == -1) {
+                            proxyStaff = null;
+                        }
+                        IntentRouter.go(context, Constant.Router.STAFF);
+                    }
+                })
+                .bindTextChangeListener(R.id.proxyReason, new OnTextListener() {
+                    @Override
+                    public void onText(String text) {
+                        reason = text.trim();
+                    }
+                })
+                .bindClickListener(R.id.blueBtn, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v12) {
+                        if (proxyStaff == null) {
+                            ToastUtils.show(EamDetailActivity.this, "请选择委托人");
+                            return;
+                        }
+                        if (waitDealtEntity.pendingid == null) {
+                            ToastUtils.show(EamDetailActivity.this, "未获取当前代办信息");
+                            return;
+                        }
+                        onLoading("正在委托...");
+                        presenterRouter.create(WaitDealtAPI.class).proxyPending(waitDealtEntity.pendingid, proxyStaff.userId, reason);
+                        customDialog.dismiss();
+                    }
+                }, false)
+                .bindClickListener(R.id.grayBtn, null, true);
+        ((CustomEditText) customDialog.getDialog().findViewById(R.id.proxyReason)).editText().setScrollBarSize(0);
+        customDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        customDialog.show();
+    }
+
     @Override
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
         if (entity.result.size() > 0) {
@@ -200,7 +283,7 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
 
     @Override
     public void proxyPendingSuccess(BapResultEntity entity) {
-        ToastUtils.show(this, "待办委托成功");
+        onLoadSuccess("待办委托成功");
         Map<String, Object> param = new HashMap<>();
         param.put(Constant.BAPQuery.EAMCODE, eamType.code);
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, param);
@@ -208,7 +291,7 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
 
     @Override
     public void proxyPendingFailed(String errorMsg) {
-        ToastUtils.show(this, ErrorMsgHelper.msgParse(errorMsg));
+        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override

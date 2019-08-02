@@ -27,15 +27,17 @@
         android:paddingLeft="@dimen/dp_15"
         android:paddingRight="@dimen/dp_15"
         android:tag="proxyPerson"
-        app:necessary="true"
         app:editable="true"
-        app:key="委托人：" />
+        app:key="委托人："
+        app:necessary="true" />
 
     <com.supcon.mes.mbap.view.CustomEditText
         android:id="@+id/proxyReason"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:padding="15dp"
+        android:layout_height="70dp"
+        android:paddingLeft="@dimen/dp_15"
+        android:paddingTop="@dimen/dp_10"
+        android:paddingRight="@dimen/dp_15"
         android:tag="proxyReason"
         app:edit_hint="请输入委托原因"
         app:gravity="top" />

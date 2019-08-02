@@ -59,6 +59,9 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 public void onClick(View view) {
                     WaitDealtEntity item = getItem(getAdapterPosition());
                     if (TextUtils.isEmpty(item.processkey)) {
+                        if (item.excutetime == null) {
+                        }
+                    } else {
 
                     }
                 }

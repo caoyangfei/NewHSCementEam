@@ -23,6 +23,7 @@ import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
@@ -143,7 +144,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
      */
     private void proxyDialog(WaitDealtEntity waitDealtEntity) {
         customDialog = new CustomDialog(this).layout(R.layout.proxy_dialog,
-                DisplayUtil.getScreenWidth(context) - DisplayUtil.dip2px(40, context), WRAP_CONTENT)
+                DisplayUtil.getScreenWidth(context) * 2 / 3, WRAP_CONTENT)
                 .bindView(R.id.blueBtn, "确定")
                 .bindView(R.id.grayBtn, "取消")
                 .bindChildListener(R.id.proxyPerson, new OnChildViewClickListener() {
@@ -178,6 +179,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                     }
                 }, false)
                 .bindClickListener(R.id.grayBtn, null, true);
+        ((CustomEditText) customDialog.getDialog().findViewById(R.id.proxyReason)).editText().setScrollBarSize(0);
         customDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         customDialog.show();
     }

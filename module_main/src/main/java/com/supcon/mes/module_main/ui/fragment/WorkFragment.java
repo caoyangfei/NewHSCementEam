@@ -28,6 +28,7 @@ import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.view.CustomAdView;
 import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.EamApplication;
@@ -310,7 +311,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     workRecycler.getChildAt(oldPosition).setSelected(false);
             }
         });
-
         waitDealtAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
@@ -351,7 +351,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
      */
     private void proxyDialog(WaitDealtEntity waitDealtEntity) {
         customDialog = new CustomDialog(context).layout(R.layout.proxy_dialog,
-                DisplayUtil.getScreenWidth(context) - DisplayUtil.dip2px(40, context), WRAP_CONTENT)
+                DisplayUtil.getScreenWidth(context) * 2 / 3, WRAP_CONTENT)
                 .bindView(R.id.blueBtn, "确定")
                 .bindView(R.id.grayBtn, "取消")
                 .bindChildListener(R.id.proxyPerson, new OnChildViewClickListener() {
@@ -386,6 +386,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     }
                 }, false)
                 .bindClickListener(R.id.grayBtn, null, true);
+        ((CustomEditText) customDialog.getDialog().findViewById(R.id.proxyReason)).editText().setScrollBarSize(0);
         customDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         customDialog.show();
     }

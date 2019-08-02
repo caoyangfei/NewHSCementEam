@@ -24,7 +24,7 @@ import retrofit2.http.QueryMap;
 public interface MainService {
 
     /**
-     * 获取所有待办数量
+     * 获取所有待办
      *
      * @return
      */
@@ -55,6 +55,6 @@ public interface MainService {
 
     //首页待办数量
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getMainButtonWorkCount.action")
-    Flowable<CommonBAPListEntity<WorkNumEntity>> getMainWorkCount(@Query("staffID") String staffID);
+    Flowable<CommonBAPListEntity<WorkNumEntity>> getMainWorkCount();
 
 }

@@ -32,7 +32,7 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
     }
 
 
-    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> {
+    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener{
 
         @BindByTag("waitDealtEamName")
         TextView waitDealtEamName;
@@ -53,12 +53,7 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
         @Override
         protected void initListener() {
             super.initListener();
-            waitDealtEntrust.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onItemChildViewClick(waitDealtEntrust, 0, getItem(getAdapterPosition()));
-                }
-            });
+            waitDealtEntrust.setOnClickListener(this::onClick);
         }
 
         @Override
@@ -77,6 +72,11 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
             } else {
                 waitDealtEntrust.setVisibility(View.VISIBLE);
             }
+        }
+
+        @Override
+        public void onClick(View view) {
+            onItemChildViewClick(view, 0, getItem(getAdapterPosition()));
         }
     }
 

@@ -17,7 +17,7 @@ import io.reactivex.functions.Function;
 public class EamAnomalyPresenter extends EamAnomalyContract.Presenter {
     @Override
     public void getMainWorkCount(String staffID) {
-        mCompositeSubscription.add(MainClient.getMainWorkCount(staffID)
+        mCompositeSubscription.add(MainClient.getMainWorkCount()
                 .onErrorReturn(new Function<Throwable, CommonBAPListEntity<WorkNumEntity>>() {
                     @Override
                     public CommonBAPListEntity<WorkNumEntity> apply(Throwable throwable) throws Exception {

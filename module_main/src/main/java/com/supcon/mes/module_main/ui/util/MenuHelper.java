@@ -82,6 +82,13 @@ public class MenuHelper {
         try {
             worksArray = new JSONObject(Util.getJson(MBapApp.getAppContext(), "hswork.json")).getJSONArray("repair");
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
+            for (MenuPopwindowBean menuPopwindowBean : works) {
+                switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.WXGD:
+                        menuPopwindowBean.setRouter(Constant.Router.WXGD_LIST);
+                        break;
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

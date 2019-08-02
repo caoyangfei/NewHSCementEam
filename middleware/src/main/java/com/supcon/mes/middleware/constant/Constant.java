@@ -349,10 +349,12 @@ public interface Constant {
         int TEMPORARY_LUBRICATION_EARLY_WARN = 9;//临时润滑
         int LUBRICATION_EARLY_WARN = 10;//润滑预警
 
+        int WXGD = 14;  //维修工单
+
         int SBDA = 13;  //设备档案
         int XJGL = 14;  //巡检管理
         int YXJL = 3;  //运行记录
-        int WXGD = 5;  //维修工单
+
         int RH = 6;  //缺陷管理
         int BY = 7;  //维修工单
         int LXYH = 8;//离线隐患
