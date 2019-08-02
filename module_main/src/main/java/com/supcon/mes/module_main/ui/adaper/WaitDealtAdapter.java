@@ -32,7 +32,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
     }
 
 
-    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> {
+    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener {
 
         @BindByTag("waitDealtEamName")
         TextView waitDealtEamName;
@@ -53,10 +53,14 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         @Override
         protected void initListener() {
             super.initListener();
-            waitDealtEntrust.setOnClickListener(new View.OnClickListener() {
+            waitDealtEntrust.setOnClickListener(this::onClick);
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    onItemChildViewClick(waitDealtEntrust, 0, getItem(getAdapterPosition()));
+                public void onClick(View view) {
+                    WaitDealtEntity item = getItem(getAdapterPosition());
+                    if (TextUtils.isEmpty(item.processkey)) {
+
+                    }
                 }
             });
         }
@@ -100,6 +104,10 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 waitDealtEntrust.setVisibility(View.VISIBLE);
             }
         }
-    }
 
+        @Override
+        public void onClick(View view) {
+            onItemChildViewClick(view, 0, getItem(getAdapterPosition()));
+        }
+    }
 }

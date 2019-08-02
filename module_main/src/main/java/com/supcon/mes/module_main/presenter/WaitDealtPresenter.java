@@ -1,5 +1,7 @@
 package com.supcon.mes.module_main.presenter;
 
+import android.text.TextUtils;
+
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
@@ -63,14 +65,16 @@ public class WaitDealtPresenter extends WaitDealtContract.Presenter {
     }
 
     @Override
-    public void proxyPending(int pendingId, int proxyUserId) {
-
+    public void proxyPending(long pendingId, long proxyUserId, String proxDesc) {
         Map<String, Object> pageQueryParams = new HashMap<>();
         pageQueryParams.put("pendingId", pendingId);
         pageQueryParams.put("proxyUsers", proxyUserId);
         pageQueryParams.put("proxyType", 2);
         pageQueryParams.put("proxyUsers_MultiIDs", proxyUserId);
         pageQueryParams.put("proxyUsers_AddIds", proxyUserId);
+        if (!TextUtils.isEmpty(proxDesc)) {
+            pageQueryParams.put("proxDesc", proxDesc);
+        }
 
         mCompositeSubscription.add(MainClient.proxyPending(pageQueryParams)
                 .onErrorReturn(new Function<Throwable, BapResultEntity>() {

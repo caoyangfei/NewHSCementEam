@@ -10,7 +10,7 @@ import com.supcon.mes.middleware.model.bean.UserInfoListEntity;
 @ContractFactory(entites = UserInfoListEntity.class)
 public interface UserListQueryAPI {
 
-    void queryUserInfoList(int pageNo);
+    void queryUserInfoList(String staffName, int pageNo);
 
 
 }

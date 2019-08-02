@@ -30,19 +30,19 @@ import io.reactivex.schedulers.Schedulers;
  * Email:wangshizhan@supcom.com
  */
 @Presenter(UserInfoPresenter.class)
-public class UserInfoListController extends BasePresenterController implements UserListQueryAPI, UserListQueryContract.View{
+public class UserInfoListController extends BasePresenterController implements UserListQueryAPI, UserListQueryContract.View {
 
     @Override
     public void onInit() {
         super.onInit();
         EamApplication.dao().getStaffDao().deleteAll();
         EamApplication.dao().getUserInfoDao().deleteAll();
-        queryUserInfoList(1);
+        queryUserInfoList("", 1);
     }
 
     @Override
-    public void queryUserInfoList(int pageNo) {
-        presenterRouter.create(UserListQueryAPI.class).queryUserInfoList(pageNo);
+    public void queryUserInfoList(String staffName, int pageNo) {
+        presenterRouter.create(UserListQueryAPI.class).queryUserInfoList(staffName, pageNo);
     }
 
     @SuppressLint("CheckResult")
@@ -66,7 +66,7 @@ public class UserInfoListController extends BasePresenterController implements U
                 .filter(new Predicate<UserInfo>() {
                     @Override
                     public boolean test(UserInfo userInfo) throws Exception {
-                        return userInfo.staff!=null;
+                        return userInfo.staff != null;
                     }
                 })
                 .map(new Function<UserInfo, Staff>() {
@@ -76,7 +76,7 @@ public class UserInfoListController extends BasePresenterController implements U
                         userInfo.namePinyin = PinYinUtils.getPinyin(userInfo.staff.name);
                         userInfo.host = EamApplication.getIp();
                         userInfo.staffId = userInfo.staff.id;
-                        userInfo.staffName= userInfo.staff.name;
+                        userInfo.staffName = userInfo.staff.name;
                         userInfo.staffCode = userInfo.staff.code;
 
 
@@ -101,13 +101,13 @@ public class UserInfoListController extends BasePresenterController implements U
                 });
 
 
-        if(entity.hasNext){
-            queryUserInfoList(entity.pageNo+1);
+        if (entity.hasNext) {
+            queryUserInfoList("", entity.pageNo + 1);
         }
     }
 
     @Override
     public void queryUserInfoListFailed(String errorMsg) {
-        LogUtil.e("UserInfoListController:"+errorMsg);
+        LogUtil.e("UserInfoListController:" + errorMsg);
     }
 }

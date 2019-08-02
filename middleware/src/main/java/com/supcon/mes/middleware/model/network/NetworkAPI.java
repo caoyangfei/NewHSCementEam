@@ -71,7 +71,7 @@ public interface NetworkAPI {
      */
 //    @GET("/foundation/user/queryList.action?pageSize=500&&page.pageSize=500&page.maxPageSize=500")
     @GET("/foundation/user/common/userRefList.action?userPage.pageSize=500&pageOrder=DESC")
-    Flowable<UserInfoListEntity> queryUserInfoList(@Query("userPage.pageNo") int pageNo);
+    Flowable<UserInfoListEntity> queryUserInfoList(@Query("staff.name") String staffName,@Query("userPage.pageNo") int pageNo);
 
     /**
      * 获取系统编码

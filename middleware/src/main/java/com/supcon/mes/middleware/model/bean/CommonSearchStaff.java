@@ -17,6 +17,8 @@ public class CommonSearchStaff extends BaseEntity implements CommonSearchEntity 
     public String pinyin;
     public String ip = MBapApp.getIp();
 
+    public Long userId;
+
     @Override
     public String getSearchId() {
         return this.id == null ? null : this.id.toString();
@@ -34,7 +36,7 @@ public class CommonSearchStaff extends BaseEntity implements CommonSearchEntity 
 
     @Override
     public String getSearchPinyin() {
-        return PinYinUtils.getHeaderLetter(pinyin==null?name:pinyin)+"";
+        return PinYinUtils.getHeaderLetter(pinyin == null ? name : pinyin) + "";
     }
 
     public Long getId() {
@@ -76,4 +78,5 @@ public class CommonSearchStaff extends BaseEntity implements CommonSearchEntity 
     public void setPinyin(String pinyin) {
         this.pinyin = pinyin;
     }
+
 }

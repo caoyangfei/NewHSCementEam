@@ -32,7 +32,7 @@ public interface MainService {
     Flowable<CommonBAPListEntity<WaitDealtEntity>> getWaitDealt(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 
     /**
-     * 获取所有待办数量
+     * 委托
      *
      * @return
      */

@@ -23,8 +23,8 @@ public class Staff extends BaseEntity implements CheckNil {
     public MainPosition mainPosition;
 
     @Override
-    public boolean checkNil(){
-        return TextUtils.isEmpty(code)&&TextUtils.isEmpty(name);
+    public boolean checkNil() {
+        return TextUtils.isEmpty(code) && TextUtils.isEmpty(name);
     }
 
     @Id
@@ -66,7 +66,7 @@ public class Staff extends BaseEntity implements CheckNil {
     }
 
     public MainPosition getMainPosition() {
-        if (mainPosition==null) {
+        if (mainPosition == null) {
             mainPosition = new MainPosition();
         }
         return mainPosition;

@@ -29,6 +29,8 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String processkey;//工作流编码
 
+    public Long pendingid;//待办
+
     public Staff staffid;
 
     public Staff getStaffid() {

@@ -14,9 +14,9 @@ import io.reactivex.functions.Function;
 public class UserInfoPresenter extends UserListQueryContract.Presenter {
 
     @Override
-    public void queryUserInfoList(int pageNo) {
+    public void queryUserInfoList(String staffName,int pageNo) {
         mCompositeSubscription.add(
-                MiddlewareHttpClient.queryUserInfoList(pageNo)
+                MiddlewareHttpClient.queryUserInfoList(staffName,pageNo)
                         .onErrorReturn(new Function<Throwable, UserInfoListEntity>() {
                             @Override
                             public UserInfoListEntity apply(Throwable throwable) throws Exception {
