@@ -137,12 +137,6 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
-
-    @Override
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
@@ -345,5 +339,11 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
         for (int i = 0; i < warnRadioGroup.getChildCount(); i++) {
             warnRadioGroup.getChildAt(i).setEnabled(enable);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

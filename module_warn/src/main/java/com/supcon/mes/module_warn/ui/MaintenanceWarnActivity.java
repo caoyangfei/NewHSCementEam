@@ -120,6 +120,8 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
+        warnId = getIntent().getLongExtra(Constant.IntentKey.WARN_ID, -1);
+        property = getIntent().getStringExtra(Constant.IntentKey.PROPERTY);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -131,14 +133,6 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
     public void onLogin(LoginEvent loginEvent) {
 
         refreshListController.refreshBegin();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-        warnId = getIntent().getLongExtra(Constant.IntentKey.WARN_ID, -1);
-        property = getIntent().getStringExtra(Constant.IntentKey.PROPERTY);
     }
 
     @Override
@@ -344,4 +338,12 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
             warnRadioGroup.getChildAt(i).setEnabled(enable);
         }
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
 }
