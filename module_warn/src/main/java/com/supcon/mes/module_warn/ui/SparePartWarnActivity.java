@@ -181,7 +181,7 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
             }
             setRadioEnable(false);
             presenterRouter.create(SparePartWarnAPI.class).getSparePart(url, queryParam, pageIndex, warnId);
-            warnId = -1;
+//            warnId = -1;
         });
         RxTextView.textChanges(titleSearchView.editText())
                 .skipInitialValue()

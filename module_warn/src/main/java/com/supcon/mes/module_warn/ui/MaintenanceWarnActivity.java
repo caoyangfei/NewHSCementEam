@@ -181,7 +181,7 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
             }
             setRadioEnable(false);
             presenterRouter.create(MaintenanceWarnAPI.class).getMaintenance(url, queryParam, pageIndex, warnId);
-            warnId = -1;
+//            warnId = -1;
         });
         RxTextView.textChanges(titleSearchView.editText())
                 .skipInitialValue()

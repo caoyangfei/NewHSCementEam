@@ -182,7 +182,7 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
             }
             setRadioEnable(false);
             presenterRouter.create(LubricationWarnAPI.class).getLubrication(url, queryParam, pageIndex, warnId);
-            warnId = -1;
+//            warnId = -1;
         });
         RxTextView.textChanges(titleSearchView.editText())
                 .skipInitialValue()
