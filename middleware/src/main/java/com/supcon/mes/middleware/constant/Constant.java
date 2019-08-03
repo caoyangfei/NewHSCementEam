@@ -292,6 +292,9 @@ public interface Constant {
         String RANKING = "RANKING";//排名
         String TYPE = "TYPE";//人员类型:机修工,巡检工
 
+        String WARN_ID = "WARN_ID";//预警id
+        String PERIODTYPE = "PERIODTYPE";//时间类型
+
     }
 
     interface FilterSearchParam {

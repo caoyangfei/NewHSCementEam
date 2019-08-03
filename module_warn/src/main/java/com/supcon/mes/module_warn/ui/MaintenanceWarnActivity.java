@@ -102,6 +102,8 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
     private long nextTime = 0;
     private ModulePermissonCheckController mModulePermissonCheckController;
     private Long deploymentId;
+    private long warnId;
+    private String property;
 
     @Override
     protected IListAdapter<MaintenanceWarnEntity> createAdapter() {
@@ -135,6 +137,8 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        warnId = getIntent().getLongExtra(Constant.IntentKey.WARN_ID, -1);
+        property = getIntent().getStringExtra(Constant.IntentKey.PROPERTY);
     }
 
     @Override
@@ -151,12 +155,16 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
         searchTitleBar.setTitleText("维保预警");
         searchTitleBar.setBackgroundResource(R.color.gradient_start);
         searchTitleBar.disableRightBtn();
+
+        if (!TextUtils.isEmpty(property) && property.equals(Constant.PeriodType.RUNTIME_LENGTH)) {
+            warnRadioGroup.check(R.id.warnRadioBtn2);
+            url = "/BEAM/baseInfo/jWXItem/data-dg1531171100814.action";
+        }
     }
 
     @Override
     protected void initData() {
         super.initData();
-        url = "/BEAM/baseInfo/jWXItem/data-dg1531171100751.action";
         mModulePermissonCheckController = new ModulePermissonCheckController();
         mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work", new OnSuccessListener<Long>() {
             @Override
@@ -178,7 +186,8 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
                 queryParam.put(Constant.BAPQuery.EAM_CODE, selecStr);
             }
             setRadioEnable(false);
-            presenterRouter.create(MaintenanceWarnAPI.class).getMaintenance(url, queryParam, pageIndex);
+            presenterRouter.create(MaintenanceWarnAPI.class).getMaintenance(url, queryParam, pageIndex, warnId);
+            warnId = -1;
         });
         RxTextView.textChanges(titleSearchView.editText())
                 .skipInitialValue()
@@ -229,11 +238,11 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
                             .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v12) {
-                                    if(!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)){
-                                        ToastUtils.show(context,"未选择单据!");
+                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+                                        ToastUtils.show(context, "未选择单据!");
                                         return;
-                                    }else
-                                    IntentRouter.go(MaintenanceWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+                                    } else
+                                        IntentRouter.go(MaintenanceWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
                                 }
                             }, true)
                             .bindClickListener(R.id.grayBtn, null, true).show();

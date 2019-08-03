@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @ContractFactory(entites = MaintenanceWarnListEntity.class)
 public interface MaintenanceWarnAPI {
-    void getMaintenance(String url,Map<String, Object> params, int page);
+    void getMaintenance(String url,Map<String, Object> params, int page,long id);
 }

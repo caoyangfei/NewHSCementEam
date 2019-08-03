@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @ContractFactory(entites = LubricationWarnListEntity.class)
 public interface LubricationWarnAPI {
-    void getLubrication(String url, Map<String, Object> params, int page);
+    void getLubrication(String url, Map<String, Object> params, int page, long id);
 }

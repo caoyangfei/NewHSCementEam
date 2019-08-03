@@ -101,6 +101,8 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
     private long nextTime = 0;
     private ModulePermissonCheckController mModulePermissonCheckController;
     private Long deploymentId;
+    private long warnId;
+    private String property;
 
 
     @Override
@@ -118,6 +120,8 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
+        warnId = getIntent().getLongExtra(Constant.IntentKey.WARN_ID, -1);
+        property = getIntent().getStringExtra(Constant.IntentKey.PROPERTY);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -151,12 +155,16 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
         searchTitleBar.setTitleText("零部件预警");
         searchTitleBar.setBackgroundResource(R.color.gradient_start);
         searchTitleBar.disableRightBtn();
+
+        if (!TextUtils.isEmpty(property) && property.equals(Constant.PeriodType.RUNTIME_LENGTH)) {
+            warnRadioGroup.check(R.id.warnRadioBtn2);
+            url = "/BEAM/baseInfo/sparePart/data-dg1543250233613.action";
+        }
     }
 
     @Override
     protected void initData() {
         super.initData();
-        url = "/BEAM/baseInfo/sparePart/data-dg1535424823416.action";
         mModulePermissonCheckController = new ModulePermissonCheckController();
         mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work", new OnSuccessListener<Long>() {
             @Override
@@ -178,7 +186,8 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
                 queryParam.put(Constant.BAPQuery.EAM_CODE, selecStr);
             }
             setRadioEnable(false);
-            presenterRouter.create(SparePartWarnAPI.class).getSparePart(url, queryParam, pageIndex);
+            presenterRouter.create(SparePartWarnAPI.class).getSparePart(url, queryParam, pageIndex, warnId);
+            warnId = -1;
         });
         RxTextView.textChanges(titleSearchView.editText())
                 .skipInitialValue()
@@ -229,11 +238,11 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
                             .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v12) {
-                                    if(!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)){
-                                        ToastUtils.show(context,"未选择单据!");
+                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+                                        ToastUtils.show(context, "未选择单据!");
                                         return;
-                                    }else
-                                    IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+                                    } else
+                                        IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
                                 }
                             }, true)
                             .bindClickListener(R.id.grayBtn, null, true).show();

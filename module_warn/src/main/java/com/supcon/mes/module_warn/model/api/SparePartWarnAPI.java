@@ -14,5 +14,5 @@ import java.util.Map;
  */
 @ContractFactory(entites = SparePartWarnListEntity.class)
 public interface SparePartWarnAPI {
-    void getSparePart(String url,Map<String, Object> params, int page);
+    void getSparePart(String url,Map<String, Object> params, int page,long id);
 }

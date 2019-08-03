@@ -22,7 +22,7 @@ import java.util.Map;
 public class LubricationWarnPresenter extends LubricationWarnContract.Presenter {
 
     @Override
-    public void getLubrication(String url, Map<String, Object> params, int page) {
+    public void getLubrication(String url, Map<String, Object> params, int page, long id) {
         if (TextUtils.isEmpty(url)) {
             url = "/BEAM/baseInfo/jWXItem/data-dg1530747504994.action";
         }
@@ -35,6 +35,10 @@ public class LubricationWarnPresenter extends LubricationWarnContract.Presenter 
         Map<String, Object> pageQueryParams = new HashMap<>();
         pageQueryParams.put("page.pageNo", page);
         pageQueryParams.put("page.maxPageSize", 500);
+        if (id != -1) {
+            pageQueryParams.put("jwxID", id);
+            pageQueryParams.put("mobileFlag", 1);
+        }
         mCompositeSubscription.add(EarlyWarnHttpClient.getLubrication(url, fastQuery, pageQueryParams)
                 .onErrorReturn(throwable -> {
                     LubricationWarnListEntity lubricationWarnListEntity = new LubricationWarnListEntity();

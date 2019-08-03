@@ -1,6 +1,7 @@
 package com.supcon.mes.module_main.ui.adaper;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,7 +11,9 @@ import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 
@@ -58,8 +61,19 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 @Override
                 public void onClick(View view) {
                     WaitDealtEntity item = getItem(getAdapterPosition());
-                    if (TextUtils.isEmpty(item.processkey)) {
-                        if (item.excutetime == null) {
+                    if (TextUtils.isEmpty(item.processkey) && !TextUtils.isEmpty(item.soucretype)) {
+                        if (item.dataid == null || TextUtils.isEmpty(item.peroidtype)) {
+                            return;
+                        }
+                        Bundle bundle = new Bundle();
+                        bundle.putLong(Constant.IntentKey.WARN_ID, item.dataid);
+                        bundle.putString(Constant.IntentKey.PROPERTY, item.peroidtype);
+                        if (item.soucretype.equals("润滑提醒")) {
+                            IntentRouter.go(context, Constant.Router.LUBRICATION_EARLY_WARN, bundle);
+                        } else if (item.soucretype.equals("零部件提醒")) {
+                            IntentRouter.go(context, Constant.Router.SPARE_EARLY_WARN, bundle);
+                        } else if (item.soucretype.equals("维保提醒")) {
+                            IntentRouter.go(context, Constant.Router.MAINTENANCE_EARLY_WARN, bundle);
                         }
                     } else {
 

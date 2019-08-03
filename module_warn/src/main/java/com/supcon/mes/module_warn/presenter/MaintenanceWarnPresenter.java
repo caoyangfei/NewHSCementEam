@@ -17,12 +17,12 @@ import java.util.Map;
  * @ClassName hongShiCementEam
  * @date 2019/4/23
  * ------------- Description -------------
- *  维保
+ * 维保
  */
 public class MaintenanceWarnPresenter extends MaintenanceWarnContract.Presenter {
 
     @Override
-    public void getMaintenance(String url,Map<String, Object> params,int page) {
+    public void getMaintenance(String url, Map<String, Object> params, int page, long id) {
         if (TextUtils.isEmpty(url)) {
             url = "/BEAM/baseInfo/jWXItem/data-dg1531171100751.action";
         }
@@ -34,7 +34,11 @@ public class MaintenanceWarnPresenter extends MaintenanceWarnContract.Presenter 
         Map<String, Object> pageQueryParams = new HashMap<>();
         pageQueryParams.put("page.pageNo", page);
         pageQueryParams.put("page.maxPageSize", 500);
-        mCompositeSubscription.add(EarlyWarnHttpClient.getMaintenance(url,fastQuery,pageQueryParams)
+        if (id != -1) {
+            pageQueryParams.put("jwxID", id);
+            pageQueryParams.put("mobileFlag", 1);
+        }
+        mCompositeSubscription.add(EarlyWarnHttpClient.getMaintenance(url, fastQuery, pageQueryParams)
                 .onErrorReturn(throwable -> {
                     MaintenanceWarnListEntity maintenanceWarnListEntity = new MaintenanceWarnListEntity();
                     maintenanceWarnListEntity.errMsg = throwable.toString();
