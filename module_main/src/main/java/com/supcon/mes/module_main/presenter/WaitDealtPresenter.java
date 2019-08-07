@@ -28,7 +28,7 @@ import io.reactivex.functions.Function;
 public class WaitDealtPresenter extends WaitDealtContract.Presenter {
     @Override
     public void getWaitDealt(int page, int pageSize, Map<String, Object> params) {
-        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createJoinFastQueryCond(params);
+        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(params);
 
         if (params.size() == 0) {
             Map<String, Object> paramsName = new HashMap<>();

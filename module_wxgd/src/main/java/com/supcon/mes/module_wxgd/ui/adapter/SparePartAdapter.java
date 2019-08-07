@@ -34,6 +34,7 @@ import java.util.List;
 public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartEntity> {
 
     private boolean editable;
+    private int repairSum;
     private String tableStatus; //单据状态
     private String tableAction; //单据ViewAction
 
@@ -54,6 +55,17 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
     protected BaseRecyclerViewHolder<SparePartEntity> getViewHolder(int viewType) {
         return new ViewHolder(context);
     }
+
+    /**
+     * @param
+     * @return
+     * @description 设置工单维修次数变量，用于判断数量是否可编辑
+     * @author zhangwenshuai1 2018/9/5
+     */
+    public void setRepairSum(int repairSum) {
+        this.repairSum = repairSum;
+    }
+
 
     /**
      * @param
@@ -131,7 +143,7 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
                         ToastUtils.show(context, tableStatus + "环节，备件不允许删除!");
                         return;
                     }
-                    if (!sparePartEntity.isRef && sparePartEntity.sparePartId != null) {
+                    if (sparePartEntity.isWarn && sparePartEntity.sparePartId != null) {
                         ToastUtils.show(context, "来源“备件更换到期预警”的备件不允许删除!", 3000);
                         return;
                     }
@@ -139,23 +151,27 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
                         ToastUtils.show(context, "已领用或领用中状态的备件不允许删除!", 3000);
                         return;
                     }
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确认删除该备件：" + (sparePartEntity.productID == null ? "--" : sparePartEntity.productID.productName))
-                            .bindView(R.id.redBtn, "确认")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    notifyItemRemoved(getLayoutPosition());
-                                    notifyItemRangeChanged(getLayoutPosition(), getItemCount());
-                                    List<SparePartEntity> list = SparePartAdapter.this.getList();
-                                    list.remove(getLayoutPosition());
+                    if (sparePartEntity.timesNum >= repairSum) {
+                        new CustomDialog(context)
+                                .twoButtonAlertDialog("确认删除该备件：" + (sparePartEntity.productID == null ? "--" : sparePartEntity.productID.productName))
+                                .bindView(R.id.redBtn, "确认")
+                                .bindView(R.id.grayBtn, "取消")
+                                .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        notifyItemRemoved(getLayoutPosition());
+                                        notifyItemRangeChanged(getLayoutPosition(), getItemCount());
+                                        List<SparePartEntity> list = SparePartAdapter.this.getList();
+                                        list.remove(getLayoutPosition());
 
-                                    EventBus.getDefault().post(new RefreshEvent(sparePartEntity.id));
-                                }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true)
-                            .show();
+                                        EventBus.getDefault().post(new RefreshEvent(sparePartEntity.id));
+                                    }
+                                }, true)
+                                .bindClickListener(R.id.grayBtn, null, true)
+                                .show();
+                    } else {
+                        ToastUtils.show(context, "历史备件数据,不允许删除!");
+                    }
                 }
             });
 
@@ -236,7 +252,7 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
             sum.getNumViewInput().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
             actualQuantity.getNumViewInput().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 
-            if (editable && !Constant.SparePartUseStatus.USEING.equals(data.getUseState().id)) {
+            if (editable && data.timesNum == repairSum && !Constant.SparePartUseStatus.USEING.equals(data.getUseState().id)) {
                 sum.setEditable(true);
                 sum.getNumViewInput().setEnabled(true);
                 remark.setEditable(true);
@@ -248,12 +264,12 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
                 chkBox.setVisibility(View.GONE);
             }
             chkBox.setChecked(false);//还原状态false
-            if ((Constant.WxgdView.DISPATCH_OPEN_URL.equals(tableAction) || Constant.WxgdView.RECEIVE_OPEN_URL.equals(tableAction))) {
+            if ((Constant.WxgdView.DISPATCH_OPEN_URL.equals(tableAction) || Constant.WxgdView.RECEIVE_OPEN_URL.equals(tableAction)) && data.timesNum == repairSum) {
                 actualQuantity.setVisibility(View.GONE);
             } else {
                 actualQuantity.setVisibility(View.VISIBLE);
             }
-            if (Constant.WxgdView.EXECUTE_OPEN_URL.equals(tableAction) && Constant.SparePartUseStatus.NO_USE.equals(data.getUseState().id)) {
+            if (Constant.WxgdView.EXECUTE_OPEN_URL.equals(tableAction) && Constant.SparePartUseStatus.NO_USE.equals(data.getUseState().id) && data.timesNum == repairSum) {
                 actualQuantity.setEditable(true);
                 actualQuantity.getNumViewInput().setEnabled(true);
             } else {

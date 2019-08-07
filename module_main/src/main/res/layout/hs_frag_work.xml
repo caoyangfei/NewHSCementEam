@@ -13,15 +13,38 @@
         android:layout_height="150dp"
         android:tag="workCustomAd" />
 
-    <com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar
-        android:id="@+id/searchTitleBar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_20"
-        android:tag="searchTitleBar"
-        app:title_background_color="@color/transparent"
-        app:title_right_btn_need="false"
-        app:title_text="移动设备管理" />
+        android:layout_height="50dp"
+        android:layout_marginTop="@dimen/dp_20">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="120dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:tag="titleText"
+            android:text="移动设备管理"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            tools:ignore="HardcodedText,RtlHardcoded" />
+
+        <com.supcon.mes.mbap.view.CustomTextView
+            android:id="@+id/eamTv"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/titleText"
+            android:background="@drawable/sh_search_black"
+            android:paddingLeft="@dimen/dp_10"
+            android:paddingRight="@dimen/dp_10"
+            android:tag="eamTv"
+            app:content_color="@color/white"
+            app:content_hint="请选择设备"
+            app:editable="true"
+            app:key_width="0dp" />
+    </RelativeLayout>
+
 
     <ScrollView
         android:id="@+id/workScrollView"

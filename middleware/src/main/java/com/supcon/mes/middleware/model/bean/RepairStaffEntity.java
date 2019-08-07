@@ -1,7 +1,6 @@
 package com.supcon.mes.middleware.model.bean;
 
 import com.supcon.common.com_http.BaseEntity;
-import com.supcon.mes.middleware.model.bean.Staff;
 
 import java.math.BigDecimal;
 
@@ -17,6 +16,7 @@ public class RepairStaffEntity extends BaseEntity {
     public Long endTime;//实际结束时间
     public String version;//版本
     public String sort;
+    public Integer timesNum;//次数
     public BigDecimal workHour;//工时(H)
     public String remark;//备注
 

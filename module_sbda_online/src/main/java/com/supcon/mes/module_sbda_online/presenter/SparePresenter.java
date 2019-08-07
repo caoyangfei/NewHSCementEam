@@ -6,9 +6,6 @@ import com.supcon.mes.module_sbda_online.model.bean.SparePartListEntity;
 import com.supcon.mes.module_sbda_online.model.contract.SpareContract;
 import com.supcon.mes.module_sbda_online.model.network.SBDAOnlineHttpClient;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author yangfei.cao
  * @ClassName hongShiCementEam
@@ -17,12 +14,8 @@ import java.util.Map;
  */
 public class SparePresenter extends SpareContract.Presenter {
     @Override
-    public void spareRecord(Long eamID, int page) {
-        Map<String, Object> pageQueryParams = new HashMap<>();
-        pageQueryParams.put("page.pageNo", page);
-        pageQueryParams.put("page.pageSize", 500);
-        pageQueryParams.put("page.maxPageSize", 500);
-        mCompositeSubscription.add(SBDAOnlineHttpClient.spareRecord(eamID, pageQueryParams)
+    public void spareRecord(Long eamID) {
+        mCompositeSubscription.add(SBDAOnlineHttpClient.spareRecord(eamID)
                 .onErrorReturn(throwable -> {
                     SparePartListEntity sparePartListEntity = new SparePartListEntity();
                     sparePartListEntity.errMsg = throwable.toString();

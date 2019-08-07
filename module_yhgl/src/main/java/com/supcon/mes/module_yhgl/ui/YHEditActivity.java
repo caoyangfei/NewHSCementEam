@@ -15,6 +15,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.com_http.BaseEntity;
 import com.supcon.common.view.base.activity.BaseRefreshActivity;
+import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.picker.SinglePicker;
@@ -64,7 +65,10 @@ import com.supcon.mes.module_yhgl.controller.LubricateOilsController;
 import com.supcon.mes.module_yhgl.controller.MaintenanceController;
 import com.supcon.mes.module_yhgl.controller.RepairStaffController;
 import com.supcon.mes.module_yhgl.controller.SparePartController;
+import com.supcon.mes.module_yhgl.model.api.YHListAPI;
 import com.supcon.mes.module_yhgl.model.api.YHSubmitAPI;
+import com.supcon.mes.module_yhgl.model.bean.YHListEntity;
+import com.supcon.mes.module_yhgl.model.contract.YHListContract;
 import com.supcon.mes.module_yhgl.model.contract.YHSubmitContract;
 import com.supcon.mes.module_yhgl.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.MaintainDto;
@@ -75,6 +79,7 @@ import com.supcon.mes.module_yhgl.model.event.LubricateOilsEvent;
 import com.supcon.mes.module_yhgl.model.event.MaintenanceEvent;
 import com.supcon.mes.module_yhgl.model.event.RepairStaffEvent;
 import com.supcon.mes.module_yhgl.model.event.SparePartEvent;
+import com.supcon.mes.module_yhgl.presenter.YHListPresenter;
 import com.supcon.mes.module_yhgl.presenter.YHSubmitPresenter;
 import com.supcon.mes.module_yhgl.util.FieldHepler;
 import com.supcon.mes.module_yhgl.util.YHGLMapManager;
@@ -97,9 +102,9 @@ import static com.supcon.mes.middleware.constant.Constant.IntentKey.DEPLOYMENT_I
  * Email:wangshizhan@supcom.com
  */
 @Router(Constant.Router.YH_EDIT)
-@Presenter(YHSubmitPresenter.class)
+@Presenter(value = {YHSubmitPresenter.class, YHListPresenter.class})
 @Controller(value = {SparePartController.class, LubricateOilsController.class, RepairStaffController.class, MaintenanceController.class, OnlineCameraController.class})
-public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContract.View {
+public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContract.View, YHListContract.View {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -159,7 +164,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     Button ysBtn;
 
 
-    private YHEntity mYHEntity, mOriginalEntity;
+    private YHEntity mYHEntity;
 
     private SinglePickController mSinglePickController;
     private DatePickController mDatePickController;
@@ -193,6 +198,8 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     private String sparePartListStr;
     private String maintenanceListStr;
     private YHEntity oldYHEntity;
+    private String tableNo;
+
 
     @Subscribe
     public void onReceiveImageDeleteEvent(ImageDeleteEvent imageDeleteEvent) {
@@ -210,18 +217,11 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
-        refreshController.setAutoPullDownRefresh(false);
-        refreshController.setPullDownRefreshEnabled(false);
+        refreshController.setAutoPullDownRefresh(true);
+        refreshController.setPullDownRefreshEnabled(true);
         mYHEntity = (YHEntity) getIntent().getSerializableExtra(Constant.IntentKey.YHGL_ENTITY);
-        oldYHEntity = GsonUtil.gsonToBean(mYHEntity.toString(), YHEntity.class);
-
-        mYHEntity.downStream = new SystemCodeEntity();
-
-        if (null != mYHEntity.eamID && !mYHEntity.eamID.checkNil()) {
-            yhEditArea.setEditable(false);
-        }
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
         deploymentId = getIntent().getLongExtra(DEPLOYMENT_ID, 0L);
-        mOriginalEntity = GsonUtil.gsonToBean(mYHEntity.toString(), YHEntity.class);
 
         mSparePartController = getController(SparePartController.class);
         mSparePartController.setEditable(true);
@@ -272,6 +272,18 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
         titleText.setText("隐患编辑");
+
+        updateInitView();
+    }
+
+    public void updateInitView() {
+        if (mYHEntity == null) return;
+        mYHEntity.downStream = new SystemCodeEntity();
+        oldYHEntity = GsonUtil.gsonToBean(mYHEntity.toString(), YHEntity.class);
+
+        if (null != mYHEntity.eamID && !mYHEntity.eamID.checkNil()) {
+            yhEditArea.setEditable(false);
+        }
         yhEditFindStaff.setValue(mYHEntity.findStaffID != null ? mYHEntity.findStaffID.name : "");
         yhEditFindTime.setDate(DateUtil.dateTimeFormat(mYHEntity.findTime));
         yhEditPriority.setSpinner(mYHEntity.priority != null ? mYHEntity.priority.value : "");
@@ -304,6 +316,35 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
         if (!TextUtils.isEmpty(mYHEntity.remark)) {
             yhEditMemo.setInput(mYHEntity.remark);
+        }
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+
+        List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
+        wxTypes = initEntities(wxTypeEntities);
+
+        List<SystemCodeEntity> yhTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.QX_TYPE);
+        yhTypes = initEntities(yhTypeEntities);
+
+        List<SystemCodeEntity> yhPriorityEntity = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_PRIORITY);
+        yhPriorities = initEntities(yhPriorityEntity);
+
+        List<Area> areaEntities = EamApplication.dao().getAreaDao().queryBuilder().where(AreaDao.Properties.Ip.eq(MBapApp.getIp())).list();
+        mAreas = initEntities(areaEntities);
+
+        List<RepairGroupEntity> repairGroupEntities =
+                EamApplication.dao().getRepairGroupEntityDao().queryBuilder().where(RepairGroupEntityDao.Properties.IsUse.eq(Boolean.valueOf(true)), RepairGroupEntityDao.Properties.Ip.eq(EamApplication.getIp())).list();
+        mRepairGroups = initEntities(repairGroupEntities);
+
+        updateInitData();
+    }
+
+    public void updateInitData() {
+        if (mYHEntity != null) {
+            iniTransition();
         }
     }
 
@@ -558,6 +599,26 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                 uploadLocalPic(result);
             }
         });*/
+        refreshController.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Map<String, Object> queryParam = new HashMap<>();
+
+                if (!TextUtils.isEmpty(tableNo)) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+                }
+
+                if (mYHEntity != null && !TextUtils.isEmpty(mYHEntity.tableNo)) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, mYHEntity.tableNo);
+                }
+
+                if (queryParam.containsKey(Constant.BAPQuery.TABLE_NO)) {
+                    presenterRouter.create(YHListAPI.class).queryYHList(1, queryParam);
+                } else {
+                    refreshController.refreshComplete();
+                }
+            }
+        });
     }
 
     private WorkFlowVar createWorkFlowVar(LinkEntity linkEntity) {
@@ -680,29 +741,6 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     }
 
 
-    @Override
-    protected void initData() {
-        super.initData();
-
-        iniTransition();
-
-        List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
-        wxTypes = initEntities(wxTypeEntities);
-
-        List<SystemCodeEntity> yhTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.QX_TYPE);
-        yhTypes = initEntities(yhTypeEntities);
-
-        List<SystemCodeEntity> yhPriorityEntity = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_PRIORITY);
-        yhPriorities = initEntities(yhPriorityEntity);
-
-        List<Area> areaEntities = EamApplication.dao().getAreaDao().queryBuilder().where(AreaDao.Properties.Ip.eq(MBapApp.getIp())).list();
-        mAreas = initEntities(areaEntities);
-
-        List<RepairGroupEntity> repairGroupEntities =
-                EamApplication.dao().getRepairGroupEntityDao().queryBuilder().where(RepairGroupEntityDao.Properties.IsUse.eq(Boolean.valueOf(true)), RepairGroupEntityDao.Properties.Ip.eq(EamApplication.getIp())).list();
-        mRepairGroups = initEntities(repairGroupEntities);
-    }
-
     private void iniTransition() {
 
         if (mYHEntity.pending == null) {
@@ -745,7 +783,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     public void onBackPressed() {
         //退出前校验表单是否修改过
         //如果修改过, 提示是否保存
-        if (isModified() || doCheckChange()) {
+        if (mYHEntity != null && (isModified() || doCheckChange())) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("页面已经被修改，是否要保存?")
                     .bindView(R.id.grayBtn, "保存")
@@ -998,7 +1036,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
      * 判断是否填写过表单
      */
     private boolean checkIsModified() {
-        if (!GsonUtil.gsonString(mYHEntity).equals(mOriginalEntity.toString())) {
+        if (oldYHEntity != null && mYHEntity != null && !GsonUtil.gsonString(mYHEntity).equals(oldYHEntity.toString())) {
             return true;
         }
 
@@ -1083,5 +1121,28 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void queryYHListSuccess(YHListEntity entity) {
+        List<YHEntity> result = entity.result;
+        if (result != null && result.size() > 0) {
+            mYHEntity = result.get(0);
+            updateInitView();
+            updateInitData();
+            mSparePartController.setYHEntity(mYHEntity);
+            mLubricateOilsController.setYHEntity(mYHEntity);
+            mRepairStaffController.setYHEntity(mYHEntity);
+            maintenanceController.setYHEntity(mYHEntity);
+            refreshController.refreshComplete();
+        } else {
+            ToastUtils.show(this, "未查到当前待办");
+        }
+    }
+
+    @Override
+    public void queryYHListFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
+        refreshController.refreshComplete();
     }
 }

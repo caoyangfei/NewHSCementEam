@@ -685,13 +685,13 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
             }
 
             if (preEntity.part == null) {
-                prePart = "" + preEam + "的部位";
+                prePart = "" + preEam + "的部位@SUPCON";
             } else {
                 prePart = preEntity.part;
             }
 
             if (curEntity.part == null) {
-                curPart = "" + curEam + "的部位";
+                curPart = "" + curEam + "的部位@SUPCON";
             } else {
                 curPart = curEntity.part;
             }

@@ -34,6 +34,7 @@ import java.util.List;
 public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairStaffEntity> {
 
     public boolean editable;
+    private int repairSum;
     private String tableStatus; //单据状态
 
     public RepairStaffAdapter(Context context, boolean editable) {
@@ -45,6 +46,17 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
     protected BaseRecyclerViewHolder<RepairStaffEntity> getViewHolder(int viewType) {
         return new ViewHolder(context);
     }
+
+    /**
+     * @param
+     * @return
+     * @description 设置工单维修次数变量，用于判断数量是否可编辑
+     * @author zhangwenshuai1 2018/9/5
+     */
+    public void setRepairSum(int repairSum) {
+        this.repairSum = repairSum;
+    }
+
 
     public void setEditable(boolean editable) {
         this.editable = editable;
@@ -62,8 +74,6 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
         LinearLayout main;
         @BindByTag("index")
         TextView index;
-        @BindByTag("timesNum")
-        TextView timesNum;
         @BindByTag("repairStaffDelete")
         ImageView repairStaffDelete;
         @BindByTag("repairStaffName")
@@ -94,8 +104,8 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
         @Override
         protected void initView() {
             super.initView();
+            chkBox.setVisibility(View.GONE);
             if (!editable) {
-                chkBox.setVisibility(View.GONE);
                 itemViewDelBtn.setVisibility(View.GONE);
             }
         }
@@ -151,20 +161,24 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
                         ToastUtils.show(context, tableStatus + "环节，维修人员不允许删除!");
                         return;
                     }
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确认删除该人员：" + (repairStaffEntity.repairStaff == null ? "--" : repairStaffEntity.repairStaff.name))
-                            .bindView(R.id.redBtn, "确认")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    List<RepairStaffEntity> list = RepairStaffAdapter.this.getList();
-                                    list.remove(getAdapterPosition());
-                                    EventBus.getDefault().post(new RefreshEvent(repairStaffEntity.id));
-                                }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true)
-                            .show();
+                    if (repairStaffEntity.timesNum != null && repairStaffEntity.timesNum >= repairSum) {
+                        new CustomDialog(context)
+                                .twoButtonAlertDialog("确认删除该人员：" + (repairStaffEntity.repairStaff == null ? "--" : repairStaffEntity.repairStaff.name))
+                                .bindView(R.id.redBtn, "确认")
+                                .bindView(R.id.grayBtn, "取消")
+                                .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        List<RepairStaffEntity> list = RepairStaffAdapter.this.getList();
+                                        list.remove(getAdapterPosition());
+                                        EventBus.getDefault().post(new RefreshEvent(repairStaffEntity.id));
+                                    }
+                                }, true)
+                                .bindClickListener(R.id.grayBtn, null, true)
+                                .show();
+                    } else {
+                        ToastUtils.show(context, "历史人员数据,不允许删除!");
+                    }
                 }
             });
 
@@ -184,7 +198,7 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
         protected void update(RepairStaffEntity data) {
             index.setText(String.valueOf(getAdapterPosition() + 1));
 
-            if (editable) {
+            if (editable && data.timesNum != null && data.timesNum == repairSum) {
                 workHour.setEditable(true);
                 remark.setEditable(true);
                 actualStartTime.setEditable(true);

@@ -148,6 +148,7 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
     private String tip;
     private WXGDSubmitController wxgdSubmitController;
     private Map<String, SystemCodeEntity> wxTypes;
+    private String tableNo;
 
     @Override
     protected int getLayoutID() {
@@ -164,6 +165,7 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
         refreshController.setAutoPullDownRefresh(true);
 
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
 
         mSparePartController = getController(SparePartController.class);
         mSparePartController.setEditable(false);
@@ -183,18 +185,29 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
     protected void initView() {
         super.initView();
         eamIc = findViewById(R.id.eamIc);
-        titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+        updateInitView();
+    }
 
-        initTableHeadView();
+    public void updateInitView() {
+        if (mWXGDEntity != null) {
+            titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+            initTableHeadView();
+        }
     }
 
     @Override
     protected void initData() {
         super.initData();
-        List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
-        wxTypes = initEntities(wxTypeEntities);
-        initTableHeadData();
-        mLinkController.initPendingTransition(transition, mWXGDEntity.pending != null ? mWXGDEntity.pending.id : 0);
+        updateInitData();
+    }
+
+    public void updateInitData() {
+        if (mWXGDEntity != null) {
+            List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
+            wxTypes = initEntities(wxTypeEntities);
+            initTableHeadData();
+            mLinkController.initPendingTransition(transition, mWXGDEntity.pending != null ? mWXGDEntity.pending.id : 0);
+        }
     }
 
     @Override
@@ -279,7 +292,11 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
             @Override
             public void onRefresh() {
                 Map<String, Object> queryParam = new HashMap<>();
-                queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                if (mWXGDEntity == null) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+                } else {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                }
                 presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
             }
         });
@@ -335,7 +352,7 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
 
     private void goSBDA() {
 
-        if (mWXGDEntity.eamID==null || mWXGDEntity.eamID.id == null) {
+        if (mWXGDEntity.eamID == null || mWXGDEntity.eamID.id == null) {
             ToastUtils.show(context, "无设备详情可查看！");
             return;
         }
@@ -443,16 +460,26 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
 
     @Override
     public void listWxgdsSuccess(WXGDListEntity entity) {
-        refreshController.refreshComplete();
         List<WXGDEntity> wxgdEntityList = entity.result;
         if (wxgdEntityList.size() > 0) {
             mWXGDEntity = wxgdEntityList.get(0);
+            updateInitView();
+            updateInitData();
+            mRepairStaffController.setWxgdEntity(mWXGDEntity);
+            mSparePartController.setWxgdEntity(mWXGDEntity);
+            mLubricateOilsController.setWxgdEntity(mWXGDEntity);
+            maintenanceController.setWxgdEntity(mWXGDEntity);
+            refreshController.refreshComplete();
+        } else {
+            ToastUtils.show(this, "未查到当前待办");
         }
+
     }
 
     @Override
     public void listWxgdsFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
+        refreshController.refreshComplete();
     }
 
     private <T extends BaseEntity> Map<String, T> initEntities(List<T> entities) {

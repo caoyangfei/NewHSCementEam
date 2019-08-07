@@ -177,7 +177,6 @@ public interface Constant {
         String ACCEPTANCE_LIST = "ACCEPTANCE_LIST";//验收列表
         String ACCEPTANCE_EDIT = "ACCEPTANCE_EDIT";//验收编辑
 
-        String TABLENO = "TABLENO";//单据编号
 
         String TXL_LIST = "TXL_LIST";
         String MULTI_DEPART_SELECT = "MULTI_PART_SELECT";
@@ -295,6 +294,10 @@ public interface Constant {
         String WARN_ID = "WARN_ID";//预警id
         String PERIODTYPE = "PERIODTYPE";//时间类型
 
+        String TABLENO = "TABLENO";//单据编号
+
+        String ISWARN = "ISWARN";//是否来自预警
+
     }
 
     interface FilterSearchParam {
@@ -354,33 +357,7 @@ public interface Constant {
 
         int WXGD = 14;  //维修工单
 
-        int SBDA = 13;  //设备档案
-        int XJGL = 14;  //巡检管理
-        int YXJL = 3;  //运行记录
-
-        int RH = 6;  //缺陷管理
-        int BY = 7;  //维修工单
-        int LXYH = 8;//离线隐患
-        int TD = 9;//停电
-        int SD = 10;//送电
-
-        int MORE = 99;  //更多
-        int SJXZ = 11;  //数据下载
-        int SJSC = 12;  //数据上传
-
-        int BJSQ = 15;  //备件申请
-        int XJLX = 16;  //巡检路线
-        int XJQY = 17;  //巡检区域
-        int XJBB = 18;  //巡检报表
-        int SBDA_ONLINE = 19;  //设备档案
-        int STOP_POLICE = 20;  //停机报警
-        int DXJH = 22;
-        int JXJH = 21;
-        //        int SPARE_EARLY_WARN = 23;//备件更换预警
-        int SCORE_EAM_LIST = 27;//设备评分
-        int SCORE_INSPECTOR_PERSON_LIST = 28;//巡检人员评分
-        int SCORE_MECHANIC_PERSON_LIST = 29;//巡检人员评分
-        int ACCEPTANCE_LIST = 30;//验收
+        int STOP_POLICE = 24;  //停机报警
     }
 
     interface HSProcesskey {

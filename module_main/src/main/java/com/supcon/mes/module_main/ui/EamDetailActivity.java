@@ -161,6 +161,23 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
                 }
             }
         });
+
+        workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
+            @Override
+            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                switch (position) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        IntentRouter.go(EamDetailActivity.this, Constant.Router.ACCEPTANCE_LIST);
+                        break;
+                    case 3:
+                        break;
+                }
+            }
+        });
     }
 
     @Override

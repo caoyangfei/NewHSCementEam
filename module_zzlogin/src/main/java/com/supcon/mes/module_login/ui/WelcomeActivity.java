@@ -40,7 +40,7 @@ public class WelcomeActivity extends Activity {
                 if (EamApplication.isHailuo()) {
                     IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN);
                 } else {
-                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION);
+                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN);
                 }
                 //在线模式使用心跳防止session过期
                 if (!SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.OFFLINE_ENABLE, false)) {

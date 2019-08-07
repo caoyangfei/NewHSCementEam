@@ -680,6 +680,12 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
                 isFirstIn = false;
             }
         }
+        if (mOLXJTaskListAdapter.getItemCount() > 0 && xjTitleMap.isSelected())
+            getController(MapController.class).show(mOLXJTaskListAdapter.getItem(0));
+        else if (mOLXJTaskListAdapter.getItemCount() <= 0)
+            getController(MapController.class).show(null);
+        else
+            getController(MapController.class).hide();
 //        else {
 //            getAreaCache();
 //

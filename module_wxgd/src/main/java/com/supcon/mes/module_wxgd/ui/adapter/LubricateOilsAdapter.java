@@ -21,14 +21,13 @@ import com.supcon.mes.mbap.view.CustomNumView;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
 import com.supcon.mes.mbap.view.CustomVerticalSpinner;
 import com.supcon.mes.mbap.view.CustomVerticalTextView;
-import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
+import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.R;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -152,20 +151,24 @@ public class LubricateOilsAdapter extends BaseListDataRecyclerViewAdapter<Lubric
                         ToastUtils.show(context, tableStatus + "环节，润滑油不允许删除!");
                         return;
                     }
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确认删除该润滑油：" + (lubricateOilsEntity.lubricate == null ? "--" : lubricateOilsEntity.lubricate.name))
-                            .bindView(R.id.redBtn, "确认")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    List<LubricateOilsEntity> list = LubricateOilsAdapter.this.getList();
-                                    list.remove(getAdapterPosition());
-                                    EventBus.getDefault().post(new RefreshEvent(lubricateOilsEntity.id));
-                                }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true)
-                            .show();
+                    if (TextUtils.isEmpty(lubricateOilsEntity.basicLubricate)) {
+                        new CustomDialog(context)
+                                .twoButtonAlertDialog("确认删除该润滑油：" + (lubricateOilsEntity.lubricate == null ? "--" : lubricateOilsEntity.lubricate.name))
+                                .bindView(R.id.redBtn, "确认")
+                                .bindView(R.id.grayBtn, "取消")
+                                .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        List<LubricateOilsEntity> list = LubricateOilsAdapter.this.getList();
+                                        list.remove(getAdapterPosition());
+                                        EventBus.getDefault().post(new RefreshEvent(lubricateOilsEntity.id));
+                                    }
+                                }, true)
+                                .bindClickListener(R.id.grayBtn, null, true)
+                                .show();
+                    } else {
+                        ToastUtils.show(context, "历史润滑油数据,不允许删除!");
+                    }
                 }
             });
 
@@ -186,7 +189,7 @@ public class LubricateOilsAdapter extends BaseListDataRecyclerViewAdapter<Lubric
             index.setText(String.valueOf(getAdapterPosition() + 1));
 
             sum.getNumViewInput().setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-            if (editable) {
+            if (editable && TextUtils.isEmpty(data.basicLubricate)) {
                 sum.setEditable(true);
                 sum.getNumViewInput().setEnabled(true);
                 oilType.setEditable(true);

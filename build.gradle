@@ -44,8 +44,8 @@ ext{
 
     minSdkVersion = 19
     targetSdkVersion = 22
-    versionCode = 25
-    versionName = "8.10.07.25"
+    versionCode = 26
+    versionName = "8.10.07.26"
 
 //    aptVersion          = '8.5.911.4'
 //    annotationVersion   = '8.5.911.6'//8.5.911.1

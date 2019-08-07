@@ -6,6 +6,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -49,6 +50,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,8 +58,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -212,35 +212,45 @@ public class LubricationWarnActivity extends BaseRefreshRecyclerActivity<Lubrica
         RxView.clicks(dispatch)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> {
-                    List<LubricationWarnEntity> list = lubricationWarnAdapter.getList();
-                    Bundle bundle = new Bundle();
-                    Flowable.fromIterable(list)
-                            .subscribeOn(Schedulers.io())
-                            .filter(lubricationWarnEntity -> lubricationWarnEntity.isCheck)
-                            .map(lubricationWarnEntity -> {
-                                WXGDEntity lubri = WXGDWarnManager.lubri(lubricationWarnEntity);
-                                lubri.pending.deploymentId = deploymentId;
-                                return lubri;
-                            })
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(wxgdEntity -> {
-                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
-                            });
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确定生成工单?")
-                            .bindView(R.id.redBtn, "确定")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v12) {
-                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
-                                        ToastUtils.show(context, "未选择单据!");
-                                        return;
-                                    } else
-                                        IntentRouter.go(LubricationWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
-                                }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true).show();
+                        List<LubricationWarnEntity> list = new ArrayList<>();
+                        list.addAll(lubricationWarnAdapter.getList());
+                        Flowable.just(list)
+                                .subscribeOn(Schedulers.io())
+                                .doOnNext(lubricationWarnEntities -> {
+                                    int length = lubricationWarnEntities.size();
+                                    for (int i = length - 1; i >= 0; i--) {
+                                        if (!lubricationWarnEntities.get(i).isCheck) {
+                                            lubricationWarnEntities.remove(i);
+                                        }
+                                    }
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .filter(lubricationWarnEntities -> {
+                                    if (list.size() <= 0) {
+                                        ToastUtils.show(context, "请选择操作项！");
+                                        return false;
+                                    }
+                                    return true;
+                                })
+                                .observeOn(Schedulers.io())
+                                .map(lubricationWarnEntity -> {
+                                    WXGDEntity lubri = WXGDWarnManager.lubri(lubricationWarnEntity.get(0));
+                                    lubri.pending.deploymentId = deploymentId;
+                                    return lubri;
+                                })
+                                .map(wxgdEntity -> {
+                                    final Bundle bundle = new Bundle();
+                                    bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
+                                    bundle.putBoolean(Constant.IntentKey.ISWARN, true);
+                                    return Pair.create(wxgdEntity, bundle);
+                                })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(pair -> new CustomDialog(context)
+                                        .twoButtonAlertDialog("确定生成工单?")
+                                        .bindView(R.id.redBtn, "确定")
+                                        .bindView(R.id.grayBtn, "取消")
+                                        .bindClickListener(R.id.redBtn, v12 -> IntentRouter.go(LubricationWarnActivity.this, Constant.Router.WXGD_WARN, pair.second), true)
+                                        .bindClickListener(R.id.grayBtn, null, true).show());
 
                 });
 

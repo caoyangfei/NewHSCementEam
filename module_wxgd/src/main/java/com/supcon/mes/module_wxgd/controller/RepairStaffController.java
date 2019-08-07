@@ -37,55 +37,58 @@ import java.util.List;
  */
 @Presenter(RepairStaffPresenter.class)
 public class RepairStaffController extends BaseViewController implements RepairStaffContract.View, RepairStaffAPI {
-//    private CustomListWidget<RepairStaffEntity> mCustomListWidget;
+    //    private CustomListWidget<RepairStaffEntity> mCustomListWidget;
     private List<RepairStaffEntity> staffEntities = new ArrayList<>();
 
-    private long id;
+    private long id = -1;
     private boolean isEditable;
     private WXGDEntity mWXGDEntity;
 
     @BindByTag("repairStaffListWidget")
     CustomListWidget<RepairStaffEntity> mCustomListWidget;
 
-    public RepairStaffController(View rootView){
+    public RepairStaffController(View rootView) {
         super(rootView);
     }
+
     @Override
     public void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
         mWXGDEntity = (WXGDEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-        this.id = mWXGDEntity.id;
+        if (mWXGDEntity != null) {
+            this.id = mWXGDEntity.id;
+        }
     }
 
     @Override
     public void initView() {
         super.initView();
-        mCustomListWidget.setAdapter(new RepairStaffAdapter(context,false));
+        mCustomListWidget.setAdapter(new RepairStaffAdapter(context, false));
     }
 
     @Override
     public void listRepairStaffListSuccess(RepairStaffListEntity entity) {
         staffEntities = entity.result;
-        for (RepairStaffEntity repairStaffEntity : staffEntities){
-            if (repairStaffEntity.remark== null){
+        for (RepairStaffEntity repairStaffEntity : staffEntities) {
+            if (repairStaffEntity.remark == null) {
                 repairStaffEntity.remark = "";
             }
-            if (repairStaffEntity.workHour != null){
+            if (repairStaffEntity.workHour != null) {
                 repairStaffEntity.workHour = repairStaffEntity.workHour.setScale(2, BigDecimal.ROUND_HALF_UP);
             }
         }
-        if(mCustomListWidget!=null){
+        if (mCustomListWidget != null) {
 //            mCustomListWidget.setData(entity.result);
 //            mCustomListWidget.setTotal(entity.result.size());
             mCustomListWidget.setData(entity.result);
-            if (isEditable){
-                mCustomListWidget.setShowText("编辑 ("+entity.result.size()+")");
-            }else {
-                mCustomListWidget.setShowText("查看 ("+entity.result.size()+")");
+            if (isEditable) {
+                mCustomListWidget.setShowText("编辑 (" + entity.result.size() + ")");
+            } else {
+                mCustomListWidget.setShowText("查看 (" + entity.result.size() + ")");
             }
         }
-        EventBus.getDefault().post(new ListEvent("repairStaff",staffEntities));
+        EventBus.getDefault().post(new ListEvent("repairStaff", staffEntities));
     }
 
     @Override
@@ -101,6 +104,7 @@ public class RepairStaffController extends BaseViewController implements RepairS
                         bundle.putString(Constant.IntentKey.REPAIR_STAFF_ENTITIES, staffEntities.toString());
                         bundle.putBoolean(Constant.IntentKey.IS_EDITABLE, isEditable);
                         bundle.putBoolean(Constant.IntentKey.IS_ADD, false);
+                        bundle.putLong(Constant.IntentKey.REPAIR_SUM,mWXGDEntity.repairSum != null ? mWXGDEntity.repairSum : 1);
                         bundle.putString(Constant.IntentKey.TABLE_STATUS, mWXGDEntity.getPending().taskDescription);
                         IntentRouter.go(context, Constant.Router.WXGD_REPAIR_STAFF_LIST, bundle);
                         break;
@@ -150,6 +154,12 @@ public class RepairStaffController extends BaseViewController implements RepairS
         presenterRouter.create(RepairStaffAPI.class).listRepairStaffList(id);
     }
 
+    public void setWxgdEntity(WXGDEntity mWxgdEntity) {
+        this.mWXGDEntity = mWxgdEntity;
+        this.id = mWxgdEntity.id;
+        presenterRouter.create(RepairStaffAPI.class).listRepairStaffList(id);
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -157,14 +167,14 @@ public class RepairStaffController extends BaseViewController implements RepairS
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refresh(BaseEvent baseEvent){}
+    public void refresh(BaseEvent baseEvent) {
+    }
 
     /**
-     * @description 获取维修人员列表
      * @param
      * @return
+     * @description 获取维修人员列表
      * @author zhangwenshuai1 2018/9/6
-     *
      */
     public List<RepairStaffEntity> getRepairStaffEntities() {
         if (staffEntities != null) {
@@ -175,24 +185,23 @@ public class RepairStaffController extends BaseViewController implements RepairS
     }
 
     /**
-     * @description 更新维修人员列表
      * @param
-     * @return  
+     * @return
+     * @description 更新维修人员列表
      * @author zhangwenshuai1 2018/9/6
-     *
      */
-    public void updateRepairStaffEntiies(List<RepairStaffEntity> list){
+    public void updateRepairStaffEntiies(List<RepairStaffEntity> list) {
         if (list == null)
             return;
         this.staffEntities = list;
-        if (mCustomListWidget != null){
+        if (mCustomListWidget != null) {
 //            mCustomListWidget.setData(list);
 //            mCustomListWidget.setTotal(list.size());
             mCustomListWidget.setData(list);
-            if (isEditable){
-                mCustomListWidget.setShowText("编辑 ("+list.size()+")");
-            }else {
-                mCustomListWidget.setShowText("查看 ("+list.size()+")");
+            if (isEditable) {
+                mCustomListWidget.setShowText("编辑 (" + list.size() + ")");
+            } else {
+                mCustomListWidget.setShowText("查看 (" + list.size() + ")");
             }
         }
     }
@@ -202,7 +211,7 @@ public class RepairStaffController extends BaseViewController implements RepairS
         this.isEditable = isEditable;
     }
 
-    public void clear(){
+    public void clear() {
         mCustomListWidget.clear();
     }
 }

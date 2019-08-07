@@ -17,12 +17,8 @@ import java.util.Map;
  */
 public class SubsidiaryPresenter extends SubsidiaryContract.Presenter {
     @Override
-    public void attachPart(Long beamID, int page) {
-        Map<String, Object> pageQueryParams = new HashMap<>();
-        pageQueryParams.put("page.pageNo", page);
-        pageQueryParams.put("page.pageSize", 20);
-        pageQueryParams.put("page.maxPageSize", 500);
-        mCompositeSubscription.add(SBDAOnlineHttpClient.attachPart(beamID, pageQueryParams)
+    public void attachPart(Long beamID) {
+        mCompositeSubscription.add(SBDAOnlineHttpClient.attachPart(beamID)
                 .onErrorReturn(throwable -> {
                     SubsidiaryListEntity subsidiaryListEntity = new SubsidiaryListEntity();
                     subsidiaryListEntity.errMsg = throwable.toString();

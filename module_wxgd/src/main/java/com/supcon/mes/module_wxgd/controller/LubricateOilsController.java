@@ -2,7 +2,6 @@ package com.supcon.mes.module_wxgd.controller;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.app.annotation.BindByTag;
@@ -12,14 +11,12 @@ import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.view.CustomListWidget;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.model.bean.SparePartEntity;
+import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
+import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.BaseEvent;
 import com.supcon.mes.module_wxgd.IntentRouter;
-import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.model.api.LubricateOilsAPI;
-import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
 import com.supcon.mes.module_wxgd.model.bean.LubricateOilsListEntity;
-import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.module_wxgd.model.contract.LubricateOilsContract;
 import com.supcon.mes.module_wxgd.model.event.ListEvent;
 import com.supcon.mes.module_wxgd.presenter.LubricateOilsPresenter;
@@ -29,8 +26,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +39,7 @@ public class LubricateOilsController extends BaseViewController implements Lubri
     @BindByTag("lubricateOilsListWidget")
     CustomListWidget<LubricateOilsEntity> mCustomListWidget;
 
-    private long id;
+    private long id = -1;
     private List<LubricateOilsEntity> mLubricateOilsOldEntities = new ArrayList<>();
     private List<LubricateOilsEntity> mLubricateOilsEntities = new ArrayList<>();
     private boolean isEditable;
@@ -59,7 +54,9 @@ public class LubricateOilsController extends BaseViewController implements Lubri
         super.onInit();
         EventBus.getDefault().register(this);
         mWXGDEntity = (WXGDEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-        this.id = mWXGDEntity.id;
+        if (mWXGDEntity != null) {
+            this.id = mWXGDEntity.id;
+        }
     }
 
     @Override
@@ -150,6 +147,13 @@ public class LubricateOilsController extends BaseViewController implements Lubri
         super.initData();
         presenterRouter.create(LubricateOilsAPI.class).listLubricateOilsList(id);
     }
+
+    public void setWxgdEntity(WXGDEntity mWxgdEntity) {
+        this.mWXGDEntity = mWxgdEntity;
+        this.id = mWxgdEntity.id;
+        presenterRouter.create(LubricateOilsAPI.class).listLubricateOilsList(id);
+    }
+
 
     @Override
     public void onDestroy() {

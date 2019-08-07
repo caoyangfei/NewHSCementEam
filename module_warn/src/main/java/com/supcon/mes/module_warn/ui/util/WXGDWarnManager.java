@@ -1,5 +1,7 @@
 package com.supcon.mes.module_warn.ui.util;
 
+import android.text.TextUtils;
+
 import com.supcon.mes.middleware.model.bean.JWXItem;
 import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
 import com.supcon.mes.middleware.model.bean.MaintainEntity;
@@ -12,7 +14,6 @@ import com.supcon.mes.module_warn.model.bean.MaintenanceWarnEntity;
 import com.supcon.mes.module_warn.model.bean.SparePartWarnEntity;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public class WXGDWarnManager {
@@ -30,7 +31,7 @@ public class WXGDWarnManager {
         repairType.id = "BEAM2005/01";
         wxgdEntity.repairType = repairType;
         wxgdEntity.workOrderContext = lubricationWarnEntity.getEamID().name
-                + "滑部位为" + lubricationWarnEntity.lubricatePart + "的润滑预警";
+                + (TextUtils.isEmpty(lubricationWarnEntity.lubricatePart) ? "" : "润滑部位为" + lubricationWarnEntity.lubricatePart) + "的润滑预警";
         wxgdEntity.createTime = System.currentTimeMillis();
         PendingEntity pendingEntity = new PendingEntity();
 //        pendingEntity.deploymentId = 1203l;
@@ -57,6 +58,7 @@ public class WXGDWarnManager {
         jwxItem.nextTime = lubricationWarnEntity.nextTime;
         jwxItem.sparePartId = lubricationWarnEntity.sparePartId;
         lubricateOilsEntity.jwxItemID = jwxItem;
+        lubricateOilsEntity.basicLubricate = "预警润滑不能删除";
         lubricateOilsEntities.add(lubricateOilsEntity);
         wxgdEntity.lubricateOils = lubricateOilsEntities;
         return wxgdEntity;
@@ -99,6 +101,7 @@ public class WXGDWarnManager {
         jwxItem.nextTime = maintenanceWarnEntity.nextTime;
         jwxItem.sparePartId = maintenanceWarnEntity.sparePartId;
         maintainEntity.jwxItemID = jwxItem;
+        maintainEntity.basicJwx = "预警备件不能删除";
         maintainEntities.add(maintainEntity);
         wxgdEntity.maintainEntities = maintainEntities;
         return wxgdEntity;
@@ -123,6 +126,7 @@ public class WXGDWarnManager {
 //        pendingEntity.deploymentId = 1203l;
         pendingEntity.activityName = "预警";
         wxgdEntity.pending = pendingEntity;
+        wxgdEntity.repairSum = 1L;
 
         ArrayList<SparePartEntity> sparePartEntities = new ArrayList<>();
         SparePartEntity sparePartEntity = new SparePartEntity();
@@ -137,6 +141,8 @@ public class WXGDWarnManager {
         sparePartEntity.nextTime = sparePartWarnEntity.nextTime;
         sparePartEntity.productID = sparePartWarnEntity.productID;
         sparePartEntity.sparePartId = sparePartWarnEntity.id;
+        sparePartEntity.timesNum = 1;
+        sparePartEntity.isWarn = true;//是否来自预警
         sparePartEntities.add(sparePartEntity);
         wxgdEntity.sparePart = sparePartEntities;
         return wxgdEntity;

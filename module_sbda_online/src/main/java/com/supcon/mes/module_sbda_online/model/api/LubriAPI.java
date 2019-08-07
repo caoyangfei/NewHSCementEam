@@ -12,5 +12,5 @@ import com.supcon.mes.module_sbda_online.model.bean.LubriListEntity;
  */
 @ContractFactory(entites = LubriListEntity.class)
 public interface LubriAPI {
-    void lubriRecord(Long beamID, int page);
+    void lubriRecord(Long beamID);
 }

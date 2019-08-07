@@ -17,7 +17,12 @@ public class ScreenEntity extends FilterBean {
     public String code;
 
     public Long id;
-
+    
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+    
     @Nullable
     @Override
     public boolean equals(Object obj) {
@@ -25,6 +30,6 @@ public class ScreenEntity extends FilterBean {
         if (this.name.trim().equals(filterBean.name.trim()) && this.type == filterBean.type) {
             return true;
         }
-        return super.equals(obj);
+        return false;
     }
 }

@@ -12,5 +12,5 @@ import com.supcon.mes.module_sbda_online.model.bean.MaintenanceListEntity;
  */
 @ContractFactory(entites = MaintenanceListEntity.class)
 public interface MaintenanceAPI {
-    void maintenanceRecord(Long beamID, int page);
+    void maintenanceRecord(Long beamID);
 }

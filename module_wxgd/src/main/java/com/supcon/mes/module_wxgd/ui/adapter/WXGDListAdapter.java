@@ -221,7 +221,9 @@ public class WXGDListAdapter extends BaseListDataRecyclerViewAdapter<WXGDEntity>
                     claim.setVisibility(View.VISIBLE);
 
                     claim.setValue(data.claim);
-                    content.setValue(data.content);
+                    content.setKey("工单内容");
+//                    content.setValue(data.content);
+                    content.setContent(data.workOrderContext == null ? "" : data.workOrderContext);
                 } else {
                     contentLl.setVisibility(View.GONE);
                     claim.setVisibility(View.GONE);

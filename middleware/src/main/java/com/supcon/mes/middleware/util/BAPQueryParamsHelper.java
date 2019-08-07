@@ -66,6 +66,20 @@ public class BAPQueryParamsHelper {
         return fastQueryCondEntity;
     }
 
+    public static List<BaseSubcondEntity> createJoinSubcondEntity(Map<String, Object> queryMap) {
+        List<BaseSubcondEntity> subcondEntities = new ArrayList<>();
+        for (String key : queryMap.keySet()) {
+            if (queryMap.get(key) == null) {
+                continue;
+            }
+            JoinSubcondEntity joinSubcondEntity = parseKeyList(key, queryMap.get(key));
+            if (joinSubcondEntity != null) {
+                subcondEntities.add(joinSubcondEntity);
+            }
+        }
+        return subcondEntities;
+    }
+
     //获取SubcondEntity对象
     public static List<BaseSubcondEntity> crateSubcondEntity(Map<String, Object> queryMap) {
         List<BaseSubcondEntity> subcondEntitys = new LinkedList<>();
@@ -458,7 +472,7 @@ public class BAPQueryParamsHelper {
         return subcondEntity;
     }
 
-    private static JoinSubcondEntity parseKeyList(String key, Object value) {
+    public static JoinSubcondEntity parseKeyList(String key, Object value) {
         SubcondEntity subcondEntity;
         JoinSubcondEntity joinSubcondEntity = new JoinSubcondEntity();
         joinSubcondEntity.type = TYPE_JOIN;

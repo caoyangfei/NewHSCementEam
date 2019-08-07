@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -22,7 +23,6 @@ import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.FilterBean;
 import com.supcon.mes.mbap.beans.LoginEvent;
-import com.supcon.mes.mbap.utils.KeyHelper;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomFilterView;
@@ -39,6 +39,7 @@ import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.KeyExpandHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.SystemCodeManager;
 import com.supcon.mes.module_yhgl.IntentRouter;
@@ -205,10 +206,16 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
         RxTextView.textChanges(customSearchView.editText())
                 .skipInitialValue()
                 .debounce(500, TimeUnit.MILLISECONDS)
-                .subscribe(charSequence -> doSearchTableNo(charSequence.toString()));
+                .subscribe(charSequence -> {
+                    if (TextUtils.isEmpty(charSequence.toString())) {
+                        doSearchTableNo(charSequence.toString());
+                    }
+                });
 
-        KeyHelper.doActionNext(customSearchView.editText(), true, () ->
-                doSearchTableNo(customSearchView.getInput().trim()));
+        KeyExpandHelper.doActionSearch(customSearchView.editText(), true, () -> {
+            doSearchTableNo(customSearchView.getInput().trim());
+        });
+
 
         listDateFilter.setFilterSelectChangedListener(filterBean -> {
             LogUtil.w("" + filterBean.toString());
@@ -385,11 +392,10 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
         refreshListController.refreshBegin();
     }
 
+    @SuppressLint("CheckResult")
     public void doSearchTableNo(String eamName) {
-
         queryParam.put(Constant.BAPQuery.EAM_NAME, eamName);
-        refreshListController.refreshBegin();
-
+        doFilter();
 //        if (queryParam.containsKey(Constant.BAPQuery.TABLE_NO) || queryParam.containsKey(Constant.BAPQuery.EAM_NAME)) {
 //            queryParam.remove(Constant.BAPQuery.TABLE_NO);
 //            queryParam.remove(Constant.BAPQuery.EAM_NAME);

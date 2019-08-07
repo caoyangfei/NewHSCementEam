@@ -13,7 +13,9 @@ import com.app.annotation.Controller;
 import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.activity.BaseControllerActivity;
+import com.supcon.common.view.base.activity.BaseRefreshActivity;
 import com.supcon.common.view.listener.OnChildViewClickListener;
+import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LinkEntity;
@@ -42,6 +44,7 @@ import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
 import com.supcon.mes.middleware.model.bean.RepairGroupEntity;
 import com.supcon.mes.middleware.model.bean.RepairGroupEntityDao;
+import com.supcon.mes.middleware.model.bean.Staff;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
@@ -54,6 +57,9 @@ import com.supcon.mes.module_wxgd.controller.MaintenanceController;
 import com.supcon.mes.module_wxgd.controller.RepairStaffController;
 import com.supcon.mes.module_wxgd.controller.SparePartController;
 import com.supcon.mes.module_wxgd.controller.WXGDSubmitController;
+import com.supcon.mes.module_wxgd.model.api.WXGDListAPI;
+import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
+import com.supcon.mes.module_wxgd.model.contract.WXGDListContract;
 import com.supcon.mes.module_wxgd.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_wxgd.model.dto.MaintainDto;
 import com.supcon.mes.module_wxgd.model.dto.RepairStaffDto;
@@ -62,6 +68,8 @@ import com.supcon.mes.module_wxgd.model.event.LubricateOilsEvent;
 import com.supcon.mes.module_wxgd.model.event.MaintenanceEvent;
 import com.supcon.mes.module_wxgd.model.event.RepairStaffEvent;
 import com.supcon.mes.module_wxgd.model.event.SparePartEvent;
+import com.supcon.mes.module_wxgd.model.event.VersionRefreshEvent;
+import com.supcon.mes.module_wxgd.presenter.WXGDListPresenter;
 import com.supcon.mes.module_wxgd.util.WXGDMapManager;
 
 import org.greenrobot.eventbus.EventBus;
@@ -70,6 +78,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +95,8 @@ import java.util.concurrent.TimeUnit;
 @Controller(value = {SparePartController.class,
         RepairStaffController.class,
         MaintenanceController.class,
-        LubricateOilsController.class})
-public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubmitController.OnSubmitResultListener {
+        LubricateOilsController.class, WXGDListPresenter.class})
+public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListContract.View,WXGDSubmitController.OnSubmitResultListener {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -145,8 +154,9 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
 
     private WXGDSubmitController mWxgdSubmitController;
     private RoleController roleController;
-
-
+    private boolean saveAndExit;
+    
+    
     @Override
     protected int getLayoutID() {
         return R.layout.ac_wxgd_warn;
@@ -157,7 +167,9 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
         super.onInit();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
         EventBus.getDefault().register(this);
-
+    
+        refreshController.setAutoPullDownRefresh(false);
+        refreshController.setPullDownRefreshEnabled(false);
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
         oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
 
@@ -284,7 +296,14 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
         super.initListener();
 
         leftBtn.setOnClickListener(v -> onBackPressed());
-
+        refreshController.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Map<String, Object> queryParam = new HashMap<>();
+                queryParam.put(Constant.BAPQuery.TABLE_NO, TextUtils.isEmpty(tmpTableNum)?mWXGDEntity.tableNo:tmpTableNum);
+                presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
+            }
+        });
         repairGroup.setOnChildViewClickListener(new OnChildViewClickListener() {
             @Override
             public void onChildViewClick(View childView, int action, Object obj) {
@@ -416,6 +435,7 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
                 .bindClickListener(R.id.redBtn, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        saveAndExit = true;
                         doSave();
                     }
                 }, true)
@@ -603,17 +623,28 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
         if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
             CommonSearchStaff searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
             chargeStaff.setValue(searchStaff.name);
+            if(mWXGDEntity.chargeStaff==null)
+            mWXGDEntity.chargeStaff = new Staff();
             mWXGDEntity.chargeStaff.id = searchStaff.id;
         }
     }
-
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void versionRefresh(VersionRefreshEvent versionRefreshEvent) {
+//        refreshController.refreshBegin();
+//    }
+    String tmpTableNum;
     @Override
     public void submitSuccess(BapResultEntity bapResultEntity) {
         onLoadSuccessAndExit("处理成功", new OnLoaderFinishListener() {
             @Override
             public void onLoaderFinished() {
-                EventBus.getDefault().post(new RefreshEvent());
-                finish();
+//                if (!saveAndExit) {
+//                    tmpTableNum =  bapResultEntity.tableInfoId+"";
+//                    EventBus.getDefault().post(new VersionRefreshEvent());
+//                } else {
+                    EventBus.getDefault().post(new RefreshEvent());
+                    finish();
+//                }
             }
         });
     }
@@ -633,6 +664,22 @@ public class WXGDWarnActivity extends BaseControllerActivity implements WXGDSubm
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void reSubmit(LoginEvent loginEvent) {
         SnackbarHelper.showMessage(rootView, "登陆成功，请重新操作!");
+    }
+    @Override
+    public void listWxgdsSuccess(WXGDListEntity entity) {
+        refreshController.refreshComplete();
+        List<WXGDEntity> wxgdEntityList = entity.result;
+        if (wxgdEntityList.size() > 0) {
+            mWXGDEntity = wxgdEntityList.get(0);
+            oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
+            initTableHeadData();
+        }
+        
+    }
+    
+    @Override
+    public void listWxgdsFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
     }
 
     /**

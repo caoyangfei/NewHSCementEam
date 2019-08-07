@@ -6,6 +6,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -49,6 +50,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +148,7 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
         contentView.addItemDecoration(new SpaceItemDecoration(15));
         //设置搜索框默认提示语
         titleSearchView.setHint("请输入设备编码");
-        searchTitleBar.setTitleText("零部件预警");
+        searchTitleBar.setTitleText("备件更换预警");
         searchTitleBar.setBackgroundResource(R.color.gradient_start);
         searchTitleBar.disableRightBtn();
 
@@ -208,39 +210,86 @@ public class SparePartWarnActivity extends BaseRefreshRecyclerActivity<SparePart
                         .subscribe(aLong -> doRefresh());
             }
         });
+//        RxView.clicks(dispatch)
+//                .throttleFirst(2, TimeUnit.SECONDS)
+//                .subscribe(o -> {
+//                    List<SparePartWarnEntity> list = sparePartWarnAdapter.getList();
+//                    Bundle bundle = new Bundle();
+//                    Flowable.fromIterable(list)
+//                            .subscribeOn(Schedulers.io())
+//                            .filter(sparePartWarnEntity -> sparePartWarnEntity.isCheck)
+//                            .map(sparePartWarnEntity -> {
+//                                WXGDEntity spare = WXGDWarnManager.spare(sparePartWarnEntity);
+//                                spare.pending.deploymentId = deploymentId;
+//                                return spare;
+//                            })
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribe(wxgdEntity -> {
+//                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
+//                            });
+//                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+//                        ToastUtils.show(context, "请选择操作项！");
+//                        return;
+//                    }
+//                    new CustomDialog(context)
+//                            .twoButtonAlertDialog("确定生成工单?")
+//                            .bindView(R.id.redBtn, "确定")
+//                            .bindView(R.id.grayBtn, "取消")
+//                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v12) {
+////                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+////                                        ToastUtils.show(context, "未选择单据!");
+////                                        return;
+////                                    } else
+//                                        IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+//                                }
+//                            }, true)
+//                            .bindClickListener(R.id.grayBtn, null, true).show();
+//
+//                });
         RxView.clicks(dispatch)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> {
-                    List<SparePartWarnEntity> list = sparePartWarnAdapter.getList();
-                    Bundle bundle = new Bundle();
-                    Flowable.fromIterable(list)
+                    List<SparePartWarnEntity> list = new ArrayList<>();
+                    list.addAll(sparePartWarnAdapter.getList());
+                    Flowable.just(list)
                             .subscribeOn(Schedulers.io())
-                            .filter(sparePartWarnEntity -> sparePartWarnEntity.isCheck)
-                            .map(sparePartWarnEntity -> {
-                                WXGDEntity spare = WXGDWarnManager.spare(sparePartWarnEntity);
-                                spare.pending.deploymentId = deploymentId;
-                                return spare;
+                            .doOnNext(lubricationWarnEntities -> {
+                                int length = lubricationWarnEntities.size();
+                                for (int i = length - 1; i >= 0; i--) {
+                                    if (!lubricationWarnEntities.get(i).isCheck) {
+                                        lubricationWarnEntities.remove(i);
+                                    }
+                                }
                             })
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(wxgdEntity -> {
-                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
-                            });
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确定生成工单?")
-                            .bindView(R.id.redBtn, "确定")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v12) {
-                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
-                                        ToastUtils.show(context, "未选择单据!");
-                                        return;
-                                    } else
-                                        IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+                            .filter(lubricationWarnEntities -> {
+                                if (list.size() <= 0) {
+                                    ToastUtils.show(context, "请选择操作项！");
+                                    return false;
                                 }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true).show();
-
+                                return true;
+                            })
+                            .observeOn(Schedulers.io())
+                            .map(lubricationWarnEntity -> {
+                                WXGDEntity lubri = WXGDWarnManager.spare(lubricationWarnEntity.get(0));
+                                lubri.pending.deploymentId = deploymentId;
+                                return lubri;
+                            })
+                            .map(wxgdEntity -> {
+                                final Bundle bundle = new Bundle();
+                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
+                                bundle.putBoolean(Constant.IntentKey.ISWARN, true);
+                                return Pair.create(wxgdEntity, bundle);
+                            })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(pair -> new CustomDialog(context)
+                                    .twoButtonAlertDialog("确定生成工单?")
+                                    .bindView(R.id.redBtn, "确定")
+                                    .bindView(R.id.grayBtn, "取消")
+                                    .bindClickListener(R.id.redBtn, v12 -> IntentRouter.go(SparePartWarnActivity.this, Constant.Router.WXGD_WARN, pair.second), true)
+                                    .bindClickListener(R.id.grayBtn, null, true).show());
                 });
         RxView.clicks(delay)
                 .throttleFirst(2, TimeUnit.SECONDS)

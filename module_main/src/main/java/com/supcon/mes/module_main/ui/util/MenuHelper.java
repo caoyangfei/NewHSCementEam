@@ -6,7 +6,6 @@ import com.supcon.mes.mbap.MBapApp;
 import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
-import com.supcon.mes.module_login.model.bean.WorkInfo;
 import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
 
 import org.json.JSONArray;
@@ -101,6 +100,14 @@ public class MenuHelper {
         try {
             worksArray = new JSONObject(Util.getJson(MBapApp.getAppContext(), "hswork.json")).getJSONArray("form");
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
+            for (MenuPopwindowBean menuPopwindowBean : works) {
+                switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.STOP_POLICE:
+                        menuPopwindowBean.setRouter(Constant.Router.STOP_POLICE);
+                        break;
+
+                }
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

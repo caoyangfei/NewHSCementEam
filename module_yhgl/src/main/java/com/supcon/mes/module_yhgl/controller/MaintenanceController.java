@@ -36,7 +36,7 @@ public class MaintenanceController extends BaseViewController implements Mainten
     @BindByTag("maintenanceListWidget")
     CustomListWidget<MaintainEntity> mCustomListWidget;
 
-    private long id;
+    private long id = -1;
     private List<MaintainEntity> maintenanceEntities = new ArrayList<>();
     private boolean isEditable;
     private YHEntity mYHEntity;
@@ -49,7 +49,9 @@ public class MaintenanceController extends BaseViewController implements Mainten
     public void onInit() {
         super.onInit();
         mYHEntity = (YHEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.YHGL_ENTITY);
-        this.id = mYHEntity.id;
+        if (mYHEntity != null) {
+            this.id = mYHEntity.id;
+        }
     }
 
     @Override
@@ -118,6 +120,12 @@ public class MaintenanceController extends BaseViewController implements Mainten
     @Override
     public void initData() {
         super.initData();
+        presenterRouter.create(MaintenanceAPI.class).listMaintenance(id);
+    }
+
+    public void setYHEntity(YHEntity mYHEntity) {
+        this.mYHEntity = mYHEntity;
+        this.id = mYHEntity.id;
         presenterRouter.create(MaintenanceAPI.class).listMaintenance(id);
     }
 

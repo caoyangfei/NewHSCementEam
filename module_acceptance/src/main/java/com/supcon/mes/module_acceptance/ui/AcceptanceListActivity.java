@@ -93,7 +93,7 @@ public class AcceptanceListActivity extends BaseRefreshRecyclerActivity<Acceptan
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
-        tableNo = getIntent().getStringExtra(Constant.Router.TABLENO);
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
     }
 
 

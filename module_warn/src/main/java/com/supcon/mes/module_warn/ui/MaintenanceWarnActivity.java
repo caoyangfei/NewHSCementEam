@@ -6,6 +6,7 @@ import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -38,7 +39,6 @@ import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_warn.IntentRouter;
 import com.supcon.mes.module_warn.R;
 import com.supcon.mes.module_warn.model.api.MaintenanceWarnAPI;
-import com.supcon.mes.module_warn.model.bean.LubricationWarnEntity;
 import com.supcon.mes.module_warn.model.bean.MaintenanceWarnEntity;
 import com.supcon.mes.module_warn.model.bean.MaintenanceWarnListEntity;
 import com.supcon.mes.module_warn.model.contract.MaintenanceWarnContract;
@@ -50,6 +50,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,6 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -208,39 +208,86 @@ public class MaintenanceWarnActivity extends BaseRefreshRecyclerActivity<Mainten
                         .subscribe(aLong -> doRefresh());
             }
         });
+//        RxView.clicks(dispatch)
+//                .throttleFirst(2, TimeUnit.SECONDS)
+//                .subscribe(o -> {
+//                    List<MaintenanceWarnEntity> list = maintenanceWarnAdapter.getList();
+//                    Bundle bundle = new Bundle();
+//                    Flowable.fromIterable(list)
+//                            .subscribeOn(Schedulers.io())
+//                            .filter(maintenanceWarnEntity -> maintenanceWarnEntity.isCheck)
+//                            .map(maintenanceWarnEntity -> {
+//                                WXGDEntity mainten = WXGDWarnManager.mainten(maintenanceWarnEntity);
+//                                mainten.pending.deploymentId = deploymentId;
+//                                return mainten;
+//                            })
+//                            .observeOn(AndroidSchedulers.mainThread())
+//                            .subscribe(wxgdEntity -> {
+//                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
+//                            });
+//                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+//                        ToastUtils.show(context, "请选择操作项！");
+//                        return;
+//                    }
+//                    new CustomDialog(context)
+//                            .twoButtonAlertDialog("确定生成工单?")
+//                            .bindView(R.id.redBtn, "确定")
+//                            .bindView(R.id.grayBtn, "取消")
+//                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v12) {
+////                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
+////                                        ToastUtils.show(context, "未选择单据!");
+////                                        return;
+////                                    } else
+//                                        IntentRouter.go(MaintenanceWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+//                                }
+//                            }, true)
+//                            .bindClickListener(R.id.grayBtn, null, true).show();
+//
+//                });
         RxView.clicks(dispatch)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> {
-                    List<MaintenanceWarnEntity> list = maintenanceWarnAdapter.getList();
-                    Bundle bundle = new Bundle();
-                    Flowable.fromIterable(list)
+                    List<MaintenanceWarnEntity> list  = new ArrayList<>();
+                    list.addAll(maintenanceWarnAdapter.getList());
+                    Flowable.just(list)
                             .subscribeOn(Schedulers.io())
-                            .filter(maintenanceWarnEntity -> maintenanceWarnEntity.isCheck)
-                            .map(maintenanceWarnEntity -> {
-                                WXGDEntity mainten = WXGDWarnManager.mainten(maintenanceWarnEntity);
-                                mainten.pending.deploymentId = deploymentId;
-                                return mainten;
+                            .doOnNext(lubricationWarnEntities -> {
+                                int length = lubricationWarnEntities.size();
+                                for (int i = length - 1; i >= 0; i--) {
+                                    if (!lubricationWarnEntities.get(i).isCheck) {
+                                        lubricationWarnEntities.remove(i);
+                                    }
+                                }
                             })
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(wxgdEntity -> {
-                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
-                            });
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("确定生成工单?")
-                            .bindView(R.id.redBtn, "确定")
-                            .bindView(R.id.grayBtn, "取消")
-                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v12) {
-                                    if (!bundle.containsKey(Constant.IntentKey.WXGD_ENTITY)) {
-                                        ToastUtils.show(context, "未选择单据!");
-                                        return;
-                                    } else
-                                        IntentRouter.go(MaintenanceWarnActivity.this, Constant.Router.WXGD_WARN, bundle);
+                            .filter(lubricationWarnEntities -> {
+                                if (list.size() <= 0) {
+                                    ToastUtils.show(context, "请选择操作项！");
+                                    return false;
                                 }
-                            }, true)
-                            .bindClickListener(R.id.grayBtn, null, true).show();
-
+                                return true;
+                            })
+                            .observeOn(Schedulers.io())
+                            .map(lubricationWarnEntity -> {
+                                WXGDEntity lubri = WXGDWarnManager.mainten(lubricationWarnEntity.get(0));
+                                lubri.pending.deploymentId = deploymentId;
+                                return lubri;
+                            })
+                            .map(wxgdEntity -> {
+                                final Bundle bundle = new Bundle();
+                                bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
+                                bundle.putBoolean(Constant.IntentKey.ISWARN, true);
+                                return Pair.create(wxgdEntity, bundle);
+                            })
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(pair -> new CustomDialog(context)
+                                    .twoButtonAlertDialog("确定生成工单?")
+                                    .bindView(R.id.redBtn, "确定")
+                                    .bindView(R.id.grayBtn, "取消")
+                                    .bindClickListener(R.id.redBtn, v12 -> IntentRouter.go(MaintenanceWarnActivity.this, Constant.Router.WXGD_WARN, pair.second), true)
+                                    .bindClickListener(R.id.grayBtn, null, true).show());
                 });
         RxView.clicks(delay)
                 .throttleFirst(2, TimeUnit.SECONDS)

@@ -18,12 +18,8 @@ import java.util.Map;
 public class LubriPresenter extends LubriContract.Presenter {
 
     @Override
-    public void lubriRecord(Long beamID, int page) {
-        Map<String, Object> pageQueryParams = new HashMap<>();
-        pageQueryParams.put("page.pageNo", page);
-        pageQueryParams.put("page.pageSize", 500);
-        pageQueryParams.put("page.maxPageSize", 500);
-        mCompositeSubscription.add(SBDAOnlineHttpClient.lubriRecord(beamID, pageQueryParams)
+    public void lubriRecord(Long beamID) {
+        mCompositeSubscription.add(SBDAOnlineHttpClient.lubriRecord(beamID)
                 .onErrorReturn(throwable -> {
                     LubriListEntity lubriListEntity = new LubriListEntity();
                     lubriListEntity.errMsg = throwable.toString();

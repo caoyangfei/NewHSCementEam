@@ -1,11 +1,13 @@
 package com.supcon.mes.module_wxgd.util;
 
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.BaseSubcondEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.JoinSubcondEntity;
 import com.supcon.mes.middleware.util.BAPQueryParamsHelper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,21 +18,28 @@ import java.util.Objects;
 public class WXGDFastQueryCondHelper {
 
     public static FastQueryCondEntity createFastQueryCond(Map<String, Object> queryMap) {
-        if (queryMap.containsKey(Constant.BAPQuery.WXGD_REPAIR_TYPE) || queryMap.containsKey(Constant.BAPQuery.WXGD_PRIORITY) || queryMap.containsKey(Constant.BAPQuery.EAM_NAME)) {
-            JoinSubcondEntity joinSubcondEntity = null;
-            if (queryMap.containsKey(Constant.BAPQuery.EAM_NAME)) {
-                Map<String, Object> nameParam = new HashMap<>();
-                nameParam.put(Constant.BAPQuery.EAM_NAME, Objects.requireNonNull(queryMap.get(Constant.BAPQuery.EAM_NAME)));
-                joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(nameParam, "EAM_BaseInfo,EAM_ID,BEAM2_WORK_RECORDS,EAMID");
-                queryMap.remove(Constant.BAPQuery.EAM_NAME);
-            }
-            FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createJoinFastQueryCond(queryMap);
-            if (joinSubcondEntity != null) {
-                fastQueryCond.subconds.add(joinSubcondEntity);
-            }
-            return BAPQueryParamsHelper.createJoinFastQueryCond(queryMap);
+        FastQueryCondEntity singleFastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(new HashMap<>());
+        if (queryMap.containsKey(Constant.BAPQuery.EAM_NAME)) {
+            Map<String, Object> nameParam = new HashMap<>();
+            nameParam.put(Constant.BAPQuery.EAM_NAME, Objects.requireNonNull(queryMap.get(Constant.BAPQuery.EAM_NAME)));
+            JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(nameParam, "EAM_BaseInfo,EAM_ID,BEAM2_WORK_RECORDS,EAMID");
+            singleFastQueryCond.subconds.add(joinSubcondEntity);
         }
-        return BAPQueryParamsHelper.createSingleFastQueryCond(queryMap);
+        if (queryMap.containsKey(Constant.BAPQuery.WXGD_PRIORITY)) {
+            Map<String, Object> areaMap = new HashMap<>();
+            areaMap.put(Constant.BAPQuery.WXGD_PRIORITY, queryMap.get(Constant.BAPQuery.WXGD_PRIORITY));
+            List<BaseSubcondEntity> joinSubcondEntity = BAPQueryParamsHelper.createJoinSubcondEntity(areaMap);
+            singleFastQueryCond.subconds.addAll(joinSubcondEntity);
+        }
+
+        Map<String, Object> otherMap = new HashMap<>();
+        otherMap.putAll(queryMap);
+        otherMap.remove(Constant.BAPQuery.EAM_NAME);
+        otherMap.remove(Constant.BAPQuery.WXGD_PRIORITY);
+
+        List<BaseSubcondEntity> baseSubcondEntities = BAPQueryParamsHelper.crateSubcondEntity(otherMap);
+        singleFastQueryCond.subconds.addAll(baseSubcondEntities);
+        return singleFastQueryCond;
     }
 
 }

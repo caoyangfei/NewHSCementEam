@@ -10,6 +10,7 @@ import com.app.annotation.Presenter;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.base.fragment.BaseRefreshRecyclerFragment;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
+import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
@@ -60,9 +61,11 @@ public class SubsidiaryFragment extends BaseRefreshRecyclerFragment<SubsidiaryEn
     @Override
     protected void initListener() {
         super.initListener();
-        refreshListController.setOnRefreshPageListener((page) -> {
-
-            presenterRouter.create(SubsidiaryAPI.class).attachPart(eamId, page);
+        refreshListController.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenterRouter.create(SubsidiaryAPI.class).attachPart(eamId);
+            }
         });
         subsidiaryAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override

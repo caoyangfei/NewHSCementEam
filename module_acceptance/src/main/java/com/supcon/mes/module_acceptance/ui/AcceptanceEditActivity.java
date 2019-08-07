@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -18,6 +20,7 @@ import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.listener.OnRefreshListener;
+import com.supcon.common.view.ptr.PtrFrameLayout;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
@@ -28,8 +31,10 @@ import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
 import com.supcon.mes.mbap.view.CustomVerticalTextView;
+import com.supcon.mes.mbap.view.CustomWorkFlowView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.LinkController;
@@ -113,7 +118,17 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
     CustomVerticalTextView acceptanceTime;
     @BindByTag("acceptanceItem")
     CustomVerticalEditText acceptanceItem;
-
+    @BindByTag("titleLayout")
+    RelativeLayout titleLayout;
+    @BindByTag("refreshFrameLayout")
+    PtrFrameLayout refreshFrameLayout;
+    @BindByTag("commentInput")
+    CustomEditText commentInput;
+    @BindByTag("transition")
+    CustomWorkFlowView transition;
+    @BindByTag("workFlowBar")
+    LinearLayout workFlowBar;
+    
     private AcceptanceEntity acceptanceEntity;
     private AcceptanceEditceAdapter acceptanceEditceAdapter;
     private String eamCodeStr;
@@ -176,9 +191,16 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
 
         eamCode.setEnabled(isEdit);
         eamName.setEnabled(isEdit);
+        
+//        initLink();
     }
-
-
+    
+    private void initLink() {
+        mLinkController.setCancelShow(acceptanceEntity.faultID != null && TextUtils.isEmpty(acceptanceEntity.faultID.tableNo));
+        mLinkController.initPendingTransition(transition, acceptanceEntity.pending.id);
+    }
+    
+    
     @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
@@ -214,6 +236,25 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
                         }, true)
                         .bindClickListener(R.id.grayBtn, null, true)
                         .show());
+//        transition.setOnChildViewClickListener(new OnChildViewClickListener() {
+//            @Override
+//            public void onChildViewClick(View childView, int action, Object obj) {
+//                WorkFlowVar workFlowVar = (WorkFlowVar) obj;
+//                switch(action){
+//                    case 0:
+//                        doSave("");
+//                        break;
+//                    case 1:
+//                        doSubmit(workFlowVar);
+//                        break;
+//                    case 2:
+//                        doSubmit(workFlowVar);
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+//        });
         refreshListController.setOnRefreshListener(() -> {
             if (TextUtils.isEmpty(eamCodeStr)) {
                 presenterRouter.create(AcceptanceEditAPI.class).getAcceptanceEdit(acceptanceEntity.getBeamID().id);
@@ -394,7 +435,9 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         SnackbarHelper.showError(rootView, errorMsg);
         refreshListController.refreshComplete(null);
     }
-
+    private void doSave() {
+    
+    }
     private void doSubmit(WorkFlowVar workFlowVar) {
         List<WorkFlowEntity> workFlowEntities = new ArrayList<>();
         WorkFlowEntity workFlowEntity = new WorkFlowEntity();

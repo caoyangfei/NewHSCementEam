@@ -59,7 +59,6 @@ import com.supcon.mes.module_wxgd.controller.MaintenanceController;
 import com.supcon.mes.module_wxgd.controller.RepairStaffController;
 import com.supcon.mes.module_wxgd.controller.SparePartController;
 import com.supcon.mes.module_wxgd.controller.WXGDSubmitController;
-import com.supcon.mes.module_wxgd.model.api.WXGDDispatcherAPI;
 import com.supcon.mes.module_wxgd.model.api.WXGDListAPI;
 import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
 import com.supcon.mes.module_wxgd.model.bean.WXGDTableInfoEntity;
@@ -283,13 +282,13 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         if (mWXGDEntity.faultInfo == null) {
             faultInfo.setVisibility(View.GONE);
         } else {
-            if (TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo)) {
-                repairLl.setVisibility(View.GONE);
-                faultInfo.setVisibility(View.GONE);
-            } else {
-                repairLl.setVisibility(View.VISIBLE);
-                faultInfo.setVisibility(View.VISIBLE);
-            }
+//            if (TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo)) {
+//                repairLl.setVisibility(View.GONE);
+//                faultInfo.setVisibility(View.GONE);
+//            } else {
+//                repairLl.setVisibility(View.VISIBLE);
+//                faultInfo.setVisibility(View.VISIBLE);
+//            }
         }
         realEndTime.setVisibility(View.GONE);
     }
@@ -533,7 +532,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     @Override
     public void onBackPressed() {
 
-        if (doCheckChange()) {
+        if (mWXGDEntity != null && doCheckChange()) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("单据数据已经被修改，是否要保存?")
                     .bindView(R.id.grayBtn, "离开")

@@ -31,9 +31,15 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String peroidtype;//时间类型
 
+    public String istemp;//是否临时巡检
+
     public Long pendingid;//待办
 
     public Staff staffid;
+
+    public String tableno;
+
+    public String openurl;
 
     public Staff getStaffid() {
         if (staffid == null) {

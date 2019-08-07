@@ -5,5 +5,5 @@ import com.supcon.mes.module_sbda_online.model.bean.ParamListEntity;
 
 @ContractFactory(entites = ParamListEntity.class)
 public interface ParamAPI {
-    void getEamParam(Long beamID, int page);
+    void getEamParam(Long beamID);
 }

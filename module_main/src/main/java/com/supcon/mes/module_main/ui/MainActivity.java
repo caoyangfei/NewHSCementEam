@@ -58,10 +58,9 @@ import java.util.List;
 
 @Router(Constant.Router.MAIN_REDLION)
 @Controller(value = {
-        SystemCodeController.class, AreaController.class,
-        RepairGroupController.class, UserInfoListController.class,
-        DepartmentController.class, DeviceTokenController.class,
-        PendingController.class, OnlineStaffListController.class})
+        SystemCodeController.class, AreaController.class, RepairGroupController.class,
+        UserInfoListController.class, DepartmentController.class, DeviceTokenController.class,
+        SilentLoginController.class, PendingController.class, OnlineStaffListController.class})
 public class MainActivity extends BaseMultiFragmentActivity {
 
     @BindByTag("tabRadioGroup")

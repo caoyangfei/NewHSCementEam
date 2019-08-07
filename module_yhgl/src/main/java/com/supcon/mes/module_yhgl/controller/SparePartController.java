@@ -39,7 +39,7 @@ import java.util.List;
 public class SparePartController extends BaseViewController implements SparePartContract.View {
 
     //    private CustomListWidget<SparePartEntity> mCustomListWidget;
-    private long id;
+    private long id = -1;
     private List<SparePartEntity> mSparePartEntities = new ArrayList<>();
     private boolean editable;
     private YHEntity mYHEntity;
@@ -56,8 +56,9 @@ public class SparePartController extends BaseViewController implements SparePart
         super.onInit();
         EventBus.getDefault().register(this);
         mYHEntity = (YHEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.YHGL_ENTITY);
-        this.id = mYHEntity.id;
-
+        if (mYHEntity != null) {
+            this.id = mYHEntity.id;
+        }
     }
 
     @Override
@@ -135,6 +136,12 @@ public class SparePartController extends BaseViewController implements SparePart
     @Override
     public void initData() {
         super.initData();
+        presenterRouter.create(SparePartAPI.class).listSparePartList(id);
+    }
+
+    public void setYHEntity(YHEntity mYHEntity) {
+        this.mYHEntity = mYHEntity;
+        this.id = mYHEntity.id;
         presenterRouter.create(SparePartAPI.class).listSparePartList(id);
     }
 

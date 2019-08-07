@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgGray"
@@ -10,9 +10,9 @@
     <include
         layout="@layout/ly_recyclerview_with_scrollbar"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_above="@id/mapLayout"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_above="@+id/btnLayout"
         />
     <LinearLayout
         android:id="@+id/mapLayout"
@@ -20,6 +20,7 @@
         android:layout_height="match_parent"
         android:background="@color/bgGray2"
         android:layout_marginTop="150dp"
+        android:layout_above="@+id/btnLayout"
         android:orientation="vertical"
         android:tag="mapLayout"
         android:visibility="gone"
@@ -74,4 +75,4 @@
             android:tag="olxjAbortBtn" />
 
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

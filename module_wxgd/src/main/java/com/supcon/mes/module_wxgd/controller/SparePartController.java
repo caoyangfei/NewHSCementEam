@@ -38,7 +38,7 @@ import java.util.List;
 public class SparePartController extends BaseViewController implements SparePartContract.View {
 
     //    private CustomListWidget<SparePartEntity> mCustomListWidget;
-    private long id;
+    private long id = -1;
     private ArrayList<SparePartEntity> mSparePartOldEntities = new ArrayList<>();
     private List<SparePartEntity> mSparePartEntities = new ArrayList<>();
     private boolean editable;
@@ -46,6 +46,7 @@ public class SparePartController extends BaseViewController implements SparePart
 
     @BindByTag("sparePartListWidget")
     CustomListWidget<SparePartEntity> mCustomListWidget;
+    private boolean iswarn;
 
     public SparePartController(View rootView) {
         super(rootView);
@@ -56,8 +57,10 @@ public class SparePartController extends BaseViewController implements SparePart
         super.onInit();
         EventBus.getDefault().register(this);
         mWXGDEntity = (WXGDEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-        this.id = mWXGDEntity.id;
-
+        iswarn = ((Activity) context).getIntent().getBooleanExtra(Constant.IntentKey.ISWARN, false);
+        if (mWXGDEntity != null) {
+            this.id = mWXGDEntity.id;
+        }
     }
 
     @Override
@@ -78,7 +81,9 @@ public class SparePartController extends BaseViewController implements SparePart
                     case 0:
                         bundle.putString(Constant.IntentKey.SPARE_PART_ENTITIES, mSparePartEntities.toString());
                         bundle.putBoolean(Constant.IntentKey.IS_EDITABLE, editable);
+                        bundle.putBoolean(Constant.IntentKey.ISWARN, iswarn);
                         bundle.putBoolean(Constant.IntentKey.IS_ADD, false);
+                        bundle.putLong(Constant.IntentKey.REPAIR_SUM, mWXGDEntity.repairSum != null ? mWXGDEntity.repairSum : 1);
                         bundle.putString(Constant.IntentKey.TABLE_STATUS, mWXGDEntity.getPending().taskDescription);
                         bundle.putString(Constant.IntentKey.TABLE_ACTION, mWXGDEntity.pending.openUrl);
                         bundle.putLong(Constant.IntentKey.LIST_ID, id);
@@ -137,6 +142,12 @@ public class SparePartController extends BaseViewController implements SparePart
     @Override
     public void initData() {
         super.initData();
+        presenterRouter.create(SparePartAPI.class).listSparePartList(id);
+    }
+
+    public void setWxgdEntity(WXGDEntity mWxgdEntity) {
+        this.mWXGDEntity = mWxgdEntity;
+        this.id = mWxgdEntity.id;
         presenterRouter.create(SparePartAPI.class).listSparePartList(id);
     }
 

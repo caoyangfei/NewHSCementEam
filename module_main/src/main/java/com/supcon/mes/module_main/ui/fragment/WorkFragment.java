@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -29,7 +28,6 @@ import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.view.CustomAdView;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
-import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
@@ -43,9 +41,9 @@ import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
+import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
-import com.supcon.mes.middleware.util.KeyExpandHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
@@ -64,11 +62,9 @@ import com.supcon.mes.module_main.presenter.EamAnomalyPresenter;
 import com.supcon.mes.module_main.presenter.ScoreStaffPresenter;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
 import com.supcon.mes.module_main.ui.MainActivity;
-import com.supcon.mes.module_main.ui.WaitDealtActivity;
 import com.supcon.mes.module_main.ui.adaper.WaitDealtAdapter;
 import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
 import com.supcon.mes.module_main.ui.util.MenuHelper;
-import com.supcon.mes.module_main.ui.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.module_main.ui.view.MenuPopwindow;
 import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
 
@@ -100,15 +96,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
 
-    @BindByTag("leftBtn")
-    ImageButton leftBtn;
     @BindByTag("titleText")
     TextView titleText;
-    @BindByTag("customSearchView")
-    CustomSearchView customSearchView;
-
-    @BindByTag("searchTitleBar")
-    CustomHorizontalSearchTitleBar searchTitleBar;
+    @BindByTag("eamTv")
+    CustomTextView eamTv;
 
     //待办
     @BindByTag("waitDealtLayout")
@@ -175,10 +166,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     protected void initView() {
         super.initView();
-        leftBtn.setVisibility(View.GONE);
-        titleText.setPadding(Util.dpToPx(getActivity(), 15), 0, 0, 0);
-        searchTitleBar.disableRightBtn();
-
         Flowable.timer(20, TimeUnit.MILLISECONDS)
                 .compose(RxSchedulers.io_main())
                 .subscribe(aLong -> initAd());
@@ -253,6 +240,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 if (oldPosition == position) {
@@ -323,12 +311,15 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
             }
         });
 
-        KeyExpandHelper.doActionSearch(customSearchView.editText(), true, () -> {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(Constant.IntentKey.EAM_CODE, customSearchView.getInput());
-                    presenterRouter.create(EamAPI.class).getEam(params, 1);
-                }
-        );
+        eamTv.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                Bundle bundle = new Bundle();
+                bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+                IntentRouter.go(getActivity(), Constant.Router.EAM, bundle);
+            }
+        });
+
         scoreLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -398,20 +389,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 proxyStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
                 CustomTextView person = customDialog.getDialog().findViewById(R.id.proxyPerson);
                 person.setContent(Util.strFormat(proxyStaff.name));
+            } else if (commonSearchEvent.commonSearchEntity instanceof EamType) {
+                EamType eamType = (EamType) commonSearchEvent.commonSearchEntity;
+                eamTv.setContent(Util.strFormat(eamType.name));
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Constant.IntentKey.EAM, eamType);
+                IntentRouter.go(getActivity(), Constant.Router.EAM_DETAIL, bundle);
             }
         }
     }
 
     @Override
     public boolean onTouch(MotionEvent ev) {
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                boolean isClickWorkRecycler = inRangeOfView(workRecycler, ev);
-                if (!isClickWorkRecycler) {
-                    menuPopwindow.changeWindowAlfa(1f);
-                    oldPosition = -1;
-                }
-                break;
+        boolean isClickWorkRecycler = inRangeOfView(workRecycler, ev);
+        if (!isClickWorkRecycler) {
+            menuPopwindow.changeWindowAlfa(1f);
+            oldPosition = -1;
         }
         return false;
     }
@@ -449,7 +442,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 ToastUtils.show(context, "标签内容空！");
                 return;
             }
-            customSearchView.setInput((String) nfcJson.get("textRecord"));
+            eamTv.setContent((String) nfcJson.get("textRecord"));
             Map<String, Object> params = new HashMap<>();
             params.put(Constant.IntentKey.EAM_CODE, nfcJson.get("textRecord"));
             presenterRouter.create(EamAPI.class).getEam(params, 1);
@@ -458,6 +451,11 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refresh(RefreshEvent event) {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
     }
 

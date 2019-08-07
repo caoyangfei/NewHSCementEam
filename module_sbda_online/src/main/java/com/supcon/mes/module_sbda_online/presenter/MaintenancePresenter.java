@@ -17,12 +17,8 @@ import java.util.Map;
  */
 public class MaintenancePresenter extends MaintenanceContract.Presenter {
     @Override
-    public void maintenanceRecord(Long beamID, int page) {
-        Map<String, Object> pageQueryParams = new HashMap<>();
-        pageQueryParams.put("page.pageNo", page);
-        pageQueryParams.put("page.pageSize", 500);
-        pageQueryParams.put("page.maxPageSize", 500);
-        mCompositeSubscription.add(SBDAOnlineHttpClient.maintenanceRecord(beamID, pageQueryParams)
+    public void maintenanceRecord(Long beamID) {
+        mCompositeSubscription.add(SBDAOnlineHttpClient.maintenanceRecord(beamID)
                 .onErrorReturn(throwable -> {
                     MaintenanceListEntity maintenanceListEntity = new MaintenanceListEntity();
                     maintenanceListEntity.errMsg = throwable.toString();

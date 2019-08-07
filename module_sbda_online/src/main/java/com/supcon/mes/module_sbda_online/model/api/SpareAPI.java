@@ -12,5 +12,5 @@ import com.supcon.mes.module_sbda_online.model.bean.SparePartListEntity;
  */
 @ContractFactory(entites = SparePartListEntity.class)
 public interface SpareAPI {
-    void spareRecord(Long eamID, int page);
+    void spareRecord(Long eamID);
 }

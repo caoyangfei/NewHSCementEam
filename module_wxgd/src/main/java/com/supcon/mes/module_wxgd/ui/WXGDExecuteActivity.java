@@ -190,6 +190,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
     private WXGDEntity oldWxgdEntity;
     private CustomDialog customDialog;
     private Map<String, SystemCodeEntity> wxTypes;
+    private String tableNo;
 
 
     @Override
@@ -220,8 +221,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
         refreshController.setAutoPullDownRefresh(true);
         refreshController.setPullDownRefreshEnabled(true);
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-
-        oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
 
         mDatePickController = new DatePickController(this);
         mDatePickController.setSecondVisible(true);
@@ -246,25 +246,37 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
     protected void initView() {
         super.initView();
         eamIc = findViewById(R.id.eamIc);
-        titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
-        initTableHeadView();
+        updateInitView();
 
     }
 
+    public void updateInitView() {
+        if (mWXGDEntity != null) {
+            titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+            initTableHeadView();
+        }
+
+    }
 
     @Override
     protected void initData() {
         super.initData();
-        List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
-        wxTypes = initEntities(wxTypeEntities);
-        String type = mWXGDEntity.workType != null ? mWXGDEntity.workType.id : "";
-        if (type.equals(Constant.WxgdAction.ACTIVATE)) {
-            isActivate = true;
-        } else if (type.equals(Constant.WxgdAction.STOP)) {
-            isActivate = false;
+        updateInitData();
+    }
+
+    public void updateInitData() {
+        if (mWXGDEntity != null) {
+            List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
+            wxTypes = initEntities(wxTypeEntities);
+            String type = mWXGDEntity.workType != null ? mWXGDEntity.workType.id : "";
+            if (type.equals(Constant.WxgdAction.ACTIVATE)) {
+                isActivate = true;
+            } else if (type.equals(Constant.WxgdAction.STOP)) {
+                isActivate = false;
+            }
+            initTableHeadData();
+            mLinkController.initPendingTransition(transition, mWXGDEntity.pending != null ? mWXGDEntity.pending.id : 0);
         }
-        initTableHeadData();
-        mLinkController.initPendingTransition(transition, mWXGDEntity.pending != null ? mWXGDEntity.pending.id : 0);
     }
 
     /**
@@ -427,7 +439,11 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
             @Override
             public void onRefresh() {
                 Map<String, Object> queryParam = new HashMap<>();
-                queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                if (mWXGDEntity == null) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+                } else {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                }
                 presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
             }
         });
@@ -579,7 +595,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 
     private void goSBDA() {
 
-        if (mWXGDEntity.eamID==null || mWXGDEntity.eamID.id == null) {
+        if (mWXGDEntity.eamID == null || mWXGDEntity.eamID.id == null) {
             ToastUtils.show(context, "无设备详情可查看！");
             return;
         }
@@ -766,23 +782,31 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 
     @Override
     public void listWxgdsSuccess(WXGDListEntity entity) {
-        refreshController.refreshComplete();
         List<WXGDEntity> wxgdEntityList = entity.result;
         if (wxgdEntityList.size() > 0) {
             mWXGDEntity = wxgdEntityList.get(0);
             oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
-            initTableHeadData();
+            updateInitView();
+            updateInitData();
+            mRepairStaffController.setWxgdEntity(mWXGDEntity);
+            mSparePartController.setWxgdEntity(mWXGDEntity);
+            mLubricateOilsController.setWxgdEntity(mWXGDEntity);
+            maintenanceController.setWxgdEntity(mWXGDEntity);
+            refreshController.refreshComplete();
+        } else {
+            ToastUtils.show(this, "未查到当前待办");
         }
     }
 
     @Override
     public void listWxgdsFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
+        refreshController.refreshComplete();
     }
 
     @Override
     public void onBackPressed() {
-        if (doCheckChange()) {
+        if (mWXGDEntity != null && doCheckChange()) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("单据数据已经被修改，是否要保存?")
                     .bindView(R.id.redBtn, "保存")

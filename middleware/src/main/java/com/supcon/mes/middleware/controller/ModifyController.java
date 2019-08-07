@@ -2,6 +2,7 @@ package com.supcon.mes.middleware.controller;
 
 import com.supcon.common.com_http.BaseEntity;
 import com.supcon.common.view.base.controller.BasePresenterController;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
 
 /**
@@ -18,7 +19,6 @@ public class ModifyController<T extends BaseEntity> extends BasePresenterControl
 
     }
     public boolean  isModifyed(T currentEntity){
-
         return !GsonUtil.gsonString(currentEntity).equals(originalEntity);
 
     }

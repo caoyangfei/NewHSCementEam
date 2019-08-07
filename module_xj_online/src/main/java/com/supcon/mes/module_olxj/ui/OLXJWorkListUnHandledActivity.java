@@ -513,7 +513,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
         }
 
         if (mXJAreaEntity.eamInspectionGuideImageDocument != null) {
-
             mXJAreaEntity.eamInspectionGuideImageDocument.name = mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
             mDownloadController.downloadEamPic(mXJAreaEntity.eamInspectionGuideImageDocument, "mobileEAM_1.0.0_work", new OnSuccessListener<File>() {
                 @Override
@@ -1073,11 +1072,11 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                     .bindView(R.id.grayBtn, "保存")
                     .bindView(R.id.redBtn, "离开")
                     .bindClickListener(R.id.grayBtn, v -> {
-//                        onLoading("正在打包并上传巡检数据，请稍后...");
-//                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
-                        back();
-                        EventBus.getDefault().post(mXJAreaEntity);
-                        EventBus.getDefault().post(new AreaRefreshEvent());
+                        onLoading("正在打包并上传巡检数据，请稍后...");
+                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+//                        back();
+//                        EventBus.getDefault().post(mXJAreaEntity);
+//                        EventBus.getDefault().post(new AreaRefreshEvent());
                     }, true)
                     .bindClickListener(R.id.redBtn, v3 -> back(), true)
                     .show();
@@ -1124,10 +1123,19 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                 }, () -> {
                     mEam = null;
                     refreshListController.refreshComplete(xjWorkItemEntities);
+//                    final Flowable flowable = Flowable.timer(1000, TimeUnit.MILLISECONDS);
+//                    flowable.compose(RxSchedulers.io_main())
+//                            .subscribe(new Consumer<Long>() {
+//                                @Override
+//                                public void accept(Long aLong) throws Exception {
+//                                    mModifyController = new ModifyController<>(mXJAreaEntity);
+//                                }
+//                            });
                     initFilterView();
                 });
 
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAreaUpdate(OLXJAreaEntity areaEntity) {

@@ -40,6 +40,7 @@ public class SparePartFragment extends BaseRefreshRecyclerFragment<SparePartEnti
         SparePartFragment fragment = new SparePartFragment();
         return fragment;
     }
+
     @Override
     protected void initView() {
         super.initView();
@@ -50,11 +51,12 @@ public class SparePartFragment extends BaseRefreshRecyclerFragment<SparePartEnti
         contentView.addItemDecoration(new SpaceItemDecoration(15));
 
     }
+
     @Override
     protected void initListener() {
         super.initListener();
         refreshListController.setOnRefreshListener(() -> {
-            presenterRouter.create(SpareAPI.class).spareRecord(eamId, 1);
+            presenterRouter.create(SpareAPI.class).spareRecord(eamId);
         });
     }
 

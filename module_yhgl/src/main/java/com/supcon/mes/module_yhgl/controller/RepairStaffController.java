@@ -40,7 +40,7 @@ public class RepairStaffController extends BaseViewController implements RepairS
     //    private CustomListWidget<RepairStaffEntity> mCustomListWidget;
     private List<RepairStaffEntity> staffEntities = new ArrayList<>();
 
-    private long id;
+    private long id = -1;
     private boolean isEditable;
     private YHEntity mYHEntity;
 
@@ -56,7 +56,9 @@ public class RepairStaffController extends BaseViewController implements RepairS
         super.onInit();
         EventBus.getDefault().register(this);
         mYHEntity = (YHEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.YHGL_ENTITY);
-        this.id = mYHEntity.id;
+        if (mYHEntity != null) {
+            this.id = mYHEntity.id;
+        }
     }
 
     @Override
@@ -151,6 +153,12 @@ public class RepairStaffController extends BaseViewController implements RepairS
     @Override
     public void initData() {
         super.initData();
+        presenterRouter.create(RepairStaffAPI.class).listRepairStaffList(id);
+    }
+
+    public void setYHEntity(YHEntity mYHEntity) {
+        this.mYHEntity = mYHEntity;
+        this.id = mYHEntity.id;
         presenterRouter.create(RepairStaffAPI.class).listRepairStaffList(id);
     }
 

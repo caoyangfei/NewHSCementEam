@@ -54,7 +54,7 @@ public class MaintenanceFragment extends BaseRefreshRecyclerFragment implements 
     protected void initListener() {
         super.initListener();
         refreshListController.setOnRefreshListener(() -> {
-            presenterRouter.create(MaintenanceAPI.class).maintenanceRecord(eamId, 1);
+            presenterRouter.create(MaintenanceAPI.class).maintenanceRecord(eamId);
         });
     }
 

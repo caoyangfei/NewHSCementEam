@@ -66,7 +66,7 @@ public class LubricationFragment extends BaseRefreshRecyclerFragment<LubriEntity
     protected void initListener() {
         super.initListener();
         refreshListController.setOnRefreshListener(() -> {
-            presenterRouter.create(LubriAPI.class).lubriRecord(eamId, 1);
+            presenterRouter.create(LubriAPI.class).lubriRecord(eamId);
         });
     }
 

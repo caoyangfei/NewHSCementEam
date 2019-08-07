@@ -430,7 +430,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
                 if (EamApplication.isHailuo()) {
                     IntentRouter.go(context, Constant.Router.MAIN);
                 } else {
-                    IntentRouter.go(context, Constant.Router.MAIN_REDLION);
+                    IntentRouter.go(context, Constant.Router.MAIN);
                 }
                 isFirstIn = false;
             }

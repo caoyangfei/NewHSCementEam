@@ -12,5 +12,5 @@ import com.supcon.mes.module_sbda_online.model.bean.SubsidiaryListEntity;
  */
 @ContractFactory(entites = SubsidiaryListEntity.class)
 public interface SubsidiaryAPI {
-    void attachPart(Long beamID, int page);
+    void attachPart(Long beamID);
 }

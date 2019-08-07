@@ -2,6 +2,7 @@ package com.supcon.mes.module_wxgd.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
@@ -123,20 +124,25 @@ public class MaintenanceAdapter extends BaseListDataRecyclerViewAdapter<Maintain
                     ToastUtils.show(context, tableStatus + "环节，维修人员不允许删除!");
                     return;
                 }
-                new CustomDialog(context)
-                        .twoButtonAlertDialog("确认删除该维保业务吗?")
-                        .bindView(R.id.redBtn, "确认")
-                        .bindView(R.id.grayBtn, "取消")
-                        .bindClickListener(R.id.redBtn, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                List<MaintainEntity> list = MaintenanceAdapter.this.getList();
-                                list.remove(getAdapterPosition());
-                                EventBus.getDefault().post(new RefreshEvent(maintainEntity.id));
-                            }
-                        }, true)
-                        .bindClickListener(R.id.grayBtn, null, true)
-                        .show();
+                if (TextUtils.isEmpty(maintainEntity.basicJwx)) {
+                    new CustomDialog(context)
+                            .twoButtonAlertDialog("确认删除该维保业务吗?")
+                            .bindView(R.id.redBtn, "确认")
+                            .bindView(R.id.grayBtn, "取消")
+                            .bindClickListener(R.id.redBtn, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    List<MaintainEntity> list = MaintenanceAdapter.this.getList();
+                                    list.remove(getAdapterPosition());
+                                    EventBus.getDefault().post(new RefreshEvent(maintainEntity.id));
+                                }
+                            }, true)
+                            .bindClickListener(R.id.grayBtn, null, true)
+                            .show();
+                } else {
+                    ToastUtils.show(context, "所选数据为历史备件数据，不允许删除！");
+                }
+
             });
         }
 

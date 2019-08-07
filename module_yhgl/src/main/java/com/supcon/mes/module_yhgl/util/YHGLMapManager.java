@@ -1,23 +1,13 @@
 package com.supcon.mes.module_yhgl.util;
 
 import android.annotation.SuppressLint;
-import android.text.TextUtils;
 
-import com.supcon.mes.mbap.utils.DateUtil;
-import com.supcon.mes.middleware.EamApplication;
-import com.supcon.mes.middleware.model.bean.AcceptanceCheckEntity;
 import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
 import com.supcon.mes.middleware.model.bean.MaintainEntity;
 import com.supcon.mes.middleware.model.bean.RepairStaffEntity;
 import com.supcon.mes.middleware.model.bean.SparePartEntity;
-import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
-import com.supcon.mes.middleware.model.bean.ValueEntity;
-import com.supcon.mes.middleware.model.bean.WXGDEntity;
-import com.supcon.mes.middleware.model.bean.YHEntity;
 import com.supcon.mes.middleware.util.Util;
-import com.supcon.mes.module_yhgl.model.dto.GoodDto;
 import com.supcon.mes.module_yhgl.model.dto.IdDto;
-import com.supcon.mes.module_yhgl.model.dto.LubricateOilDto;
 import com.supcon.mes.module_yhgl.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.MaintainDto;
 import com.supcon.mes.module_yhgl.model.dto.RepairStaffDto;
@@ -25,8 +15,6 @@ import com.supcon.mes.module_yhgl.model.dto.SparePartEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.StaffDto;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -112,6 +100,7 @@ public class YHGLMapManager {
             sparePartEntityDto.nextDuration = Util.strFormat2(sparePartEntity.nextDuration);
             sparePartEntityDto.accessoryName = Util.strFormat2(sparePartEntity.accessoryName);
             sparePartEntityDto.isRef = Util.strFormat2(sparePartEntity.isRef);
+            sparePartEntityDto.timesNum = Util.strFormat2(sparePartEntity.timesNum);
             sparePartEntityDtos.add(sparePartEntityDto);
         }
         return sparePartEntityDtos;
@@ -135,7 +124,7 @@ public class YHGLMapManager {
             lubricateOilsEntityDto.lubricate = idDto;
 
             idDto = new IdDto();
-            idDto.id = lubricateOilsEntity.oilType == null ? "" : lubricateOilsEntity.oilType.id;
+            idDto.id = lubricateOilsEntity.oilType == null ? "" : Util.strFormat2(lubricateOilsEntity.oilType.id);
             lubricateOilsEntityDto.oilType = idDto;
             idDto = new IdDto();
             idDto.id = lubricateOilsEntity.jwxItemID == null ? "" : Util.strFormat2(lubricateOilsEntity.jwxItemID.id);

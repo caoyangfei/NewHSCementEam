@@ -35,19 +35,19 @@ public interface ApiService {
 
     //附属
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461551623906.action")
-    Flowable<SubsidiaryListEntity> attachPart(@Query("baseInfo.id") Long beamID, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<SubsidiaryListEntity> attachPart(@Query("baseInfo.id") Long beamID);
 
     //备件
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461551624000.action")
-    Flowable<SparePartListEntity> spareRecord(@Query("baseInfo.id") Long beamID, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<SparePartListEntity> spareRecord(@Query("baseInfo.id") Long beamID);
 
     //润滑
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461553165559.action")
-    Flowable<LubriListEntity> lubriRecord(@Query("baseInfo.id") Long beamID, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<LubriListEntity> lubriRecord(@Query("baseInfo.id") Long beamID);
 
     //维保
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461561957963.action")
-    Flowable<MaintenanceListEntity> maintenanceRecord(@Query("baseInfo.id") Long beamID, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<MaintenanceListEntity> maintenanceRecord(@Query("baseInfo.id") Long beamID);
 
     //维修
     @GET("/BEAM2/workList/workRecord/data-dg1543885029358.action")

@@ -5,6 +5,7 @@ import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
+import com.supcon.mes.module_score.model.bean.ScoreDeviceCheckResultEntity;
 import com.supcon.mes.module_score.model.bean.ScoreDutyEamEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamListEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamPerformanceListEntity;
@@ -59,4 +60,8 @@ public interface ScoreService {
     @POST
     @Multipart
     Flowable<BapResultEntity> doStaffSubmit(@Url String url, @PartMap Map<String, RequestBody> map);
+    
+    
+    @GET("/BEAM/scorePerformance/scoreHead/checkIsDeal.action")
+    Flowable<ScoreDeviceCheckResultEntity> doCheckDevice(@Query("eamId")long eamId,@Query("dateString") String date);
 }

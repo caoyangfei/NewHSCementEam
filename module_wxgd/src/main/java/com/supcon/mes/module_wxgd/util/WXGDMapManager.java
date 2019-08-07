@@ -10,11 +10,9 @@ import com.supcon.mes.middleware.model.bean.MaintainEntity;
 import com.supcon.mes.middleware.model.bean.RepairStaffEntity;
 import com.supcon.mes.middleware.model.bean.SparePartEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
-import com.supcon.mes.middleware.model.bean.ValueEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.model.dto.AcceptanceCheckEntityDto;
-import com.supcon.mes.module_wxgd.model.dto.GoodDto;
 import com.supcon.mes.module_wxgd.model.dto.IdDto;
 import com.supcon.mes.module_wxgd.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_wxgd.model.dto.MaintainDto;
@@ -105,6 +103,7 @@ public class WXGDMapManager {
             repairStaffDto.sort = staffs.get(i).sort == null ? "" : String.valueOf(staffs.get(i).sort);
             repairStaffDto.rowIndex = String.valueOf(i);
             repairStaffDto.remark = staffs.get(i).remark;
+            repairStaffDto.timesNum = Util.strFormat2(staffs.get(i).timesNum);
             staffSubmitEntities.add(repairStaffDto);
         }
         return staffSubmitEntities;
@@ -154,6 +153,7 @@ public class WXGDMapManager {
             sparePartEntityDto.lastDuration = Util.strFormat2(sparePartEntity.lastDuration);
             sparePartEntityDto.nextDuration = Util.strFormat2(sparePartEntity.nextDuration);
             sparePartEntityDto.accessoryName = Util.strFormat2(sparePartEntity.accessoryName);
+            sparePartEntityDto.timesNum = Util.strFormat2(sparePartEntity.timesNum);
             sparePartEntityDto.isRef = Util.strFormat2(sparePartEntity.isRef);
             sparePartEntityDtos.add(sparePartEntityDto);
         }

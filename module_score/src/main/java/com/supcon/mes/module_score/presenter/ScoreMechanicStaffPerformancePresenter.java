@@ -50,6 +50,7 @@ public class ScoreMechanicStaffPerformancePresenter extends ScoreMechanicStaffPe
     @Override
     public void getMechanicStaffScore(int scoreId) {
         List<String> urls = new ArrayList<>();
+
         //设备运行
         urls.add("/BEAM/patrolWorkerScore/workerScoreHead/data-dg1560475480845.action");
         //规范化管理

@@ -11,10 +11,8 @@ import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.view.CustomListWidget;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
 import com.supcon.mes.middleware.model.bean.MaintainEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
-import com.supcon.mes.middleware.model.bean.YHEntity;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.model.api.MaintenanceAPI;
 import com.supcon.mes.module_wxgd.model.bean.MaintenanceListEntity;
@@ -37,7 +35,7 @@ public class MaintenanceController extends BaseViewController implements Mainten
     @BindByTag("maintenanceListWidget")
     CustomListWidget<MaintainEntity> mCustomListWidget;
 
-    private long id;
+    private long id = -1;
     private List<MaintainEntity> maintenanceOldEntities = new ArrayList<>();
     private List<MaintainEntity> maintenanceEntities = new ArrayList<>();
     private boolean isEditable;
@@ -51,7 +49,9 @@ public class MaintenanceController extends BaseViewController implements Mainten
     public void onInit() {
         super.onInit();
         wxgdEntity = (WXGDEntity) ((Activity) context).getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-        this.id = wxgdEntity.id;
+        if (wxgdEntity != null) {
+            this.id = wxgdEntity.id;
+        }
     }
 
     @Override
@@ -117,6 +117,12 @@ public class MaintenanceController extends BaseViewController implements Mainten
     @Override
     public void initData() {
         super.initData();
+        presenterRouter.create(MaintenanceAPI.class).listMaintenance(id);
+    }
+
+    public void setWxgdEntity(WXGDEntity mWxgdEntity) {
+        this.wxgdEntity = mWxgdEntity;
+        this.id = mWxgdEntity.id;
         presenterRouter.create(MaintenanceAPI.class).listMaintenance(id);
     }
 

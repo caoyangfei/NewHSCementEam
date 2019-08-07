@@ -310,8 +310,10 @@ public class OLXJTaskListAdapter extends BaseListDataRecyclerViewAdapter<OLXJTas
 //            taskTableNo.setText(data.tableNo);
             itemXJPath.setText(data.workGroupID.name);
             taskResponsiblePerson.setText(data.resstaffID.name);
-            taskStartEndTime.setText(String.format("%s  ~  %s",
-                    DateUtil.dateFormat(data.starTime, "MM-dd HH:mm:ss"), DateUtil.dateFormat(data.endTime, "MM-dd HH:mm:ss")));
+            taskStartEndTime.setText(
+                    String.format("%s  ~  %s",
+                    DateUtil.dateFormat(data.starTime, "MM-dd HH:mm:ss"),
+                    DateUtil.dateFormat(data.endTime, "MM-dd HH:mm:ss")));
             taskStatus.setText(data.state);
 
         }

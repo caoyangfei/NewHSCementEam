@@ -65,7 +65,7 @@ public class ParamFragment extends BaseRefreshRecyclerFragment<ParamEntity> impl
     protected void initListener() {
         super.initListener();
         refreshListController.setOnRefreshListener(() -> {
-            presenterRouter.create(ParamAPI.class).getEamParam(eamId, 1);
+            presenterRouter.create(ParamAPI.class).getEamParam(eamId);
         });
     }
 

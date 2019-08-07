@@ -45,15 +45,14 @@ public class MapController extends BaseViewController {
 
     @BindByTag("mapLayout")
     LinearLayout mapLayout;
-
     @BindByTag("progressBar")
     ProgressBar progressBar;
     @BindByTag("webView")
     BridgeWebView webView;
     private boolean isShow = false;
-
-
+    //地图区域点击触发事件
     private OnMapAreaClickListener mOnMapAreaClickListener;
+    //在线巡检区域数据列表
     private List<OLXJAreaEntity> mOLXJAreaEntities;
 
     public MapController(View rootView) {
@@ -67,28 +66,20 @@ public class MapController extends BaseViewController {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-    }
-
-    @Override
     public void onDestroy() {
-        super.onDestroy();
         EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
-
+    
+    /**
+     * 刷新地图视图
+     * @param areaRefreshEvent
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAreaRefresh(AreaRefreshEvent areaRefreshEvent) {
-
-        if(isShow)
-        webView.reload();
+        if(isShow) {
+            webView.reload();
+        }
     }
 
     @Override
@@ -160,8 +151,12 @@ public class MapController extends BaseViewController {
 
     public void show(OLXJTaskEntity data) {
         isShow = true;
+        if (data==null){
+            mapLayout.setVisibility(View.INVISIBLE);
+            return;
+        }
         mapLayout.setVisibility(View.VISIBLE);
-
+        
         //当页面正在加载时，禁止链接的点击事件
         Map<String, String> header = new HashMap<>();
         String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
@@ -172,9 +167,8 @@ public class MapController extends BaseViewController {
         if (!TextUtils.isEmpty(EamApplication.getAuthorization())) {
             header.put("Authorization", EamApplication.getAuthorization());
         }
-
+        //session过期导致问题
         webView.loadUrl(url, header);
-
     }
 
     public void hide() {
