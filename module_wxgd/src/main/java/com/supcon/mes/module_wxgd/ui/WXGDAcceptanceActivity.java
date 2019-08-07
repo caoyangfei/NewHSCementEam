@@ -1,5 +1,6 @@
 package com.supcon.mes.module_wxgd.ui;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -66,7 +67,6 @@ import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
 import com.supcon.mes.module_wxgd.model.contract.GenerateAcceptanceContract;
 import com.supcon.mes.module_wxgd.model.contract.WXGDListContract;
 import com.supcon.mes.module_wxgd.model.dto.AcceptanceCheckEntityDto;
-import com.supcon.mes.module_wxgd.model.event.AcceptanceEvent;
 import com.supcon.mes.module_wxgd.model.event.ListEvent;
 import com.supcon.mes.module_wxgd.presenter.GenerateAcceptancePresenter;
 import com.supcon.mes.module_wxgd.presenter.WXGDListPresenter;
@@ -179,6 +179,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     private RoleController roleController;
     private AcceptanceCheckEntity currentAcceptChkEntity = new AcceptanceCheckEntity();  //当前验收数据
     private String acceptanceCheckEntities;
+    private String tableNo;
 
     @Override
     protected int getLayoutID() {
@@ -193,6 +194,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
         refreshController.setPullDownRefreshEnabled(true);
         refreshController.setAutoPullDownRefresh(true);
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
 
         mSparePartController = getController(SparePartController.class);
         mSparePartController.setEditable(false);
@@ -234,13 +236,16 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     protected void initView() {
         super.initView();
         eamIc = findViewById(R.id.eamIc);
-        titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+        updateInitView();
+    }
 
-        initTableHeadView();
-
-        // 初始化工作流
-        initLink();
-
+    public void updateInitView() {
+        if (mWXGDEntity != null) {
+            titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+            initTableHeadView();
+            // 初始化工作流
+            initLink();
+        }
     }
 
     /**
@@ -289,8 +294,14 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     @Override
     protected void initData() {
         super.initData();
-        initTableHeadData();
+        updateInitData();
 //        presenterRouter.create(WXGDDispatcherAPI.class).getWxgdInfo(1000, 1000);
+    }
+
+    public void updateInitData() {
+        if (mWXGDEntity != null) {
+            initTableHeadData();
+        }
     }
 
     /**
@@ -335,7 +346,11 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             @Override
             public void onRefresh() {
                 Map<String, Object> queryParam = new HashMap<>();
-                queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                if (mWXGDEntity == null) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+                } else {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                }
                 presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
             }
         });
@@ -411,19 +426,20 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             public void onClick(View v) {
                 if (currentAcceptChkEntity.checkApplyId != null) {
                     Bundle bundle = new Bundle();
-                    bundle.putString(Constant.Router.TABLENO, currentAcceptChkEntity.checkApplyId.tableNo);
+                    bundle.putString(Constant.IntentKey.TABLENO, currentAcceptChkEntity.checkApplyId.tableNo);
                     IntentRouter.go(WXGDAcceptanceActivity.this, Constant.Router.ACCEPTANCE_LIST, bundle);
                     back();
                 } else {
                     if (mWXGDEntity.eamID != null) {
+                        onLoading("处理中...");
                         presenterRouter.create(GenerateAcceptanceAPI.class).generateCheckApply(mWXGDEntity.id != null ? mWXGDEntity.id : 0
-                                , mWXGDEntity.eamID.id != null ? mWXGDEntity.eamID.id : 0, Util.strFormat2(mWXGDEntity.faultInfo != null ? mWXGDEntity.faultInfo.describe : "")
+                                , mWXGDEntity.eamID.id != null ? mWXGDEntity.eamID.id : 0
+                                , Util.strFormat2(mWXGDEntity.faultInfo != null ? mWXGDEntity.faultInfo.describe : "")
                                 , mWXGDEntity.eamID.getInstallPlace().id);
                     } else {
                         ToastUtils.show(context, "无设备可生成验收单！");
                     }
                 }
-
             }
         });
     }
@@ -615,10 +631,10 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     public void receiveList(ListEvent listEvent) {
         if ("acceptanceCheckEntity".equals(listEvent.getFlag())) {
             List list = listEvent.getList();
-            if (list.size() > 0 && list.size() == mWXGDEntity.repairSum) {
+            if (list.size() > 0 && mWXGDEntity.repairSum != null && list.size() == mWXGDEntity.repairSum) {
                 // 已存在保存数据
-                currentAcceptChkEntity = (AcceptanceCheckEntity) list.get(list.size()-1); // 获取最后一个为当前可编辑
-            }else {
+                currentAcceptChkEntity = (AcceptanceCheckEntity) list.get(list.size() - 1); // 获取最后一个为当前可编辑
+            } else {
                 // 未存在保存数据
                 currentAcceptChkEntity.checkTime = new Date().getTime();
 
@@ -631,20 +647,8 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
 
             }
             setView();
-            acceptanceCheckEntities = listEvent.getList().toString();
+            acceptanceCheckEntities = currentAcceptChkEntity.toString();
         }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refresh(AcceptanceEvent event) {
-        mAcceptanceCheckController.updateAcceptanceCheckEntities(event.getList());
-        if (event.getList().size() <= 0) {
-            mAcceptanceCheckController.clear();
-            currentAcceptChkEntity = new AcceptanceCheckEntity();
-            acceptanceCheckEntities = "";
-            setView();
-        }
-        dgDeletedIds_acceptance = event.getDgDeletedIds();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -664,7 +668,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
 //        if (currentAcceptChkEntity.checkApplyId != null) {
 //            acceptApplyBtn.setVisibility(View.GONE);
 //        }
-        if (currentAcceptChkEntity.checkStaff == null){
+        if (currentAcceptChkEntity.checkStaff == null) {
             AccountInfo accountInfo = EamApplication.getAccountInfo();
             Staff staff = new Staff();
             staff.id = accountInfo.staffId;
@@ -672,7 +676,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             staff.code = accountInfo.staffCode;
             currentAcceptChkEntity.checkStaff = staff;
         }
-        if (currentAcceptChkEntity.checkTime == null){
+        if (currentAcceptChkEntity.checkTime == null) {
             currentAcceptChkEntity.checkTime = new Date().getTime();
         }
 
@@ -693,24 +697,35 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
      * @author zhangwenshuai1 2018/9/11
      */
     private boolean doCheckChange() {
-        if (!TextUtils.isEmpty(acceptanceCheckEntities) && !acceptanceCheckEntities.equals(getCurrentAcceptChk().toString())) {
+        if (!TextUtils.isEmpty(acceptanceCheckEntities) && !acceptanceCheckEntities.equals(currentAcceptChkEntity.toString())) {
             return true;
         }
         return false;
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void listWxgdsSuccess(WXGDListEntity entity) {
-        refreshController.refreshComplete();
         List<WXGDEntity> wxgdEntityList = entity.result;
         if (wxgdEntityList.size() > 0) {
             mWXGDEntity = wxgdEntityList.get(0);
+            updateInitView();
+            updateInitData();
+            mAcceptanceCheckController.setWxgdEntity(mWXGDEntity);
+            mRepairStaffController.setWxgdEntity(mWXGDEntity);
+            mSparePartController.setWxgdEntity(mWXGDEntity);
+            mLubricateOilsController.setWxgdEntity(mWXGDEntity);
+            maintenanceController.setWxgdEntity(mWXGDEntity);
+            refreshController.refreshComplete();
+        } else {
+            ToastUtils.show(this, "未查到当前待办");
         }
     }
 
     @Override
     public void listWxgdsFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
+        refreshController.refreshComplete();
     }
 
     @Override
@@ -719,7 +734,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             @Override
             public void onLoaderFinished() {
                 Bundle bundle = new Bundle();
-                bundle.putString(Constant.Router.TABLENO, entity.tableNo);
+                bundle.putString(Constant.IntentKey.TABLENO, entity.tableNo);
                 IntentRouter.go(WXGDAcceptanceActivity.this, Constant.Router.ACCEPTANCE_LIST, bundle);
                 back();
             }
