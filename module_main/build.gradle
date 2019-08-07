@@ -62,10 +62,8 @@ dependencies {
     implementation project(':middleware')
     implementation project(':upush')
     implementation project(':module_zzlogin')
-//    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
-//    annotationProcessor "com.github.jasonwang18.common:apt:$rootProject.ext.commonVersion@jar"
+    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
     implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation project(':module_txl')
 }
 
-apply from: '../library.gradle'

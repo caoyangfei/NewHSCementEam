@@ -1,7 +1,6 @@
 package com.supcon.mes.module_olxj.controller;
 
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -13,7 +12,6 @@ import android.widget.ProgressBar;
 
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.controller.BaseViewController;
-import com.supcon.common.view.util.DisplayUtil;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.view.js.BaseBridgeWebViewClient;
 import com.supcon.common.view.view.js.BridgeHandler;
@@ -22,7 +20,6 @@ import com.supcon.common.view.view.js.BridgeWebView;
 import com.supcon.common.view.view.js.CallBackFunction;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.model.event.UhfRfidEvent;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJTaskEntity;
 import com.supcon.mes.module_olxj.model.event.AreaRefreshEvent;

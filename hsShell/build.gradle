@@ -110,11 +110,11 @@ android {
         }
     }
 
-    repositories {
-        flatDir {
-            dirs project(':module_zz').file('libs')
-        }
-    }
+//    repositories {
+//        flatDir {
+//            dirs project(':module_zz_new').file('libs')
+//        }
+//    }
 
     //支持Java8
     defaultConfig.javaCompileOptions {
@@ -149,9 +149,9 @@ dependencies {
         implementation project(':module_yhgl')
         implementation project(':module_tsd')
         implementation project(':module_sbda_online')
-        implementation project(':module_zz')
+        implementation project(':module_zz_new')
         implementation project(':module_score')
-        implementation project(':mogu_viber')
+        implementation project(':vibLib')
         implementation project(':module_warn')
         implementation project(':module_acceptance')
     }

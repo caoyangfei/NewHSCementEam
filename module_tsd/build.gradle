@@ -37,7 +37,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation project(':middleware')
-//    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
-//    annotationProcessor "com.github.jasonwang18.common:apt:$rootProject.ext.commonVersion@jar"
+    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
 }
-apply from: '../library.gradle'

@@ -197,9 +197,9 @@ public class MainActivity extends BaseMultiFragmentActivity {
             getController(UserInfoListController.class).onInit();
         }
 
-//        if(EamApplication.isHailuo()) {
-//            workFragment.doZhiZhiLogin();
-//        }
+        if(EamApplication.isHailuo()) {
+            workFragment.doZhiZhiLogin();
+        }
     }
 
 

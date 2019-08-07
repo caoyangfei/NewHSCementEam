@@ -2,10 +2,7 @@
 buildscript {
 
     repositories {
-//        maven { url 'http://192.168.90.70:8888/nexus/content/groups/supcon_mes' }
         google()
-        maven { url "https://jitpack.io" }
-        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         mavenCentral()
         jcenter()
 
@@ -24,11 +21,14 @@ allprojects {
     repositories {
         google()
         maven { url "https://jitpack.io" }
+        maven { url 'https://dl.bintray.com/jasonwanghz/common' }
+        maven { url 'https://dl.bintray.com/jasonwanghz/mbap' }
+        maven { url 'https://dl.bintray.com/jasonwanghz/drive' }
         mavenCentral()
         jcenter()
-
+//        maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
         flatDir {
-            dirs '../module_zz/libs', 'libs'  //系统会搜索本身libs下和moduleM中libs下的依赖，使用逗号隔开。
+            dirs '../module_zz_new/libs', '../vibLib/libs', 'libs'  //系统会搜索本身libs下和moduleM中libs下的依赖，使用逗号隔开。
         }
     }
 }
@@ -39,7 +39,7 @@ task clean(type: Delete) {
 
 ext{
     compileSdkVersion = 28
-    buildToolsVersion = "27.0.3"
+    buildToolsVersion = "28.0.3"
     applicationId = "com.supcon.mes.cementEam"
 
     minSdkVersion = 19
@@ -47,14 +47,50 @@ ext{
     versionCode = 26
     versionName = "8.10.07.26"
 
-//    aptVersion          = '8.5.911.4'
-//    annotationVersion   = '8.5.911.6'//8.5.911.1
-//    httpVersion         = '8.5.911.1'
-//    viewVersion         = '8.5.911.89debug5'//8.5.911.13
-//    routerVersion       = '8.5.911.1'
-//    mbapVersion         = '8.5.911.142debug52'//8.5.911.57
-//    vibrateVersion      = '8.5.911.36'
-    commonVersion       = '1.3.5.3'
-    bapkitVersion       = '1.3.5.3'
     isAlone  = false
+
+//    commonVersion       = '1.3.5.3'
+//    bapkitVersion       = '1.3.5.3'
+//    mbapVersion         = '9.4.17.1debug21'
+//    vibrateVersion      = '8.5.911.38debug2'
+//    testoVersion        = '8.5.911.1'
+//    sb2Version          = '8.5.911.6debug10'
+//    nfcVersion          = '8.5.911.4'
+
+    aptVersion          = '9.7.29.2'
+    annotationVersion   = '9.7.29.2'
+    httpVersion         = '9.7.29.2'
+    viewVersion         = '9.7.29.2'
+    routerVersion       = '9.7.29.2'
+    mbapVersion         = '9.7.29.2'
+
+    vibVersion          = '9.7.29.1'
+    sb2Version          = '9.7.29.1'
+    nfcVersion          = '9.7.29.1'
+
+//zz
+    common_versionName = "common 1.0"
+    utils_versionName = "utils 1.0"
+    qrversionName="qr 1.0"
+    contactversionName="contact 1.0"
+    weexlib_versionName="weexlib 1.0"
+    webviewjs_versionName="webviewjs 1.0"
+    fastjsonLibVersion="1.1.46.android"
+    glideLibVersion="4.7.1"
+    eventbusLibVersion="3.0.0"
+    lubanLibVersion="1.1.8"
+    googleGsonLibVersion="2.3.1"
+    butterKnifeLibVersion="8.5.1"
+    junitLibVersion="4.12"
+    constraintLibVersion="1.0.2"
+    tinypinyinLibVersion="2.0.3"
+    greenDaoLibVersion="3.2.0"
+    okhttpLibVersion="2.3.0"
+    okioLibVersion="1.0.1"
+    picassoLibVersion="2.5.2"
+    weexInspectorLibVersion="0.10.0.5"
+    weexSdkLibVersion="0.16.0"
+    findbugsLibVersion="2.0.1"
+    weexpluginLibVersion="1.3"
+    zxingLibVersion="3.2.1"
 }

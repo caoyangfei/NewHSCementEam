@@ -33,7 +33,6 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
-import com.supcon.mes.middleware.util.SP2ThermometerHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
@@ -42,6 +41,7 @@ import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
 import com.supcon.mes.module_olxj.ui.OLXJWorkListUnHandledActivity;
+import com.supcon.mes.sb2.util.SB2ThermometerHelper;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -63,7 +63,7 @@ import java.util.regex.Pattern;
 
 public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
 
-    private SP2ThermometerHelper sp2ThermometerHelper;
+    private SB2ThermometerHelper sp2ThermometerHelper;
 
     public OLXJWorkListAdapter(Context context) {
         super(context);
@@ -100,7 +100,7 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
      * @date 2018/4/28
      */
     private void initThermometer() {
-        sp2ThermometerHelper = SP2ThermometerHelper.getInstance();
+        sp2ThermometerHelper = SB2ThermometerHelper.getInstance();
     }
 
 

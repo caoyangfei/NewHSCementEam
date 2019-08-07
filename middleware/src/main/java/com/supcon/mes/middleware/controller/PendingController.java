@@ -5,8 +5,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.app.annotation.Presenter;
+import com.supcon.common.BaseConstant;
 import com.supcon.common.view.base.controller.BaseDataController;
 import com.supcon.common.view.util.LogUtil;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.IntentRouter;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.api.PendingQueryAPI;
@@ -16,6 +18,7 @@ import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.bean.YHEntity;
 import com.supcon.mes.middleware.model.contract.PendingQueryContract;
 import com.supcon.mes.middleware.presenter.PendingQueryPresenter;
+import com.supcon.mes.middleware.util.PhoneUtil;
 
 /**
  * Created by wangshizhan on 2019/4/30
@@ -43,6 +46,40 @@ public class PendingController extends BaseDataController implements PendingQuer
         }
         else if(pendingEntity.deploymentName.contains("工单")){
             presenterRouter.create(PendingQueryAPI.class).queryWXGD(pendingEntity.tableNo);
+        }
+        else if(pendingEntity.deploymentName.contains("停电")){
+
+            String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
+                    + Constant.WebUrl.TD_LIST;
+
+            /*if(EamApplication.isHailuo()){
+                url+=  "&mobileMacAddr=" + *//*PhoneUtil.getMacAddressFromIp(context)*//*PhoneUtil.getDeviceSN();
+            }*/
+            Bundle bundle = new Bundle();
+            bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
+            bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
+            bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
+            bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
+//                    bundle.putString(BaseConstant.WEB_URL, EamApplication.getIp()+":"+EamApplication.getPort()+"/BEAMEle/onOrOff/onoroff/eleOffList.action?${getPowerCode('BEAMEle_1.0.0_onOrOff_eleOffList_self')}&&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOffList&openType=page&clientType=mobile");
+            bundle.putString(BaseConstant.WEB_URL, url);
+            IntentRouter.go(context, Constant.Router.TD, bundle);
+        }
+        else if(pendingEntity.deploymentName.contains("送电")){
+
+            String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
+                    + Constant.WebUrl.SD_LIST;
+
+            /*if(EamApplication.isHailuo()){
+                url+=  "&mobileMacAddr=" + *//*PhoneUtil.getMacAddressFromIp(context)*//*PhoneUtil.getDeviceSN();
+            }*/
+            Bundle bundle = new Bundle();
+            bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
+            bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
+            bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
+            bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
+//                    bundle.putString(BaseConstant.WEB_URL, EamApplication.getIp()+":"+EamApplication.getPort()+"/BEAMEle/onOrOff/onoroff/eleOffList.action?${getPowerCode('BEAMEle_1.0.0_onOrOff_eleOffList_self')}&&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOffList&openType=page&clientType=mobile");
+            bundle.putString(BaseConstant.WEB_URL, url);
+            IntentRouter.go(context, Constant.Router.SD, bundle);
         }
 
     }

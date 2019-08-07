@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Controller;
@@ -17,14 +18,17 @@ import com.supcon.mes.mbap.view.CustomArrowView;
 import com.supcon.mes.mbap.view.CustomCacheView;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomPotraitView;
+import com.supcon.mes.mbap.view.CustomVerticalTextView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.StaffPicController;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.PhoneUtil;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_login.IntentRouter;
 import com.supcon.mes.module_login.R;
+import com.supcon.mes.module_login.controller.PasswordController;
 import com.supcon.mes.module_login.model.api.MineAPI;
 import com.supcon.mes.module_login.model.contract.MineContract;
 import com.supcon.mes.module_login.presenter.MinePresenter;
@@ -61,6 +65,10 @@ public class MineFragment extends BaseControllerFragment implements MineContract
 
     @BindByTag("mineAbout")
     CustomArrowView mineAbout;
+
+    @BindByTag("infoContent")
+    TextView infoContent;
+
     private Uri uri;
 
 
@@ -78,6 +86,7 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     protected void initView() {
         super.initView();
 
+        infoContent.setText(PhoneUtil.getDeviceSN());
     }
 
     @Override

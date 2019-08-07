@@ -37,11 +37,8 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
-import com.supcon.mes.middleware.model.event.BarcodeEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.event.SB2AttachEvent;
-import com.supcon.mes.middleware.model.event.UhfRfidEvent;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -63,6 +60,9 @@ import com.supcon.mes.module_olxj.model.event.RefreshMapEvent;
 import com.supcon.mes.module_olxj.presenter.OLXJTaskStatusPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTempTaskListPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJTaskListAdapter;
+import com.supcon.mes.sb2.model.event.BarcodeEvent;
+import com.supcon.mes.sb2.model.event.SB2AttachEvent;
+import com.supcon.mes.sb2.model.event.UhfRfidEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -589,9 +589,9 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void scanBarCode(BarcodeEvent barcodeEvent) {
         
-        LogUtil.i("BarcodeEvent", barcodeEvent.getCode());
+        LogUtil.i("BarcodeEvent", barcodeEvent.getScanCode());
         
-        dealSign(barcodeEvent.getCode());
+        dealSign(barcodeEvent.getScanCode());
         
         
     }

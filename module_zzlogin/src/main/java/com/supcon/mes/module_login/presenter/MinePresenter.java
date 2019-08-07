@@ -28,11 +28,6 @@ public class MinePresenter extends MineContract.Presenter {
     public void logout() {
         LogUtil.i("dologout");
 
-        //如果是离线使用
-        if (SharedPreferencesUtils.getParam(App.getAppContext(), MBapConstant.SPKey.OFFLINE_ENABLE, false)) {
-            getView().logoutSuccess();
-            return;
-        }
         EventBus.getDefault().post(new DeviceTokenEvent(SharedPreferencesUtils.getParam(EamApplication.getAppContext(), Constant.SPKey.DEVICE_TOKEN, ""), false));
         mCompositeSubscription.add(
                 LoginHttpClient.logout()

@@ -59,8 +59,7 @@ dependencies {
 //    implementation files('libs/SecurityEnvSDK-release-1.1.0.jar')
     implementation 'org.greenrobot:eventbus:3.0.0'
 
-    implementation "com.github.jasonwang18.common:com_view:$rootProject.ext.commonVersion"
-//    implementation "com.github.jasonwang18.common:com_http:$rootProject.ext.commonVersion"
+    compileOnly "com.supcon.mes.common:com_view:$rootProject.ext.viewVersion"
 
-    implementation 'com.google.code.gson:gson:2.8.2'
+    compileOnly 'com.google.code.gson:gson:2.8.5'
 }

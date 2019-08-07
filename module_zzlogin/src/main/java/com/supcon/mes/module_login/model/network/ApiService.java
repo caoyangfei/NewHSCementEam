@@ -100,4 +100,20 @@ public interface ApiService {
      */
     @GET("/public/foundation/auth/getZhizhiUrl.action")
     Flowable<BapResultEntity> getZhizhiUrl();
+
+    /**
+     * 检查密码是否正确，是修改密码的第一步
+     * @param oldpassword
+     * @return
+     */
+    @GET("/foundation/userset/checkPwd.action")
+    Flowable<BapResultEntity>  checkPwd(@Query("oldpassword") String oldpassword);
+
+    /**
+     * 提交新的密码，是修改密码第二步
+     * @param userInfo
+     * @return
+     */
+    @GET("/foundation/userset/saveUsersrtInfo.action")
+    Flowable<BapResultEntity>  saveUsersrtInfo(@QueryMap Map<String,Object> userInfo);
 }

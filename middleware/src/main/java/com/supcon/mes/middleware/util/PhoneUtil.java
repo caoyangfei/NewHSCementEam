@@ -19,11 +19,11 @@ import java.util.Enumeration;
 public class PhoneUtil {
 
     public static String getMacAddressFromIp(Context context) {
-        String mac_s= "";
+        String mac_s = "";
         StringBuilder buf = new StringBuilder();
         try {
             byte[] mac;
-            NetworkInterface ne=NetworkInterface.getByInetAddress(InetAddress.getByName(getIpAddress(context)));
+            NetworkInterface ne = NetworkInterface.getByInetAddress(InetAddress.getByName(getIpAddress(context)));
             mac = ne.getHardwareAddress();
             for (byte b : mac) {
                 buf.append(String.format("%02X:", b));
@@ -39,7 +39,7 @@ public class PhoneUtil {
         return mac_s;
     }
 
-    public static String getIpAddress(Context context){
+    public static String getIpAddress(Context context) {
         NetworkInfo info = ((ConnectivityManager) context
                 .getSystemService(Context.CONNECTIVITY_SERVICE)).getActiveNetworkInfo();
         if (info != null && info.isConnected()) {
@@ -65,7 +65,7 @@ public class PhoneUtil {
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 String ipAddress = intIP2StringIP(wifiInfo.getIpAddress());
                 return ipAddress;
-            }  else if (info.getType() == ConnectivityManager.TYPE_ETHERNET){
+            } else if (info.getType() == ConnectivityManager.TYPE_ETHERNET) {
                 // 有限网络
                 return getLocalIp();
             }
@@ -100,6 +100,15 @@ public class PhoneUtil {
 
         }
         return "0.0.0.0";
+
+    }
+
+
+    public static String getDeviceSN() {
+
+        String serialNumber = android.os.Build.SERIAL;
+
+        return serialNumber;
 
     }
 }

@@ -34,7 +34,6 @@ import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
 import com.supcon.mes.middleware.model.bean.Area;
 import com.supcon.mes.middleware.model.bean.AreaDao;
 import com.supcon.mes.middleware.model.bean.YHEntity;
-import com.supcon.mes.middleware.model.event.BarcodeEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
@@ -50,6 +49,7 @@ import com.supcon.mes.module_yhgl.model.contract.YHListContract;
 import com.supcon.mes.module_yhgl.presenter.YHListPresenter;
 import com.supcon.mes.module_yhgl.ui.adapter.YHListAdapter;
 import com.supcon.mes.module_yhgl.util.YHFilterHelper;
+import com.supcon.mes.sb2.model.event.BarcodeEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -433,7 +433,7 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBarCode(BarcodeEvent barcodeEvent) {
-        String code = barcodeEvent.getCode();
+        String code = barcodeEvent.getScanCode();
         Log.e("code", code);
         if (isShow) {
             customSearchView.setInput(code);

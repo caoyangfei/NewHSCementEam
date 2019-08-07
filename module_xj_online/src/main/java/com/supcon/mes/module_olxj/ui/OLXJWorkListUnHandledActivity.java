@@ -47,7 +47,6 @@ import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntity;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntityDao;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.event.ThermometerEvent;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.ui.view.CustomRadioSheetDialog;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
@@ -72,6 +71,7 @@ import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapter;
+import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
 
 import org.greenrobot.eventbus.EventBus;

@@ -35,6 +35,7 @@ public class SilentLoginPresenter extends SilentLoginContract.Presenter {
 //        }
 
         mCompositeSubscription.add(
+
                 LoginHttpClient.login(username, pwd, defaultMap)
                         .onErrorReturn(throwable -> {
                             LoginEntity loginEntity = new LoginEntity();

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageButton;
@@ -15,16 +16,6 @@ import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
-import com.bluetron.rxretrohttp.exception.ApiException;
-import com.bluetron.zhizhi.BuildConstants;
-import com.bluetron.zhizhi.domain.bean.response.workstation.OwnMinAppItem;
-import com.bluetron.zhizhi.domain.event.login.LogOutEventSDK;
-import com.bluetron.zhizhi.domain.event.login.LoginEventSDK;
-import com.bluetron.zhizhi.domain.event.minapp.MinappListEvent;
-import com.bluetron.zhizhi.domain.router.Navigation;
-import com.bluetron.zhizhi.home.presentation.HomeSDK;
-import com.bluetron.zhizhi.login.presentation.LoginUserSDK;
-import com.jdjz.coresdk14.ZZApp;
 import com.supcon.common.BaseConstant;
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.adapter.IListAdapter;
@@ -33,6 +24,7 @@ import com.supcon.common.view.util.DisplayUtil;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.common.view.util.ToastUtils;
+import com.supcon.mes.mbap.MBapConstant;
 import com.supcon.mes.mbap.beans.GalleryBean;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.view.CustomAdView;
@@ -40,6 +32,7 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.PhoneUtil;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_login.IntentRouter;
 import com.supcon.mes.module_login.R;
@@ -62,6 +55,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import cn.bluetron.coresdk.contract.CoreSdkContract;
+import cn.bluetron.coresdk.main.SLCoreSdk;
+import cn.bluetron.coresdk.model.bean.response.OwnMinAppItem;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
@@ -122,40 +118,27 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
         EventBus.getDefault().register(this);
     }
 
-    public void doZhiZhiLogin() {
-        String ip = SharedPreferencesUtils.getParam(ZZApp.getAppContext(), Constant.ZZ.IP, "");
-        String port = SharedPreferencesUtils.getParam(ZZApp.getAppContext(), Constant.ZZ.PORT, "");
-        String userName = ZZApp.getUserName();
-        String pwd = ZZApp.getPassword();
-        LogUtil.d("zhizhi login ip:" + ip + " port:" + port + " userName:" + userName + " pwd:" + pwd);
-        LoginUserSDK.getInstance().userLogin(TextUtils.isEmpty(userName) ? "admin" : userName, TextUtils.isEmpty(pwd) ? "Supos1304@" : pwd, "Http://" + ip + ":" + port + "/");
-//        HomeSDK.getInstance().getMinppListSDK();
+    public void doZhiZhiLogin(){
+        String suposTicket = SharedPreferencesUtils.getParam(context, MBapConstant.SPKey.SUPOS_TICKET, "");
+        LogUtil.d("suposTicket:"+suposTicket);
+        SLCoreSdk.initialize(getActivity().getApplication(),"http://10.30.55.50:8042", suposTicket, "admin");
+        SLCoreSdk.client().getMinAppList(new CoreSdkContract.GetMinAppListCallBack() {
+            @Override
+            public void onGetMinAppList(List<OwnMinAppItem> list) {
+                //System.out.println(list);
+                Log.i("tchl","list size:"+list.size());
+                initZhiZhiApps(list);
+            }
+
+            @Override
+            public void onError(String msg) {
+                //Toast.makeText(MainActivity.this,"getMinAppList error:"+msg,Toast.LENGTH_LONG).show();
+                Log.i("tchl","getMinAppList error");
+            }
+        });
     }
 
-    //登录,登出,获取minappist时出错返回的内容和code
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(ApiException ex) {
-        ToastUtils.show(context, ex.getCode() + " " + ex.getMessage());
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(LoginEventSDK ex) {
-        LogUtil.d("supos平台登录成功！");
-        HomeSDK.getInstance().getMinppListSDK();
-        String token1 = LoginUserSDK.getInstance().getOSToken();
-        LogUtil.e("zhizhi token1:" + token1);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(LogOutEventSDK ex) {
-        LogUtil.d("supos平台登出成功");
-    }
-
-    private List<WorkInfo> sbWorkInfos = new ArrayList<>();
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void Event(MinappListEvent minappListEvent) {
+    private void initZhiZhiApps(List<OwnMinAppItem> list) {
         if (zzApps == null) {
             zzApps = new ArrayList<>();
         } else {
@@ -163,20 +146,15 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
                 zzApps.clear();
             }
 
-            if (sbWorkInfos.size() != 0) {
-                sbWorkInfos.clear();
-            }
         }
-        List<OwnMinAppItem> minappList = minappListEvent.getList();
-        for (int i = 0; i < minappList.size(); i++) {
-            OwnMinAppItem appItem = minappListEvent.getList().get(i);
+
+        for (int i = 0; i < list.size(); i++) {
+            OwnMinAppItem appItem = list.get(i);
             WorkInfo workInfo = new WorkInfo();
             workInfo.iconUrl = appItem.getAppiconurl();
             workInfo.name = appItem.getAppname();
             workInfo.pendingUrl = appItem.getAppurl();
-            workInfo.zzBaseServerUrl = appItem.getAppserverbaseurl();
-            workInfo.zzAppType = appItem.getApptype();
-            workInfo.zzAppId = appItem.getAppId();
+            workInfo.appItem = appItem;
             workInfo.isOpen = true;
             workInfo.router = appItem.getAppurl();
             zzApps.add(workInfo);
@@ -228,9 +206,9 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 
         defaultList = WorkHelper.getDefaultWorkList(context);
 
-//        if(EamApplication.isHailuo()){
-//            doZhiZhiLogin();
-//        }
+        if(EamApplication.isHailuo()){
+            doZhiZhiLogin();
+        }
 
 
         Flowable.timer(20, TimeUnit.MILLISECONDS)
@@ -353,8 +331,10 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 
                 if (Constant.Router.SD.equals(workInfo.router)) {
                     String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
-                            + Constant.WebUrl.SD_LIST
-                            /*+"&mobileMacAddr=" + PhoneUtil.getMacAddressFromIp(context)*/;
+                            + Constant.WebUrl.SD_LIST;
+                    /*if(EamApplication.isHailuo()){
+                        url+=  "&mobileMacAddr=" + *//*PhoneUtil.getMacAddressFromIp(context)*//*PhoneUtil.getDeviceSN();
+                    }*/
                     Bundle bundle = new Bundle();
                     bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
                     bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
@@ -366,8 +346,10 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
                     IntentRouter.go(context, workInfo.router, bundle);
                 } else if (Constant.Router.TD.equals(workInfo.router)) {
                     String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
-                            + Constant.WebUrl.TD_LIST
-                            /*+"&mobileMacAddr=" + PhoneUtil.getMacAddressFromIp(context)*/;
+                            + Constant.WebUrl.TD_LIST;
+                    /*if(EamApplication.isHailuo()){
+                        url+=  "&mobileMacAddr=" + *//*PhoneUtil.getMacAddressFromIp(context)*//*PhoneUtil.getDeviceSN();
+                    }*/
                     Bundle bundle = new Bundle();
                     bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
                     bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
@@ -376,7 +358,7 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
                     bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
                     bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
                     IntentRouter.go(context, workInfo.router, bundle);
-                } else if (workInfo.zzAppType != 0) {
+                } else if (workInfo.appItem != null) {
                     goZZApp(workInfo);
                 } else
                     IntentRouter.go(getContext(), workInfo.router);
@@ -394,22 +376,12 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 
     private void goZZApp(WorkInfo workInfo) {
 
-        switch (workInfo.zzAppType) {
+        switch (workInfo.appItem.getApptype()) {
             case 1:
-                Navigation.navigateToTFAppList(workInfo.name);
+                SLCoreSdk.client().openTFAppListActivity(workInfo.appItem);
                 break;
             case 2:
-                if ("过程报警".equals(workInfo.name)) {
-                    BuildConstants.isInit = true;
-                    BuildConstants.appId = workInfo.zzAppId;
-                    Navigation.navigateToAlarmMinapp(workInfo.pendingUrl
-                            , workInfo.name, workInfo.zzBaseServerUrl
-                            , workInfo.iconUrl);
-                } else if ("趋势图".equals(workInfo.name)) {
-                    Navigation.navigateToTrendMinapp(workInfo.pendingUrl
-                            , workInfo.name, workInfo.zzBaseServerUrl
-                            , workInfo.iconUrl);
-                }
+                SLCoreSdk.client().openWebApp(workInfo.appItem);
                 break;
 
         }

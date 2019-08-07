@@ -37,11 +37,8 @@ import com.supcon.mes.mbap.utils.controllers.SinglePickController;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
-import com.supcon.mes.middleware.model.event.BarcodeEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.event.SB2AttachEvent;
-import com.supcon.mes.middleware.model.event.UhfRfidEvent;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -62,6 +59,9 @@ import com.supcon.mes.module_olxj.model.contract.OLXJTaskStatusContract;
 import com.supcon.mes.module_olxj.presenter.OLXJTaskListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTaskStatusPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJTaskListAdapter;
+import com.supcon.mes.sb2.model.event.BarcodeEvent;
+import com.supcon.mes.sb2.model.event.SB2AttachEvent;
+import com.supcon.mes.sb2.model.event.UhfRfidEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -570,8 +570,8 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void scanBarCode(BarcodeEvent barcodeEvent) {
-        LogUtil.i("BarcodeEvent", barcodeEvent.getCode());
-        dealSign(barcodeEvent.getCode());
+        LogUtil.i("BarcodeEvent", barcodeEvent.getScanCode());
+        dealSign(barcodeEvent.getScanCode());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

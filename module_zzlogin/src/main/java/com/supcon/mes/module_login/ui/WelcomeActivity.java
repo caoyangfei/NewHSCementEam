@@ -4,10 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.common.view.util.StatusBarUtils;
 import com.supcon.mes.mbap.MBapApp;
-import com.supcon.mes.mbap.MBapConstant;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.module_login.IntentRouter;
@@ -37,15 +35,13 @@ public class WelcomeActivity extends Activity {
         boolean finalIsHS = isHS;
         new Handler().postDelayed(() -> {
             if (MBapApp.isIsLogin()) {
-                if (EamApplication.isHailuo()) {
-                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN);
+                if (EamApplication.isHongshi()) {
+                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION);
                 } else {
-                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN);
+                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION);
                 }
                 //在线模式使用心跳防止session过期
-                if (!SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.OFFLINE_ENABLE, false)) {
-                    HeartBeatService.startLoginLoop(this);
-                }
+                HeartBeatService.startLoginLoop(this);
             } else {
                 Bundle bundle = new Bundle();
                 if (!finalIsHS) {

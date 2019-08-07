@@ -18,6 +18,7 @@ import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.SwitchButton;
+import com.supcon.mes.mbap.view.CustomArrowView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.DeviceManager;
@@ -31,6 +32,7 @@ import com.supcon.mes.mbap.utils.PatternUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
+import com.supcon.mes.module_login.controller.PasswordController;
 import com.supcon.mes.module_login.model.api.MineAPI;
 import com.supcon.mes.module_login.model.contract.MineContract;
 import com.supcon.mes.module_login.presenter.MinePresenter;
@@ -64,6 +66,11 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
     @BindByTag("offlineSwitchBtn")
     SwitchButton offlineSwitchBtn;
 
+    @BindByTag("pwdSettings")
+    CustomArrowView pwdSettings;
+
+    private PasswordController mPasswordController;
+
 
     private StringBuilder originalParam = new StringBuilder();
 
@@ -95,9 +102,6 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
         portInput.setInput(SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.PORT, ""));
 
         urlSwitchBtn.setChecked(SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.URL_ENABLE, false));
-
-        qrCodeSwitchBtn.setChecked(SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.QR_CODE_ENABLE, false));
-        offlineSwitchBtn.setChecked(SharedPreferencesUtils.getParam(this, MBapConstant.SPKey.OFFLINE_ENABLE, false));
 
 
         EditTextHelper.setEditTextInhibitInputSpace(ipInput.editText());
@@ -169,9 +173,6 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
 
         leftBtn.setOnClickListener(v -> onBackPressed());
 
-        qrCodeSwitchBtn.setOnCheckedChangeListener((switchButton, b) -> SharedPreferencesUtils.setParam(context, MBapConstant.SPKey.QR_CODE_ENABLE, b));
-        offlineSwitchBtn.setOnCheckedChangeListener((switchButton, b) -> SharedPreferencesUtils.setParam(context, MBapConstant.SPKey.OFFLINE_ENABLE, b));
-
         urlSwitchBtn.setOnCheckedChangeListener((switchButton, b) -> {
 
             isUrlEnabled = b;
@@ -180,6 +181,18 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
 
             SharedPreferencesUtils.setParam(context, MBapConstant.SPKey.URL_ENABLE, b);
         });
+
+        pwdSettings.setOnClickListener(v -> showPwdDialog());
+    }
+
+    private void showPwdDialog() {
+
+        if(mPasswordController == null){
+            mPasswordController = new PasswordController(PasswordController.getView(context), true);
+            mPasswordController.init();
+        }
+
+        mPasswordController.open();
     }
 
     @Override
@@ -303,9 +316,6 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
             MBapApp.setUrl("");
         }
 
-
-        //使用模式  在线 / 离线
-        SharedPreferencesUtils.setParam(this, MBapConstant.SPKey.OFFLINE_ENABLE, offlineSwitchBtn.isChecked());
 
         Api.getInstance().rebuild();
 

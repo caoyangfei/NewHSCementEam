@@ -1,12 +1,6 @@
 package com.supcon.mes.middleware.util;
 
-import android.app.Notification;
 import android.app.Service;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-
-import com.supcon.mes.middleware.service.KeepService;
 
 /**
  * Created by wangshizhan on 2019/4/24

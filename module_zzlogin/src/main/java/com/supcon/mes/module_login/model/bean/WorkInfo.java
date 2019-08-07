@@ -2,6 +2,8 @@ package com.supcon.mes.module_login.model.bean;
 
 import com.supcon.common.com_http.BaseEntity;
 
+import cn.bluetron.coresdk.model.bean.response.OwnMinAppItem;
+
 /**
  * Created by wangshizhan on 2017/8/16.
  * Email:wangshizhan@supcon.com
@@ -22,7 +24,5 @@ public class WorkInfo extends BaseEntity {
     public boolean isOpen;
     public String pendingUrl;
 
-    public String zzAppId;
-    public int zzAppType;
-    public String zzBaseServerUrl;
+    public OwnMinAppItem appItem;
 }

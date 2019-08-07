@@ -14,7 +14,7 @@
 
 
     <application
-        android:name="com.jdjz.coresdk14.ZZApp"
+        android:name="com.supcon.mes.middleware.EamApplication"
         android:icon="${APP_ICON}"
         android:label="${APP_NAME}"
         android:largeHeap="true"

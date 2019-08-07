@@ -79,6 +79,43 @@
         custom:arrow_text="关于我们"
         android:layout_marginBottom="@dimen/dp_1"
         />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@color/white"
+            >
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_user_cpxx"
+                android:id="@+id/infoIcon"
+                android:tag="infoIcon"
+                android:scaleType="center"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/dp_20"
+                style="@style/DetailText"
+                android:textColor="@color/textColorlightblack"
+                android:layout_toRightOf="@+id/infoIcon"
+                android:gravity="left|center_vertical"
+                android:text="设备唯一码"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/infoContent"
+                style="@style/DetailText"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="@dimen/dp_15"
+                android:textSize="@dimen/fontSize_12sp"
+                android:layout_toRightOf="@+id/infoIcon"
+                android:tag="infoContent"
+                />
+        </RelativeLayout>
+
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_50"
@@ -87,5 +124,7 @@
         android:id="@+id/logout"
         android:background="@drawable/sl_logout_btn"
         />
+
+
     </LinearLayout>
 </ScrollView>

@@ -161,7 +161,9 @@
             android:id="@+id/taskAreaListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/BgXjAreaBlue"
             android:overScrollMode="never"
+            android:paddingTop="@dimen/dp_20"
             android:tag="taskAreaListView"
             android:visibility="gone" />
     </LinearLayout>

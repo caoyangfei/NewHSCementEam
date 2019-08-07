@@ -19,4 +19,6 @@ public class BapResultEntity extends BaseEntity {
     public long pendingId;
     public String zhizhiUrl;
     public String powerCode;
+
+    public String Message;
 }

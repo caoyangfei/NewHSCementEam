@@ -20,7 +20,6 @@ import com.supcon.mes.middleware.model.bean.AccountInfoDao;
 import com.supcon.mes.middleware.model.bean.DaoMaster;
 import com.supcon.mes.middleware.model.bean.DaoSession;
 import com.supcon.mes.middleware.model.bean.Staff;
-import com.supcon.mes.middleware.service.KeepService;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.CrashHandler;
 import com.supcon.mes.push.PushController;
@@ -91,7 +90,6 @@ public class EamApplication extends MBapApp {
         initRouter();
         initUMeng();
         initIP();
-        startService(new Intent(this, KeepService.class));
     }
 
 
@@ -147,6 +145,20 @@ public class EamApplication extends MBapApp {
             }
             setIp(ip);
             setPort(port);
+        }
+
+        String zzIp = SharedPreferencesUtils.getParam(getApplicationContext(), Constant.ZZ.IP, "");
+        LogUtil.d("channel:"+channel+" zzip:"+zzIp);
+        if(!TextUtils.isEmpty(zzIp)){
+            return;
+        }
+        if (channel.equals("hongshi")) {
+            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "zhizhi.hssn.hz.supos.net"/*"192.168.13.113"*/);
+            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "8181");
+        }
+        else if(channel.equals("hailuo")){
+            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "60.167.69.246"/*"192.168.13.113"*/);
+            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "38043");
         }
 
     }
@@ -236,5 +248,22 @@ public class EamApplication extends MBapApp {
             return true;
         }
 
+    }
+
+    private static String zzUrl;
+
+    public static void setZzUrl(String zzUrl) {
+        if(!TextUtils.isEmpty(zzUrl)) {
+            EamApplication.zzUrl = zzUrl;
+            SharedPreferencesUtils.setParam(getAppContext(), Constant.ZZ.URL, zzUrl);
+        }
+
+    }
+
+    public static String getZzUrl() {
+        if(TextUtils.isEmpty(zzUrl)){
+            zzUrl = SharedPreferencesUtils.getParam(getAppContext(), Constant.ZZ.URL, "");
+        }
+        return zzUrl;
     }
 }
