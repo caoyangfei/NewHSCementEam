@@ -21,6 +21,7 @@ public class SparePartEntity extends BaseEntity {
     public Float lastDuration;//上次更换时长
     public String spareMemo;//备注
     public float depleteSum;//数量
+    public float standingCrop;//现存量
     public Good productID;//备件
 
     public AccessoryEamId accessoryEamId;//附属设备

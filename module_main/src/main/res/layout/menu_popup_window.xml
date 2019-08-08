@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,19 +18,20 @@
             android:background="@drawable/shap_fillet_bg"
             android:nestedScrollingEnabled="false"
             android:overScrollMode="never"
-            android:paddingTop="@dimen/dp_10"
             android:paddingLeft="@dimen/dp_10"
+            android:paddingTop="@dimen/dp_10"
             android:paddingBottom="@dimen/dp_10"
             android:tag="lv_toptitle_menu"
             tools:ignore="UnusedAttribute" />
 
-        <com.supcon.mes.module_main.ui.view.PopwinBackView
+        <com.supcon.mes.middleware.ui.view.PopwinBackView
             android:id="@+id/pv_triangle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/lv_toptitle_menu"
             android:layout_marginLeft="@dimen/dp_10"
-            android:tag="pv_triangle" />
+            android:tag="pv_triangle"
+            app:direction="bottom" />
     </RelativeLayout>
 
 </RelativeLayout>

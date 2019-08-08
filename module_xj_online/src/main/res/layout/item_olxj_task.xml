@@ -164,6 +164,7 @@
             android:background="@color/BgXjAreaBlue"
             android:overScrollMode="never"
             android:paddingTop="@dimen/dp_20"
+            android:paddingBottom="@dimen/dp_10"
             android:tag="taskAreaListView"
             android:visibility="gone" />
     </LinearLayout>

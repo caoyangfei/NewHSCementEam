@@ -38,6 +38,16 @@
             app:max_lines="1" />
 
         <com.supcon.mes.mbap.view.CustomTextView
+            android:id="@+id/itemSparePartStandingCropTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/dp_5"
+            android:tag="itemSparePartStandingCropTv"
+            app:content_hint="--"
+            app:key="现   存   量:"
+            app:max_lines="1" />
+
+        <com.supcon.mes.mbap.view.CustomTextView
             android:id="@+id/itemSparePartModelSpecifTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

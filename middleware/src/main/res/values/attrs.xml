@@ -18,4 +18,12 @@
         <attr name="android:layout_gravity" />
     </declare-styleable>
 
+    <declare-styleable name="PopwinBackView">
+        <attr name="direction" format="enum">
+            <enum name="top" value="0" />//向上
+            <enum name="bottom" value="1" />//向下
+            <enum name="left" value="2" />//向左
+            <enum name="right" value="3" />//向右
+        </attr>
+    </declare-styleable>
 </resources>

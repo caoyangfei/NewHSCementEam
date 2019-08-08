@@ -2,7 +2,8 @@ package com.supcon.mes.module_wxgd.presenter;
 
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
-import com.supcon.mes.module_wxgd.model.bean.StandingCropResultEntity;
+import com.supcon.mes.middleware.model.bean.StandingCropEntity;
+import com.supcon.mes.middleware.model.network.MiddlewareHttpClient;
 import com.supcon.mes.module_wxgd.model.contract.SparePartListContract;
 import com.supcon.mes.module_wxgd.model.network.HttpClient;
 
@@ -17,27 +18,26 @@ public class SparePartListPresenter extends SparePartListContract.Presenter {
     @Override
     public void updateStandingCrop(String productCode) {
         mCompositeSubscription.add(
-                HttpClient.updateStandingCrop(productCode)
-                        .onErrorReturn(new Function<Throwable, CommonListEntity<StandingCropResultEntity>>() {
+                MiddlewareHttpClient.updateStandingCrop(productCode)
+                        .onErrorReturn(new Function<Throwable, CommonListEntity<StandingCropEntity>>() {
                             @Override
-                            public CommonListEntity<StandingCropResultEntity> apply(Throwable throwable) throws Exception {
+                            public CommonListEntity<StandingCropEntity> apply(Throwable throwable) throws Exception {
                                 CommonListEntity resultEntity = new CommonListEntity();
                                 resultEntity.success = false;
                                 resultEntity.errMsg = throwable.toString();
                                 return resultEntity;
                             }
                         })
-                        .subscribe(new Consumer<CommonListEntity<StandingCropResultEntity>>() {
+                        .subscribe(new Consumer<CommonListEntity<StandingCropEntity>>() {
                             @Override
-                            public void accept(CommonListEntity<StandingCropResultEntity> resultEntity) throws Exception {
+                            public void accept(CommonListEntity<StandingCropEntity> resultEntity) throws Exception {
                                 if (resultEntity.success) {
                                     getView().updateStandingCropSuccess(resultEntity);
                                 } else {
                                     getView().updateStandingCropFailed(resultEntity.errMsg);
                                 }
                             }
-                        })
-        );
+                        }));
     }
 
     @Override

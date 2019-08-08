@@ -30,12 +30,10 @@ public class WaitDealtPresenter extends WaitDealtContract.Presenter {
     public void getWaitDealt(int page, int pageSize, Map<String, Object> params) {
         FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(params);
 
-        if (params.size() == 0) {
-            Map<String, Object> paramsName = new HashMap<>();
-            paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
-            JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PERSONWORKINFO,STAFFID");
-            fastQueryCond.subconds.add(joinSubcondEntity);
-        }
+        Map<String, Object> paramsName = new HashMap<>();
+        paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
+        JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PERSONWORKINFO,STAFFID");
+        fastQueryCond.subconds.add(joinSubcondEntity);
 
         fastQueryCond.modelAlias = "personworkinfo";
 

@@ -242,8 +242,6 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
 
                     //手动签到
                     OLXJAreaEntity areaEntity = (OLXJAreaEntity) obj;
-
-
                     showSignReason(areaEntity);
                     break;
 
@@ -347,7 +345,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
                                     return;
                                 }
                                 if (mOLXJTaskAreaController == null) {
-                                    mOLXJTaskAreaController = new OLXJTaskAreaController(context);
+                                    mOLXJTaskAreaController = new OLXJTaskAreaController(context, 0);
 
                                 }
                                 mOLXJTaskAreaController.getData(taskEntity, new OnSuccessListener<Boolean>() {

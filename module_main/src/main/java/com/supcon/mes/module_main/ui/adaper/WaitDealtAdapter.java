@@ -95,19 +95,23 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                             Bundle bundle = new Bundle();
                             bundle.putString(Constant.IntentKey.TABLENO, item.tableno);
                             if (item.processkey.equals("work")) {
-                                switch (item.openurl) {
-                                    case Constant.WxgdView.RECEIVE_OPEN_URL:
-                                        IntentRouter.go(context, Constant.Router.WXGD_RECEIVE, bundle);
-                                        break;
-                                    case Constant.WxgdView.DISPATCH_OPEN_URL:
-                                        IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
-                                        break;
-                                    case Constant.WxgdView.EXECUTE_OPEN_URL:
-                                        IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
-                                        break;
-                                    case Constant.WxgdView.ACCEPTANCE_OPEN_URL:
-                                        IntentRouter.go(context, Constant.Router.WXGD_ACCEPTANCE, bundle);
-                                        break;
+                                if (!TextUtils.isEmpty(item.openurl)) {
+                                    switch (item.openurl) {
+                                        case Constant.WxgdView.RECEIVE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_RECEIVE, bundle);
+                                            break;
+                                        case Constant.WxgdView.DISPATCH_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
+                                            break;
+                                        case Constant.WxgdView.EXECUTE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
+                                            break;
+                                        case Constant.WxgdView.ACCEPTANCE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_ACCEPTANCE, bundle);
+                                            break;
+                                    }
+                                } else {
+                                    ToastUtils.show(context, "未查询到工单状态状态!");
                                 }
                             } else if (item.processkey.equals("faultInfoFW")) {
                                 IntentRouter.go(context, Constant.Router.YH_EDIT, bundle);

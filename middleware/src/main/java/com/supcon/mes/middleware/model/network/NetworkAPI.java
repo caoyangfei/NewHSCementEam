@@ -23,6 +23,7 @@ import com.supcon.mes.middleware.model.bean.RepairGroupListEntity;
 import com.supcon.mes.middleware.model.bean.RoleListEntity;
 import com.supcon.mes.middleware.model.bean.SparePartRefListEntity;
 import com.supcon.mes.middleware.model.bean.StaffDetailInfoListEntity;
+import com.supcon.mes.middleware.model.bean.StandingCropEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeListEntity;
 import com.supcon.mes.middleware.model.bean.TxlListEntity;
 import com.supcon.mes.middleware.model.bean.UserInfoListEntity;
@@ -49,9 +50,10 @@ import retrofit2.http.QueryMap;
  */
 @ApiFactory(name = "MiddlewareHttpClient")
 public interface NetworkAPI {
-    
+
     @GET("/foundation/staff/list-data.action?&staff.code=&staff.name=&department.name=&position.name=&companyId=1000&cusDepartmentDown=yes&cusPositionDown=yes&pageSize=100000&&records.pageSize=100000&records.maxPageSize=500")
     Flowable<TxlListEntity> getStaffList(@Query("records.pageNo") int pageNum);
+
     /**
      * 用户列表
      */
@@ -71,7 +73,7 @@ public interface NetworkAPI {
      */
 //    @GET("/foundation/user/queryList.action?pageSize=500&&page.pageSize=500&page.maxPageSize=500")
     @GET("/foundation/user/common/userRefList.action?userPage.pageSize=500&pageOrder=DESC")
-    Flowable<UserInfoListEntity> queryUserInfoList(@Query("staff.name") String staffName,@Query("userPage.pageNo") int pageNo);
+    Flowable<UserInfoListEntity> queryUserInfoList(@Query("staff.name") String staffName, @Query("userPage.pageNo") int pageNo);
 
     /**
      * 获取系统编码
@@ -192,6 +194,7 @@ public interface NetworkAPI {
 
     /**
      * 获取制定PowerCode
+     *
      * @param deploymentId
      */
     @GET("/ec/workflow/getStartActivePowerCode.action")
@@ -334,5 +337,9 @@ public interface NetworkAPI {
      */
     @GET("/BEAM/baseInfo/baseInfo/baseInfoPartForview-query.action")
     Flowable<CommonListEntity<EamType>> getEam(@Query("advQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
+
+
+    @GET("/BEAM/baseInfo/baseInfo/getSupOSStandingCrop.action")
+    Flowable<CommonListEntity<StandingCropEntity>> updateStandingCrop(@Query("sparePartCodes") String sparePartCodes);
 
 }

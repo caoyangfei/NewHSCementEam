@@ -1,6 +1,7 @@
 package com.supcon.mes.module_main.ui.adaper;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,8 +10,11 @@ import android.widget.TextView;
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
+import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 
@@ -54,6 +58,68 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
         protected void initListener() {
             super.initListener();
             waitDealtEntrust.setOnClickListener(this::onClick);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WaitDealtEntity item = getItem(getAdapterPosition());
+                    if (TextUtils.isEmpty(item.processkey)) {
+                        if (item.dataid == null || TextUtils.isEmpty(item.soucretype)) {
+                            ToastUtils.show(context, "未查询到当前单据状态!");
+                            return;
+                        }
+                        if (!TextUtils.isEmpty(item.istemp) && item.soucretype.equals("巡检提醒")) {
+                            if (item.istemp.equals("1")) {
+                                IntentRouter.go(context, Constant.Router.LSXJ_LIST);
+                            } else {
+                                IntentRouter.go(context, Constant.Router.JHXJ_LIST);
+                            }
+                        } else {
+                            if (TextUtils.isEmpty(item.peroidtype)) {
+                                ToastUtils.show(context, "未查询到当前单据周期类型!");
+                                return;
+                            }
+                            Bundle bundle = new Bundle();
+                            bundle.putLong(Constant.IntentKey.WARN_ID, item.dataid);
+                            bundle.putString(Constant.IntentKey.PROPERTY, item.peroidtype);
+                            if (item.soucretype.equals("润滑提醒")) {
+                                IntentRouter.go(context, Constant.Router.LUBRICATION_EARLY_WARN, bundle);
+                            } else if (item.soucretype.equals("零部件提醒")) {
+                                IntentRouter.go(context, Constant.Router.SPARE_EARLY_WARN, bundle);
+                            } else if (item.soucretype.equals("维保提醒")) {
+                                IntentRouter.go(context, Constant.Router.MAINTENANCE_EARLY_WARN, bundle);
+                            }
+                        }
+
+                    } else {
+                        if (!TextUtils.isEmpty(item.tableno)) {
+                            Bundle bundle = new Bundle();
+                            bundle.putString(Constant.IntentKey.TABLENO, item.tableno);
+                            if (item.processkey.equals("work")) {
+                                if (!TextUtils.isEmpty(item.openurl)) {
+                                    switch (item.openurl) {
+                                        case Constant.WxgdView.RECEIVE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_RECEIVE, bundle);
+                                            break;
+                                        case Constant.WxgdView.DISPATCH_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
+                                            break;
+                                        case Constant.WxgdView.EXECUTE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
+                                            break;
+                                        case Constant.WxgdView.ACCEPTANCE_OPEN_URL:
+                                            IntentRouter.go(context, Constant.Router.WXGD_ACCEPTANCE, bundle);
+                                            break;
+                                    }
+                                } else {
+                                    ToastUtils.show(context, "未查询到工单状态状态!");
+                                }
+                            } else if (item.processkey.equals("faultInfoFW")) {
+                                IntentRouter.go(context, Constant.Router.YH_EDIT, bundle);
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         @Override

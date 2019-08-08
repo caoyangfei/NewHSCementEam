@@ -18,4 +18,9 @@
         <item name="android:layout_marginBottom">@dimen/dp_3</item>
         <item name="android:layout_marginTop">@dimen/dp_3</item>
     </style>
+
+    <style name="AnimationPreview">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
 </resources>

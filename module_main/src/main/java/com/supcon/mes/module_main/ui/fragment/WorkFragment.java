@@ -96,8 +96,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
 
-    @BindByTag("titleText")
-    TextView titleText;
     @BindByTag("eamTv")
     CustomTextView eamTv;
 
@@ -314,9 +312,13 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         eamTv.setOnChildViewClickListener(new OnChildViewClickListener() {
             @Override
             public void onChildViewClick(View childView, int action, Object obj) {
-                Bundle bundle = new Bundle();
-                bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
-                IntentRouter.go(getActivity(), Constant.Router.EAM, bundle);
+                if (action == -1) {
+                    eamTv.setContent("");
+                } else {
+                    Bundle bundle = new Bundle();
+                    bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+                    IntentRouter.go(getActivity(), Constant.Router.EAM, bundle);
+                }
             }
         });
 

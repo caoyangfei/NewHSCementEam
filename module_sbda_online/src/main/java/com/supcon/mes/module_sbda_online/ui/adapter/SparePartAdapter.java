@@ -46,6 +46,8 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
         CustomTextView itemSparePartNameTv;
         @BindByTag("itemSparePartNumTv")
         CustomTextView itemSparePartNumTv;
+        @BindByTag("itemSparePartStandingCropTv")
+        CustomTextView itemSparePartStandingCropTv;
         @BindByTag("itemSparePartModelSpecifTv")
         CustomTextView itemSparePartModelSpecifTv;
         @BindByTag("itemSparePartAttachEamTv")
@@ -94,6 +96,7 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
             itemSparePartNameTv.contentView().setText(HtmlParser.buildSpannedText(eam, new HtmlTagHandler()));
 
             itemSparePartNumTv.setValue(Util.big2(data.depleteSum) + Util.strFormat2(data.getProductID().getProductBaseUnit().name));
+            itemSparePartStandingCropTv.setValue(Util.big0(data.standingCrop) + Util.strFormat2(data.getProductID().getProductBaseUnit().name));
             if (TextUtils.isEmpty(data.getProductID().productModel) && TextUtils.isEmpty(data.getProductID().productSpecif)) {
                 itemSparePartModelSpecifTv.setVisibility(View.GONE);
             } else {

@@ -21,6 +21,7 @@ import com.supcon.mes.module_olxj.model.contract.OLXJWorkListContract;
 import com.supcon.mes.module_olxj.presenter.OLXJAreaListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkItemPresenter;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,9 +45,11 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
     private List<OLXJAreaEntity> mAreaEntities = new ArrayList<>();
     private Map<Long, OLXJAreaEntity> mAreaEntityMap = new LinkedHashMap<>();
     private OnSuccessListener<Boolean> mOnSuccessListener;
+    private int type;//0  计划巡检 1 临时巡检
 
-    public OLXJTaskAreaController(Context context) {
+    public OLXJTaskAreaController(Context context, int type) {
         super(context);
+        this.type = type;
     }
 
     @Override

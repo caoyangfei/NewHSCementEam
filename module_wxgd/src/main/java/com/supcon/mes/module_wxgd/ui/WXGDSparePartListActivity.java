@@ -31,6 +31,7 @@ import com.supcon.mes.middleware.model.bean.Good;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.SparePartEntity;
 import com.supcon.mes.middleware.model.bean.SparePartRefEntity;
+import com.supcon.mes.middleware.model.bean.StandingCropEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.model.event.SparePartAddEvent;
@@ -44,7 +45,6 @@ import com.supcon.mes.module_wxgd.model.api.SparePartAPI;
 import com.supcon.mes.module_wxgd.model.api.SparePartListAPI;
 import com.supcon.mes.module_wxgd.model.bean.SparePartJsonEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartListEntity;
-import com.supcon.mes.module_wxgd.model.bean.StandingCropResultEntity;
 import com.supcon.mes.module_wxgd.model.contract.SparePartContract;
 import com.supcon.mes.module_wxgd.model.contract.SparePartListContract;
 import com.supcon.mes.module_wxgd.model.dto.GoodDto;
@@ -420,9 +420,9 @@ public class WXGDSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
             loaderController.showMsgAndclose("库存更新成功!", true, 1000);
         }
         //回填页面现存量值
-        List<StandingCropResultEntity> list = entity.result;
+        List<StandingCropEntity> list = entity.result;
         for (SparePartEntity sparePartEntity : mSparePartEntityList) {
-            for (StandingCropResultEntity standingCropResultEntity : list) {
+            for (StandingCropEntity standingCropResultEntity : list) {
                 if (sparePartEntity.productID != null && standingCropResultEntity.productCode.equals(sparePartEntity.productID.productCode)) {
                     sparePartEntity.standingCrop = new BigDecimal(standingCropResultEntity.useQuantity);
                 }

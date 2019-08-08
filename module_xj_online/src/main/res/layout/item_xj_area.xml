@@ -30,7 +30,7 @@
             android:layout_height="20dp"
             android:layout_centerInParent="true"
             android:scaleType="centerInside"
-            android:src="@drawable/dot_done"
+            android:src="@drawable/dot_wait"
             android:tag="itemAreaDot" />
 
         <View
@@ -85,27 +85,27 @@
         <ImageView
             android:id="@+id/itemAreaFault"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginRight="@dimen/dp_10"
             android:layout_toLeftOf="@+id/itemAreaProgress"
+            android:scaleType="centerInside"
             android:src="@drawable/icon_yh"
             android:tag="itemAreaFault"
             android:visibility="invisible" />
 
         <TextView
             android:id="@+id/itemAreaProgress"
-            android:layout_width="wrap_content"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="@dimen/dp_10"
+            android:layout_marginRight="@dimen/dp_5"
             android:ellipsize="end"
             android:tag="itemAreaProgress"
             android:textColor="@color/xjAreaBlue"
-            android:textSize="@dimen/fontSize_15sp"
+            android:textSize="@dimen/fontSize_14sp"
             tools:text="1/12" />
     </RelativeLayout>
-
 
 </RelativeLayout>

@@ -5,6 +5,7 @@ import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
+import com.supcon.mes.middleware.model.bean.StandingCropEntity;
 import com.supcon.mes.module_wxgd.model.bean.AcceptanceCheckListEntity;
 import com.supcon.mes.module_wxgd.model.bean.GenerateAcceptanceEntity;
 import com.supcon.mes.module_wxgd.model.bean.LubricateOilsListEntity;
@@ -12,7 +13,6 @@ import com.supcon.mes.module_wxgd.model.bean.MaintenanceListEntity;
 import com.supcon.mes.module_wxgd.model.bean.RepairStaffListEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartListEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartRefListEntity;
-import com.supcon.mes.module_wxgd.model.bean.StandingCropResultEntity;
 import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
 
 import java.util.Map;
@@ -159,7 +159,7 @@ public interface ApiService {
      * @author zhangwenshuai1 2018/10/10
      */
     @POST("/BEAM2/workList/workRecord/getNowSum.action")
-    Flowable<CommonListEntity<StandingCropResultEntity>> updateStandingCrop(@Query("productCode") String productCode);
+    Flowable<CommonListEntity<StandingCropEntity>> updateStandingCrop(@Query("productCode") String productCode);
 
     /**
      * @param
