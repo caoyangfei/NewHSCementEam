@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -91,6 +92,8 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     @BindByTag("eamName")
     TrapezoidView eamName;
 
+    @BindByTag("eamLayout")
+    RelativeLayout eamLayout;
     @BindByTag("starLevel")
     SimpleRatingBar starLevel;
     @BindByTag("eamScore")
@@ -169,6 +172,9 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
                     case 0:
                         break;
                     case 1:
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable(Constant.IntentKey.EAM, eamType);
+                        IntentRouter.go(EamDetailActivity.this, Constant.Router.TEMPORARY_LUBRICATION_EARLY_WARN, bundle);
                         break;
                     case 2:
                         IntentRouter.go(EamDetailActivity.this, Constant.Router.ACCEPTANCE_LIST);
@@ -176,6 +182,12 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
                     case 3:
                         break;
                 }
+            }
+        });
+        eamLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
     }

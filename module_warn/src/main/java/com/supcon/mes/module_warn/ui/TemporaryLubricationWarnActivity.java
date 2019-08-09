@@ -86,6 +86,7 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
 
     private TemporaryAdapter temporaryAdapter;
     private final Map<String, Object> queryParam = new HashMap<>();
+    private EamType eamType;
 
     @Override
     protected int getLayoutID() {
@@ -95,6 +96,7 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
     @Override
     protected void onInit() {
         super.onInit();
+        eamType = (EamType) getIntent().getSerializableExtra(Constant.IntentKey.EAM);
         EventBus.getDefault().register(this);
         nfcHelper = NFCHelper.getInstance();
         if (nfcHelper != null) {
@@ -127,6 +129,17 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         temporaryAdapter = new TemporaryAdapter(context);
         recyclerView.setAdapter((BaseListDataRecyclerViewAdapter) EmptyAdapterHelper.getRecyclerEmptyAdapter(context, "请刷卡获取设备"));
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        if (eamType != null) {
+            eamCode.setContent(Util.strFormat(eamType.code));
+            eamName.setContent(Util.strFormat(eamType.name));
+            queryParam.put(Constant.IntentKey.EAM_CODE, Util.strFormat(eamType.code));
+            refreshController.refreshBegin();
+        }
     }
 
     @SuppressLint("CheckResult")

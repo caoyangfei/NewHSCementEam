@@ -183,6 +183,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     private List<Long> dgDeletedIds_repairStaff = new ArrayList<>();
     private List<Long> dgDeletedIds_lubricateOils = new ArrayList<>();
     private List<Long> dgDeletedIds_maintenance = new ArrayList<>();
+    private String tableNo;
 
     @Override
     protected int getLayoutID() {
@@ -199,7 +200,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         refreshController.setPullDownRefreshEnabled(true);
 
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
-        oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
+        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
 
         mSparePartController = getController(SparePartController.class);
         mSparePartController.setEditable(true);
@@ -253,12 +254,16 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     protected void initView() {
         super.initView();
         eamIc = findViewById(R.id.eamIc);
-        titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
-        initTableHeadView();
+        updateInitView();
+    }
 
-        // 初始化工作流
-        initLink();
-
+    public void updateInitView() {
+        if (mWXGDEntity != null) {
+            titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+            initTableHeadView();
+            // 初始化工作流
+            initLink();
+        }
     }
 
     /**
@@ -296,7 +301,13 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     @Override
     protected void initData() {
         super.initData();
-        initTableHeadData();
+        updateInitData();
+    }
+
+    public void updateInitData() {
+        if (mWXGDEntity != null) {
+            initTableHeadData();
+        }
     }
 
     /**
@@ -360,7 +371,11 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
             @Override
             public void onRefresh() {
                 Map<String, Object> queryParam = new HashMap<>();
-                queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                if (mWXGDEntity == null) {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+                } else {
+                    queryParam.put(Constant.BAPQuery.TABLE_NO, mWXGDEntity.tableNo);
+                }
                 presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
             }
         });
@@ -569,9 +584,9 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
         // 水泥(红狮/海螺)项目
-        if (Constant.YHWXType.DX_SYSCODE.equals(str)){
+        if (Constant.YHWXType.DX_SYSCODE.equals(str)) {
             map.put("workRecord.repairType.id", Constant.YHWXType.DX_SYSCODE);
-        }else if (Constant.YHWXType.JX_SYSCODE.equals(str)){
+        } else if (Constant.YHWXType.JX_SYSCODE.equals(str)) {
             map.put("workRecord.repairType.id", Constant.YHWXType.JX_SYSCODE);
         }
 
@@ -825,14 +840,20 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
 
     @Override
     public void listWxgdsSuccess(WXGDListEntity entity) {
-        refreshController.refreshComplete();
         List<WXGDEntity> wxgdEntityList = entity.result;
         if (wxgdEntityList.size() > 0) {
             mWXGDEntity = wxgdEntityList.get(0);
             oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
-            initTableHeadData();
+            updateInitView();
+            updateInitData();
+            mRepairStaffController.setWxgdEntity(mWXGDEntity);
+            mSparePartController.setWxgdEntity(mWXGDEntity);
+            mLubricateOilsController.setWxgdEntity(mWXGDEntity);
+            maintenanceController.setWxgdEntity(mWXGDEntity);
+            refreshController.refreshComplete();
+        } else {
+            ToastUtils.show(this, "未查到当前待办");
         }
-
     }
 
     @Override

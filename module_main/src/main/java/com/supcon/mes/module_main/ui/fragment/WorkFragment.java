@@ -437,7 +437,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getNFC(NFCEvent nfcEvent) {
-        if (!hidden) {
+        if (!hidden && EamApplication.getAppContext().getCurActivity() instanceof MainActivity) {
             LogUtil.d("NFC_TAG", nfcEvent.getNfc());
             Map<String, Object> nfcJson = Util.gsonToMaps(nfcEvent.getNfc());
             if (nfcJson.get("textRecord") == null) {
@@ -521,7 +521,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getPersonScoreFailed(String errorMsg) {
-        LogUtil.e(errorMsg);
+        LogUtil.e(!TextUtils.isEmpty(errorMsg) ? errorMsg : "获取评分失败！");
     }
 
     @Override

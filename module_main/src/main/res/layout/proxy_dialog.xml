@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="10dp"
-        android:text="工作委托"
+        android:text="工作交接"
         android:textSize="@dimen/fontSize_20sp" />
 
     <include layout="@layout/ly_line" />
