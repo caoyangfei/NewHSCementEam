@@ -140,6 +140,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                     itemAreaFault.setVisibility(View.VISIBLE);
                     itemAreaDot.setImageDrawable(context.getResources().getDrawable(R.drawable.dot_wait_yh));
                 }
+                itemAreaTime.setText("未开始");
             }
 
             //遍历巡检项
@@ -184,8 +185,8 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                                     } else {
                                         itemAreaFault.setVisibility(View.INVISIBLE);
                                         itemAreaDot.setImageDrawable(context.getResources().getDrawable(R.drawable.dot_done));
-                                        itemAreaTime.setText(formatter.format(DateUtil.dateFormat(data.signedTime, "yyyy-MM-dd HH:mm:ss")));
                                     }
+                                    itemAreaTime.setText(formatter.format(DateUtil.dateFormat(data.signedTime, "yyyy-MM-dd HH:mm:ss")));
                                 }
                             });
         }
