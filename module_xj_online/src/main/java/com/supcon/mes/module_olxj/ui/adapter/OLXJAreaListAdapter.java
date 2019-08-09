@@ -158,7 +158,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                                         faultPosition.getAndIncrement();
                                         isFault = true;
                                         faultMsg.append(faultPosition.get()).append(".")
-                                                .append("设备：").append(xjWorkItemEntity.eamID.name + "(").append(xjWorkItemEntity.eamID.code + ")").append("\n")
+                                                .append("设备：").append(xjWorkItemEntity.eamID.code + "(").append(xjWorkItemEntity.eamID.name + ")").append("\n")
                                                 .append("故障现象：").append(xjWorkItemEntity.content).append("\n")
                                                 .append("发现人：").append(EamApplication.getAccountInfo().staffName).append("\n");
                                     }

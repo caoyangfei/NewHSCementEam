@@ -507,7 +507,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getEamFailed(String errorMsg) {
-        SnackbarHelper.showError(rootView, errorMsg);
+        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override
@@ -519,7 +519,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getPersonScoreFailed(String errorMsg) {
-        LogUtil.e(!TextUtils.isEmpty(errorMsg) ? errorMsg : "获取评分失败！");
+        LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override
@@ -536,7 +536,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getMainWorkCountFailed(String errorMsg) {
-        LogUtil.e(errorMsg);
+        LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override

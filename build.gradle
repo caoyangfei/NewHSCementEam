@@ -44,8 +44,8 @@ ext{
 
     minSdkVersion = 19
     targetSdkVersion = 22
-    versionCode = 26
-    versionName = "8.10.07.26"
+    versionCode = 27
+    versionName = "8.10.07.27"
 
     isAlone  = false
 
