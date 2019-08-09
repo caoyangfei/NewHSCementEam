@@ -303,8 +303,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 WaitDealtEntity waitDealtEntity = (WaitDealtEntity) obj;
                 if (childView.getId() == R.id.waitDealtEntrust) {
                     proxyDialog(waitDealtEntity);
-                } else {
-
                 }
             }
         });

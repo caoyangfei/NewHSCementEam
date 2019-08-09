@@ -6,6 +6,7 @@ import com.app.annotation.Presenter;
 import com.supcon.common.view.base.controller.BaseDataController;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.module_olxj.model.api.OLXJAreaAPI;
@@ -71,6 +72,16 @@ public class OLXJAreaRefController extends BaseDataController implements OLXJAre
     @Override
     public void getOJXJAreaListFailed(String errorMsg) {
         LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
+    }
+
+    @Override
+    public void getAbnormalInspectTaskPartSuccess(CommonListEntity entity) {
+
+    }
+
+    @Override
+    public void getAbnormalInspectTaskPartFailed(String errorMsg) {
+
     }
 
     public List<OLXJAreaEntity> getAreaEntities() {

@@ -160,6 +160,12 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             } else {
                 waitDealtEntrust.setVisibility(View.VISIBLE);
             }
+
+            if (!TextUtils.isEmpty(data.entrflag) && data.entrflag.equals("0")) {
+                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.mipmap.btn_entrust));
+            } else {
+                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.mipmap.btn_entrusted));
+            }
         }
 
         @Override

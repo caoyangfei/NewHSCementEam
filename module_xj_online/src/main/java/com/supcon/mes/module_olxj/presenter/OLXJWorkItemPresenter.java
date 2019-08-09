@@ -79,17 +79,16 @@ public class OLXJWorkItemPresenter extends OLXJWorkListContract.Presenter {
                             public CommonBAPListEntity<OLXJWorkItemEntity> apply(Throwable throwable) throws Exception {
                                 CommonBAPListEntity commonBAPListEntity = new CommonBAPListEntity();
                                 commonBAPListEntity.success = false;
-                                commonBAPListEntity.errMsg= throwable.toString();
+                                commonBAPListEntity.errMsg = throwable.toString();
                                 return commonBAPListEntity;
                             }
                         })
                         .subscribe(new Consumer<CommonBAPListEntity<OLXJWorkItemEntity>>() {
                             @Override
                             public void accept(CommonBAPListEntity<OLXJWorkItemEntity> olxjWorkItemEntityCommonBAPListEntity) throws Exception {
-                                if(olxjWorkItemEntityCommonBAPListEntity.result!=null){
+                                if (olxjWorkItemEntityCommonBAPListEntity.result != null) {
                                     Objects.requireNonNull(getView()).getWorkItemListSuccess(olxjWorkItemEntityCommonBAPListEntity);
-                                }
-                                else{
+                                } else {
                                     Objects.requireNonNull(getView()).getWorkItemListFailed(olxjWorkItemEntityCommonBAPListEntity.errMsg);
                                 }
                             }
@@ -118,17 +117,16 @@ public class OLXJWorkItemPresenter extends OLXJWorkListContract.Presenter {
                             public CommonBAPListEntity<OLXJWorkItemEntity> apply(Throwable throwable) throws Exception {
                                 CommonBAPListEntity commonBAPListEntity = new CommonBAPListEntity();
                                 commonBAPListEntity.success = false;
-                                commonBAPListEntity.errMsg= throwable.toString();
+                                commonBAPListEntity.errMsg = throwable.toString();
                                 return commonBAPListEntity;
                             }
                         })
                         .subscribe(new Consumer<CommonBAPListEntity<OLXJWorkItemEntity>>() {
                             @Override
                             public void accept(CommonBAPListEntity<OLXJWorkItemEntity> olxjWorkItemEntityCommonBAPListEntity) throws Exception {
-                                if(olxjWorkItemEntityCommonBAPListEntity.result!=null){
+                                if (olxjWorkItemEntityCommonBAPListEntity.result != null) {
                                     Objects.requireNonNull(getView()).getWorkItemListRefSuccess(olxjWorkItemEntityCommonBAPListEntity);
-                                }
-                                else{
+                                } else {
                                     Objects.requireNonNull(getView()).getWorkItemListRefFailed(olxjWorkItemEntityCommonBAPListEntity.errMsg);
                                 }
                             }

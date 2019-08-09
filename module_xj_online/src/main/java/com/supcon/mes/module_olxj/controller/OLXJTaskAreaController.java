@@ -2,16 +2,19 @@ package com.supcon.mes.module_olxj.controller;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.app.annotation.Presenter;
 import com.supcon.common.view.base.controller.BaseDataController;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.module_olxj.model.api.OLXJAreaAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJWorkListAPI;
+import com.supcon.mes.module_olxj.model.bean.AbnormalEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJTaskEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
@@ -21,7 +24,6 @@ import com.supcon.mes.module_olxj.model.contract.OLXJWorkListContract;
 import com.supcon.mes.module_olxj.presenter.OLXJAreaListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkItemPresenter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -91,6 +93,14 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
     private void getAreaData() {
         presenterRouter.create(OLXJAreaAPI.class).getOJXJAreaList(mTaskEntity.workGroupID.id, cuttentAreaPage);
     }
+
+    /**
+     * 获取巡检路线隐患信息
+     */
+    private void getAbnormalInspectTaskPart() {
+        presenterRouter.create(OLXJAreaAPI.class).getAbnormalInspectTaskPart(mTaskEntity.workGroupID.id, type);
+    }
+
 
     @Override
     public void getXJWorkItemListSuccess(OLXJWorkListEntity entity) {
@@ -164,8 +174,6 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
                         mAreaEntityMap.put(areaEntity.id, areaEntity);
                     }
                 });
-
-
     }
 
     @Override
@@ -199,12 +207,37 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
         } else {
             initArea(mAreaEntities);
             getWorkData();
+            getAbnormalInspectTaskPart();
         }
     }
 
     @Override
     public void getOJXJAreaListFailed(String errorMsg) {
         LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
+    }
+
+    @Override
+    public void getAbnormalInspectTaskPartSuccess(CommonListEntity entity) {
+        updateAreaAbnormal(entity.result);
+    }
+
+    @Override
+    public void getAbnormalInspectTaskPartFailed(String errorMsg) {
+        LogUtil.e(ErrorMsgHelper.msgParse(!TextUtils.isEmpty(errorMsg) ? errorMsg : "获取巡检隐患信息失败!"));
+    }
+
+    @SuppressLint("CheckResult")
+    private void updateAreaAbnormal(List<AbnormalEntity> abnormalEntities) {
+        Flowable.fromIterable(abnormalEntities)
+                .subscribe(new Consumer<AbnormalEntity>() {
+                    @Override
+                    public void accept(AbnormalEntity abnormalEntity) throws Exception {
+                        if (mAreaEntityMap.containsKey(abnormalEntity.workCode)) {
+                            OLXJAreaEntity olxjAreaEntity = mAreaEntityMap.get(abnormalEntity.workCode);
+                            olxjAreaEntity.oldfaultMsg = abnormalEntity.abnormalInfo;
+                        }
+                    }
+                });
     }
 
     public List<OLXJAreaEntity> getAreaEntities() {

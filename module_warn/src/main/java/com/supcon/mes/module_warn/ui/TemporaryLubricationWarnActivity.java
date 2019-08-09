@@ -122,7 +122,7 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
-        titleBar.setTitle("日常润滑任务");
+        titleBar.setTitle("临时润滑");
 
         refreshController.setAutoPullDownRefresh(false);
         refreshController.setPullDownRefreshEnabled(false);

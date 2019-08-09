@@ -41,6 +41,8 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String openurl;
 
+    public String entrflag;
+
     public Staff getStaffid() {
         if (staffid == null) {
             staffid = new Staff();

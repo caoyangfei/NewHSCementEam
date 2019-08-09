@@ -7,6 +7,7 @@ import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
+import com.supcon.mes.module_olxj.model.bean.AbnormalEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJExemptionEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJGroupEntity;
@@ -136,6 +137,11 @@ public interface OLXJNetworkAPI {
     @GET("/mobileEAM/work/work/workPart-query.action?valueType=mobileEAM001/02&&permissionCode=mobileEAM_1.0.0_work_workLayout&page.pageSize=20&page.maxPageSize=500")
     Flowable<CommonBAPListEntity<OLXJAreaEntity>> queryOLXJArea(@Query("workGroupID") long workGroupID, @Query("page.pageNo") int pageNo);
 
+    /**
+     * 获取区域列表
+     */
+    @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getAbnormalInspectTaskPart.action")
+    Flowable<CommonListEntity<AbnormalEntity>> getAbnormalInspectTaskPart(@Query("workGroupId") long workGroupID, @Query("isTemp") int isTemp);
 
     /**
      * 区域上传数据
