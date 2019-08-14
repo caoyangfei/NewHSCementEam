@@ -104,6 +104,7 @@ public class ScoreEamListActivity extends BaseRefreshRecyclerActivity implements
         super.onInit();
         EventBus.getDefault().register(this);
         scoreTableNo = getIntent().getStringExtra(Constant.IntentKey.SCORETABLENO);
+        selecStr = getIntent().getStringExtra(Constant.IntentKey.EAM_CODE);
     }
 
 
@@ -204,7 +205,7 @@ public class ScoreEamListActivity extends BaseRefreshRecyclerActivity implements
                     refreshListController.refreshBegin();
                 }
 
-            }).show(DateUtil.dateFormat(queryParam.containsKey(Constant.BAPQuery.SCORE_TIME_START)?(String) queryParam.get(Constant.BAPQuery.SCORE_TIME_START):getThreeDay()));
+            }).show(DateUtil.dateFormat(queryParam.containsKey(Constant.BAPQuery.SCORE_TIME_START) ? (String) queryParam.get(Constant.BAPQuery.SCORE_TIME_START) : getThreeDay()));
         });
 
         stopTime.setOnChildViewClickListener((childView, action, obj) ->

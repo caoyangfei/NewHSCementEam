@@ -34,22 +34,22 @@ public class FilterHelper {
         FilterBean filterBean;
 
         filterBean = new FilterBean();
-        filterBean.name = "不限";
+        filterBean.name = "来源不限";
         list.add(filterBean);
         filterBean = new FilterBean();
-        filterBean.name = Constant.WxgdWorkSource_CN.patrolcheck;
+        filterBean.name = Constant.WorkSource_CN.patrolcheck;
         list.add(filterBean);
         filterBean = new FilterBean();
-        filterBean.name = Constant.WxgdWorkSource_CN.lubrication;
+        filterBean.name = Constant.WorkSource_CN.lubrication;
         list.add(filterBean);
         filterBean = new FilterBean();
-        filterBean.name = Constant.WxgdWorkSource_CN.maintenance;
+        filterBean.name = Constant.WorkSource_CN.maintenance;
         list.add(filterBean);
         filterBean = new FilterBean();
-        filterBean.name = Constant.WxgdWorkSource_CN.sparepart;
+        filterBean.name = Constant.WorkSource_CN.sparepart;
         list.add(filterBean);
         filterBean = new FilterBean();
-        filterBean.name = Constant.WxgdWorkSource_CN.other;
+        filterBean.name = Constant.WorkSource_CN.other;
         list.add(filterBean);
         return list;
     }
@@ -59,16 +59,15 @@ public class FilterHelper {
         List<SystemCodeEntity> list = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
         List<FilterBean> filterBeanList = new ArrayList<>();
         FilterBean filterBean;
+        filterBean = new FilterBean();
+        filterBean.name = "类型不限";
+        filterBean.type = CustomFilterView.VIEW_TYPE_ALL;
+        filterBeanList.add(filterBean);
         for (SystemCodeEntity entity : list) {
             filterBean = new FilterBean();
             filterBean.name = entity.value;
             filterBeanList.add(filterBean);
         }
-        filterBean = new FilterBean();
-        filterBean.name = "类型不限";
-        filterBean.type = CustomFilterView.VIEW_TYPE_ALL;
-        filterBeanList.add(filterBean);
-
         return filterBeanList;
     }
 
@@ -77,16 +76,15 @@ public class FilterHelper {
         List<SystemCodeEntity> list = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_PRIORITY);
         List<FilterBean> filterBeanList = new ArrayList<>();
         FilterBean filterBean;
+        filterBean = new FilterBean();
+        filterBean.name = "级别不限";
+        filterBean.type = CustomFilterView.VIEW_TYPE_ALL;
+        filterBeanList.add(filterBean);
         for (SystemCodeEntity entity : list) {
             filterBean = new FilterBean();
             filterBean.name = entity.value;
             filterBeanList.add(filterBean);
         }
-        filterBean = new FilterBean();
-        filterBean.name = "级别不限";
-        filterBean.type = CustomFilterView.VIEW_TYPE_ALL;
-        filterBeanList.add(filterBean);
-
         return filterBeanList;
     }
 

@@ -7,6 +7,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -94,6 +96,9 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
 
     YHListAdapter mAdapter;
 
+    @BindByTag("radioGroup1")
+    RadioGroup radioGroup1;
+
     @BindByTag("listDateFilter")
     CustomFilterView<FilterBean> listDateFilter;
 
@@ -172,6 +177,8 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
         listAreaFilter.setData(YHFilterHelper.createAreaFilter());
         listYHTypeFilter.setData(YHFilterHelper.createYHTypeFilter());
         listYHPriorityFilter.setData(YHFilterHelper.createPriorityFilter());
+
+        YHFilterHelper.addview(this, radioGroup1, YHFilterHelper.createWorkSource(), 1000);
     }
 
     @SuppressLint("CheckResult")
@@ -359,6 +366,11 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
             }
 
         });
+
+        radioGroup1.setOnCheckedChangeListener((group, checkedId) -> {
+            RadioButton radioButton = findViewById(group.getCheckedRadioButtonId());
+            generateWorkSourceFilter(radioButton.getText().toString());
+        });
     }
 
     @Override
@@ -386,6 +398,37 @@ public class YHGLListActivity extends BaseRefreshRecyclerActivity<YHEntity> impl
         bundle.putSerializable(Constant.IntentKey.DEPLOYMENT_ID, deploymentId);
         IntentRouter.go(context, Constant.Router.YH_EDIT, bundle);
 
+    }
+
+    /**
+     * @param
+     * @return
+     * @description 封装来源过滤条件
+     * @author zhangwenshuai1 2018/8/14
+     */
+    private void generateWorkSourceFilter(String workSource) {
+        String workSourceId = "";
+        switch (workSource) {
+            case Constant.WorkSource_CN.patrolcheck:
+                workSourceId = Constant.YhglWorkSource.patrolcheck;
+                break;
+            case Constant.WorkSource_CN.lubrication:
+                workSourceId = Constant.YhglWorkSource.lubrication;
+                break;
+            case Constant.WorkSource_CN.maintenance:
+                workSourceId = Constant.YhglWorkSource.maintenance;
+                break;
+            case Constant.WorkSource_CN.sparepart:
+                workSourceId = Constant.YhglWorkSource.sparepart;
+                break;
+            case Constant.WorkSource_CN.other:
+                workSourceId = Constant.YhglWorkSource.other;
+                break;
+            default:
+                break;
+        }
+        queryParam.put(Constant.BAPQuery.SOURCE_TYPE, workSourceId);
+        doFilter();
     }
 
     private void doFilter() {

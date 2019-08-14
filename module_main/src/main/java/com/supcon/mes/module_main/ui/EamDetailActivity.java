@@ -35,6 +35,7 @@ import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
 import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
+import com.supcon.mes.middleware.ui.view.TrapezoidView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
@@ -51,7 +52,6 @@ import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
 import com.supcon.mes.module_main.ui.adaper.AnomalyAdapter;
 import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
 import com.supcon.mes.module_main.ui.view.SimpleRatingBar;
-import com.supcon.mes.module_main.ui.view.TrapezoidView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -187,9 +187,20 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         eamLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Bundle bundle = new Bundle();
+                bundle.putString(Constant.IntentKey.EAM_CODE, eamType.code);
+                IntentRouter.go(EamDetailActivity.this, Constant.Router.SCORE_EAM_LIST, bundle);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Map<String, Object> param = new HashMap<>();
+        param.put(Constant.BAPQuery.EAMCODE, eamType.code);
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, param);
+
     }
 
     @Override
@@ -216,9 +227,6 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         workAdapter.notifyDataSetChanged();
 
         eamName.setText(eamType.name);
-        Map<String, Object> param = new HashMap<>();
-        param.put(Constant.BAPQuery.EAMCODE, eamType.code);
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, param);
         presenterRouter.create(ScoreEamAPI.class).getEamScore(eamType.id);
         new EamPicController().initEamPic(eamPic, eamType.id);
     }

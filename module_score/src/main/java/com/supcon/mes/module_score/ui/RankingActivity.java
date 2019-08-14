@@ -1,7 +1,6 @@
 package com.supcon.mes.module_score.ui;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -149,15 +148,10 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
                     queryParam.put(Constant.BAPQuery.SCORE_DATA_START, year + "-" + month + "-" + day + " 00:00:00");
                     queryParam.put(Constant.BAPQuery.SCORE_DATA_STOP, year + "-" + month + "-" + day + " 23:59:59");
                     refreshListController.refreshBegin();
-                }).show(DateUtil.dateFormat(dateTv.getText().toString()));
+                }).show(DateUtil.dateFormat(dateTv.getText().toString()), expend);
             }
         });
-        datePickController.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                AnimatorUtil.rotationExpandIcon(expend, 180, 0);
-            }
-        });
+
         refreshListController.setOnRefreshPageListener(pageIndex -> {
             String url;
             if (type.equals("BEAM_065/03")) {

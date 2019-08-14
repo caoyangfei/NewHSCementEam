@@ -134,16 +134,16 @@ public class OLXJWorkItemEntity extends BaseEntity implements Comparable<OLXJWor
     @Override
     public int compareTo(@NonNull OLXJWorkItemEntity o) {
 
-        if (this.eamID == null || o.eamID == null) {
-            return 0;
-        }
-
-        if (this.eamID.id.equals(o.eamID.id) && this.part != null) {
-            if (o.part == null) return 1;
-            return this.part.compareTo(o.part);
-        }
-
-        return (int) (this.eamID.id - o.eamID.id);
-//        return this.sort - o.sort;
+//        if (this.eamID == null || o.eamID == null) {
+//            return 0;
+//        }
+//
+//        if (this.eamID.id.equals(o.eamID.id) && this.part != null) {
+//            if (o.part == null) return 1;
+//            return this.part.compareTo(o.part);
+//        }
+//
+//        return (int) (this.eamID.id - o.eamID.id);
+        return this.sort - o.sort;
     }
 }

@@ -2,10 +2,12 @@ package com.supcon.mes.middleware.controller;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.widget.ImageView;
 
 import com.supcon.common.view.view.picker.DateTimePicker;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.controllers.BasePickerController;
+import com.supcon.mes.middleware.util.AnimatorUtil;
 
 import static com.supcon.common.view.view.picker.DateTimePicker.NONE;
 import static com.supcon.common.view.view.picker.DateTimePicker.YEAR_MONTH_DAY;
@@ -19,15 +21,15 @@ import static com.supcon.common.view.view.picker.DateTimePicker.YEAR_MONTH_DAY;
  * @Related-classes
  * @Desc
  */
-public class DatePickController extends BasePickerController<DateTimePicker> {
+public class DatePickController extends BasePickerController<DateTimePicker> implements DialogInterface.OnDismissListener {
 
     private String[] dateStrs;
     private DateTimePicker.OnYearMonthDayTimePickListener mListener;
     private DateTimePicker dateTimePicker;
+    private ImageView expend;
 
     public DatePickController(Activity activity) {
         super(activity);
-        dateTimePicker = new DateTimePicker(activity, YEAR_MONTH_DAY, NONE);
     }
 
 
@@ -43,7 +45,13 @@ public class DatePickController extends BasePickerController<DateTimePicker> {
     }
 
     public void show(long time) {
+        parseTime(time);
+        show();
 
+    }
+
+    public void show(long time, ImageView expend) {
+        this.expend = expend;
         parseTime(time);
         show();
 
@@ -58,6 +66,8 @@ public class DatePickController extends BasePickerController<DateTimePicker> {
     }
 
     public void show() {
+        dateTimePicker = new DateTimePicker(activity, YEAR_MONTH_DAY, NONE);
+        dateTimePicker.setOnDismissListener(this::onDismiss);
         dateTimePicker.setDateRangeStart(2017, 1, 1);
         dateTimePicker.setDateRangeEnd(2025, 11, 11);
         dateTimePicker.setDividerVisible(isDividerVisible);
@@ -82,6 +92,8 @@ public class DatePickController extends BasePickerController<DateTimePicker> {
 
     @Override
     public DateTimePicker create() {
+        dateTimePicker = new DateTimePicker(activity, YEAR_MONTH_DAY, NONE);
+        dateTimePicker.setOnDismissListener(this::onDismiss);
         dateTimePicker.setDateRangeStart(2017, 1, 1);
         dateTimePicker.setDateRangeEnd(2025, 11, 11);
         dateTimePicker.setTimeRangeStart(0, 0);
@@ -107,12 +119,15 @@ public class DatePickController extends BasePickerController<DateTimePicker> {
         return dateTimePicker;
     }
 
-    public void setOnDismissListener(final DialogInterface.OnDismissListener onDismissListener) {
-        dateTimePicker.setOnDismissListener(onDismissListener);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        if (expend != null) {
+            AnimatorUtil.rotationExpandIcon(expend, 180, 0);
+        }
     }
 }

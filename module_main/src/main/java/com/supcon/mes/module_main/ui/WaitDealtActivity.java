@@ -5,6 +5,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -47,6 +49,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.functions.Consumer;
@@ -71,10 +74,14 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     @BindByTag("titleText")
     TextView titleText;
 
+    @BindByTag("waitState")
+    RadioGroup waitState;
+
     private WaitDealtAdapter waitDealtAdapter;
     private CustomDialog customDialog;
     private CommonSearchStaff proxyStaff;
     private String reason;
+    private Map<String, Object> queryParam = new HashMap<>();
 
     @Override
     protected IListAdapter<WaitDealtEntity> createAdapter() {
@@ -119,7 +126,8 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
             public void onRefresh(int pageIndex) {
-                presenterRouter.create(WaitDealtAPI.class).getWaitDealt(pageIndex, 20, new HashMap<>());
+
+                presenterRouter.create(WaitDealtAPI.class).getWaitDealt(pageIndex, 20, queryParam);
             }
         });
         waitDealtAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
@@ -128,9 +136,25 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                 WaitDealtEntity waitDealtEntity = (WaitDealtEntity) obj;
                 if (childView.getId() == R.id.waitDealtEntrust) {
                     proxyDialog(waitDealtEntity);
-                } else {
-
                 }
+            }
+        });
+
+        waitState.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = findViewById(checkedId);
+                queryParam.remove(Constant.BAPQuery.OVERALLSTATE);
+                queryParam.remove(Constant.BAPQuery.OVERDATEFLAG);
+                if (radioButton.isChecked()) {
+                    if (radioButton.getText().toString().equals("超期")) {
+                        queryParam.put(Constant.BAPQuery.OVERDATEFLAG, "1");
+                    } else {
+                        queryParam.put(Constant.BAPQuery.OVERDATEFLAG, "0");
+                        queryParam.put(Constant.BAPQuery.OVERALLSTATE, radioButton.getText().toString());
+                    }
+                }
+                refreshListController.refreshBegin();
             }
         });
     }

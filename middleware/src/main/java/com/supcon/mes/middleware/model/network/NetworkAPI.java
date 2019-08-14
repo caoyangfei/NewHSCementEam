@@ -28,6 +28,7 @@ import com.supcon.mes.middleware.model.bean.SystemCodeListEntity;
 import com.supcon.mes.middleware.model.bean.TxlListEntity;
 import com.supcon.mes.middleware.model.bean.UserInfoListEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
+import com.supcon.mes.middleware.model.bean.WorkCountEntity;
 import com.supcon.mes.middleware.model.bean.WorkFlowListEntity;
 import com.supcon.mes.middleware.model.bean.YHEntity;
 
@@ -43,6 +44,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
+import retrofit2.http.Url;
 
 /**
  * Created by wangshizhan on 2018/7/10
@@ -342,4 +344,8 @@ public interface NetworkAPI {
     @GET("/BEAM/baseInfo/baseInfo/getSupOSStandingCrop.action")
     Flowable<CommonListEntity<StandingCropEntity>> updateStandingCrop(@Query("sparePartCodes") String sparePartCodes);
 
+
+    //获取工单,隐患数量
+    @GET
+    Flowable<CommonListEntity<WorkCountEntity>> getWorkCount(@Url String url);
 }

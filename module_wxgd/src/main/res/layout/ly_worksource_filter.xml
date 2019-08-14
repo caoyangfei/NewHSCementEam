@@ -48,8 +48,7 @@
         app:icon_res="@drawable/ic_choose_white2"
         app:text="维修类型"
         app:text_color="@color/white"
-        app:text_size="14"
-        android:visibility="gone"/>
+        app:text_size="14" />
 
     <com.supcon.mes.mbap.view.CustomFilterView
         android:id="@+id/listPriorityFilter"

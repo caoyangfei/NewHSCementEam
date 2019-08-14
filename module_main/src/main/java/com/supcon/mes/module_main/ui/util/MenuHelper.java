@@ -32,13 +32,6 @@ public class MenuHelper {
                     case Constant.HSWorkType.LSXJ:
                         menuPopwindowBean.setRouter(Constant.Router.LSXJ_LIST);
                         break;
-
-                    case Constant.HSWorkType.SPARE_EARLY_WARN:
-                        menuPopwindowBean.setRouter(Constant.Router.SPARE_EARLY_WARN);
-                        break;
-                    case Constant.HSWorkType.MAINTENANCE_EARLY_WARN:
-                        menuPopwindowBean.setRouter(Constant.Router.MAINTENANCE_EARLY_WARN);
-                        break;
                     case Constant.HSWorkType.YHGL:
                         menuPopwindowBean.setRouter(Constant.Router.YH_LIST);
                         break;
@@ -83,8 +76,20 @@ public class MenuHelper {
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
             for (MenuPopwindowBean menuPopwindowBean : works) {
                 switch (menuPopwindowBean.getType()) {
-                    case Constant.HSWorkType.WXGD:
+                    case Constant.HSWorkType.DAILY_WXGD:
                         menuPopwindowBean.setRouter(Constant.Router.WXGD_LIST);
+                        break;
+                    case Constant.HSWorkType.REPAIR_WXGD:
+                        menuPopwindowBean.setRouter(Constant.Router.WXGD_LIST);
+                        break;
+                    case Constant.HSWorkType.OHAUL_WXGD:
+                        menuPopwindowBean.setRouter(Constant.Router.WXGD_LIST);
+                        break;
+                    case Constant.HSWorkType.SPARE_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.SPARE_EARLY_WARN);
+                        break;
+                    case Constant.HSWorkType.MAINTENANCE_EARLY_WARN:
+                        menuPopwindowBean.setRouter(Constant.Router.MAINTENANCE_EARLY_WARN);
                         break;
                 }
             }
@@ -102,6 +107,15 @@ public class MenuHelper {
             works = GsonUtil.jsonToList(worksArray.toString(), MenuPopwindowBean.class);
             for (MenuPopwindowBean menuPopwindowBean : works) {
                 switch (menuPopwindowBean.getType()) {
+                    case Constant.HSWorkType.XJ_STATISTICS:
+                        menuPopwindowBean.setRouter(Constant.Router.XJ_STATISTICS);
+                        break;
+                    case Constant.HSWorkType.YH_STATISTICS:
+                        menuPopwindowBean.setRouter(Constant.Router.YH_STATISTICS);
+                        break;
+                    case Constant.HSWorkType.WXGD_STATISTICS:
+                        menuPopwindowBean.setRouter(Constant.Router.WXGD_STATISTICS);
+                        break;
                     case Constant.HSWorkType.STOP_POLICE:
                         menuPopwindowBean.setRouter(Constant.Router.STOP_POLICE);
                         break;

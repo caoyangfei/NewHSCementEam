@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -116,6 +117,7 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
     Map<String, Object> queryParam = new HashMap<>();
     private WXGDSubmitController wxgdSubmitController;
     private RoleController roleController;
+    private String repairType;
 
 
     @Override
@@ -132,7 +134,7 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
     @Override
     protected void onInit() {
         super.onInit();
-
+        repairType = getIntent().getStringExtra(Constant.IntentKey.REPAIR_TYPE);
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setLoadMoreEnable(true);
@@ -157,6 +159,15 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
     }
 
     @Override
+    protected void initData() {
+        super.initData();
+        if (!TextUtils.isEmpty(repairType)) {
+            listRepairTypeFilter.setCurrentItem(repairType);
+            queryParam.put(Constant.BAPQuery.REPAIR_TYPE, SystemCodeManager.getInstance().getSystemCodeEntityId(Constant.SystemCode.YH_WX_TYPE, repairType));
+        }
+    }
+
+    @Override
     protected void onRegisterController() {
         super.onRegisterController();
         roleController = new RoleController();
@@ -174,9 +185,8 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
      */
     private void initFilter() {
         listWorkSourceFilter.setData(FilterHelper.createWorkSourceList());
-//        listRepairTypeFilter.setData(FilterHelper.createRepairTypeList());
+        listRepairTypeFilter.setData(FilterHelper.createRepairTypeList());
         listPriorityFilter.setData(FilterHelper.createPriorityList());
-
         FilterHelper.addview(this, radioGroup1, FilterHelper.createWorkflowList(), 1000);
     }
 
@@ -208,9 +218,9 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
             @Override
             public void onFilterSelected(FilterBean filterBean) {
                 if (filterBean.type == CustomFilterView.VIEW_TYPE_ALL) {
-                    queryParam.remove(Constant.BAPQuery.WXGD_REPAIR_TYPE);
+                    queryParam.remove(Constant.BAPQuery.REPAIR_TYPE);
                 } else {
-                    queryParam.put(Constant.BAPQuery.WXGD_REPAIR_TYPE, SystemCodeManager.getInstance().getSystemCodeEntityId(Constant.SystemCode.YH_WX_TYPE, filterBean.name));
+                    queryParam.put(Constant.BAPQuery.REPAIR_TYPE, SystemCodeManager.getInstance().getSystemCodeEntityId(Constant.SystemCode.YH_WX_TYPE, filterBean.name));
                 }
                 doFilter();
             }
@@ -351,19 +361,19 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
     private void generateFilterCondition(String workSource) {
         String workSourceId = "";
         switch (workSource) {
-            case Constant.WxgdWorkSource_CN.patrolcheck:
+            case Constant.WorkSource_CN.patrolcheck:
                 workSourceId = Constant.WxgdWorkSource.patrolcheck;
                 break;
-            case Constant.WxgdWorkSource_CN.lubrication:
+            case Constant.WorkSource_CN.lubrication:
                 workSourceId = Constant.WxgdWorkSource.lubrication;
                 break;
-            case Constant.WxgdWorkSource_CN.maintenance:
+            case Constant.WorkSource_CN.maintenance:
                 workSourceId = Constant.WxgdWorkSource.maintenance;
                 break;
-            case Constant.WxgdWorkSource_CN.sparepart:
+            case Constant.WorkSource_CN.sparepart:
                 workSourceId = Constant.WxgdWorkSource.sparepart;
                 break;
-            case Constant.WxgdWorkSource_CN.other:
+            case Constant.WorkSource_CN.other:
                 workSourceId = Constant.WxgdWorkSource.other;
                 break;
             default:

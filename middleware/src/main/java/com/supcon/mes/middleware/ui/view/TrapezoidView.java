@@ -1,4 +1,4 @@
-package com.supcon.mes.module_main.ui.view;
+package com.supcon.mes.middleware.ui.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,7 +8,8 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
-import com.supcon.mes.module_main.R;
+import com.supcon.mes.middleware.R;
+
 
 /**
  * @author yangfei.cao

@@ -17,50 +17,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:drawableLeft="@drawable/wait_dealt_state_orange"
-            android:drawablePadding="@dimen/dp_5"
-            android:text="超期"
-            android:textSize="@dimen/fontSize_14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:drawableLeft="@drawable/wait_dealt_state_gray"
-            android:drawablePadding="@dimen/dp_5"
-            android:text="待处理"
-            android:textSize="@dimen/fontSize_14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:drawableLeft="@drawable/wait_dealt_state_yellow"
-            android:drawablePadding="@dimen/dp_5"
-            android:text="处理中"
-            android:textSize="@dimen/fontSize_14sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_5"
-            android:drawableLeft="@drawable/wait_dealt_state_blue"
-            android:drawablePadding="@dimen/dp_5"
-            android:text="待验收"
-            android:textSize="@dimen/fontSize_14sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="@dimen/dp_5">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:drawableStart="@mipmap/btn_entrust"
             android:drawablePadding="@dimen/dp_10"
             android:gravity="center"
@@ -77,6 +33,81 @@
             android:text="已委托"
             android:textSize="@dimen/fontSize_14sp" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="@dimen/dp_5">
+
+        <RadioGroup
+            android:id="@+id/waitState"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:tag="waitState">
+
+            <RadioButton
+                android:id="@+id/dealtOverdue"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:button="@drawable/wait_dealt_state_orange"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingStart="@dimen/dp_10"
+                android:tag="dealtOverdue"
+                android:text="超期"
+                android:textColor="@color/textColorGray"
+                android:textSize="@dimen/fontSize_14sp" />
+
+            <RadioButton
+                android:id="@+id/dealtTodo"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:button="@drawable/wait_dealt_state_gray"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingStart="@dimen/dp_10"
+                android:tag="dealtTodo"
+                android:text="待处理"
+                android:textColor="@color/textColorGray"
+                android:textSize="@dimen/fontSize_14sp" />
+
+            <RadioButton
+                android:id="@+id/dealtDoing"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:button="@drawable/wait_dealt_state_yellow"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingStart="@dimen/dp_10"
+                android:tag="dealtDoing"
+                android:text="处理中"
+                android:textColor="@color/textColorGray"
+                android:textSize="@dimen/fontSize_14sp" />
+
+            <RadioButton
+                android:id="@+id/dealtAcceptance"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/dp_10"
+                android:button="@drawable/wait_dealt_state_blue"
+                android:drawablePadding="@dimen/dp_5"
+                android:paddingStart="@dimen/dp_10"
+                android:tag="dealtAcceptance"
+                android:text="验收"
+                android:textColor="@color/textColorGray"
+                android:textSize="@dimen/fontSize_14sp" />
+        </RadioGroup>
+
+    </LinearLayout>
+
 
     <include layout="@layout/ly_recyclerview" />
 </LinearLayout>

@@ -234,7 +234,25 @@ public class BAPQueryParamsHelper {
                 subcondEntity.paramStr = LIKE_OPT_Q;
                 subcondEntity.value = String.valueOf(value);
                 break;
+            case Constant.BAPQuery.CREATE_DATE_START:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = Constant.BAPQuery.CREATE_TIME;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = Constant.BAPQuery.DATETIME;
+                subcondEntity.operator = GE;
+                subcondEntity.paramStr = LIKE_OPT_Q;
+                subcondEntity.value = String.valueOf(value);
 
+                break;
+            case Constant.BAPQuery.CREATE_DATE_END:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = Constant.BAPQuery.CREATE_TIME;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = Constant.BAPQuery.DATETIME;
+                subcondEntity.operator = LE;
+                subcondEntity.paramStr = LIKE_OPT_Q;
+                subcondEntity.value = String.valueOf(value);
+                break;
             case Constant.BAPQuery.XSCK_DATE_START:
                 subcondEntity = new SubcondEntity();
                 subcondEntity.columnName = Constant.BAPQuery.OUT_STORAGE_DATE;
@@ -272,6 +290,15 @@ public class BAPQueryParamsHelper {
 //                subcondEntity.paramStr = LIKE_OPT_Q;
 //                subcondEntity.value = String.valueOf(value);
 //                break;
+            case Constant.BAPQuery.SOURCE_TYPE:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.columnName = Constant.BAPQuery.SOURCE_TYPE;
+                subcondEntity.dbColumnType = Constant.BAPQuery.SYSTEMCODE;
+                subcondEntity.operator = Constant.BAPQuery.BE;
+                subcondEntity.paramStr = Constant.BAPQuery.LIKE_OPT_Q;
+                subcondEntity.value = String.valueOf(value);
+                break;
 
             case Constant.BAPQuery.WORK_SOURCE:
                 subcondEntity = new SubcondEntity();
@@ -463,6 +490,23 @@ public class BAPQueryParamsHelper {
                 subcondEntity.columnName = Constant.BAPQuery.SCORE_TABLE_NO;
                 subcondEntity.type = TYPE_NORMAL;
                 subcondEntity.dbColumnType = Constant.BAPQuery.BAPCODE;
+                subcondEntity.operator = Constant.BAPQuery.LIKE;
+                subcondEntity.paramStr = LIKE_OPT_BLUR;
+                subcondEntity.value = String.valueOf(value);
+            case Constant.BAPQuery.OVERALLSTATE:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = Constant.BAPQuery.OVERALLSTATE;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = Constant.BAPQuery.TEXT;
+                subcondEntity.operator = Constant.BAPQuery.LIKE;
+                subcondEntity.paramStr = LIKE_OPT_BLUR;
+                subcondEntity.value = String.valueOf(value);
+                break;
+            case Constant.BAPQuery.OVERDATEFLAG:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = Constant.BAPQuery.OVERDATEFLAG;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = Constant.BAPQuery.TEXT;
                 subcondEntity.operator = Constant.BAPQuery.LIKE;
                 subcondEntity.paramStr = LIKE_OPT_BLUR;
                 subcondEntity.value = String.valueOf(value);

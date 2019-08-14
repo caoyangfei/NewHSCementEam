@@ -28,7 +28,7 @@
                 android:layout_height="180dp"
                 android:scaleType="centerCrop" />
 
-            <com.supcon.mes.module_main.ui.view.TrapezoidView
+            <com.supcon.mes.middleware.ui.view.TrapezoidView
                 android:id="@+id/eamName"
                 android:layout_width="140dp"
                 android:layout_height="30dp"

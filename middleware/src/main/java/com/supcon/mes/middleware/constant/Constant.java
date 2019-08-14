@@ -80,6 +80,7 @@ public interface Constant {
         String QXGL_VIEW = "QXGL_VIEW";         //缺陷管理查看页面
 
         String WXGD_LIST = "WXGDList";  //维修工单列表
+        String WXGD_STATISTICS = "WXGD_STATISTICS";//工单统计
         String WXGD_DISPATCHER = "WXGD_DISPATCHER";//维修工单派单
         String WXGD_RECEIVE = "WXGD_RECEIVE";//维修工单接单
         String WXGD_EXECUTE = "WXGD_EXECUTE";//维修工单执行
@@ -129,6 +130,7 @@ public interface Constant {
         String XJ_QXGL_LIST = "XJ_QXGL_LIST";
 
         String YH_LIST = "YH_LIST";
+        String YH_STATISTICS = "YH_STATISTICS";//隐患统计
         String OFFLINE_YH_LIST = "OFFLINE_YH_LIST";
         String YH_EDIT = "YH_EDIT";
         String OFFLINE_YH_EDIT = "OFFLINE_YH_EDIT";
@@ -146,6 +148,7 @@ public interface Constant {
 
         String LSXJ_LIST = "LSXJ_LIST";
         String JHXJ_LIST = "JHXJ_LIST";
+        String XJ_STATISTICS = "XJ_STATISTICS";//巡检统计
         String JHXJ_LX_LIST = "JHXJ_LX_LIST";
         String OLXJ_WORK_LIST_UNHANDLED = "OLXJ_WORK_LIST_UNHANDLED";
         String OLXJ_WORK_LIST_HANDLED = "OLXJ_WORK_LIST_HANDLED";
@@ -298,6 +301,8 @@ public interface Constant {
 
         String ISWARN = "ISWARN";//是否来自预警
 
+        String REPAIR_TYPE = "REPAIR_TYPE";//维修类型
+
     }
 
     interface FilterSearchParam {
@@ -347,17 +352,23 @@ public interface Constant {
     interface HSWorkType {//设备功能类型
         int JHXJ = 1;  //计划巡检
         int LSXJ = 2;  //临时巡检
+        int YHGL = 3;  //隐患单
 
-        int SPARE_EARLY_WARN = 5;//备件更换预警
-        int MAINTENANCE_EARLY_WARN = 6;//维保预警
-        int YHGL = 7;  //隐患管理
-        int PLAN_LUBRICATION_EARLY_WARN = 8;//计划润滑
-        int TEMPORARY_LUBRICATION_EARLY_WARN = 9;//临时润滑
-        int LUBRICATION_EARLY_WARN = 10;//润滑预警
+        int PLAN_LUBRICATION_EARLY_WARN = 5;//计划润滑
+        int TEMPORARY_LUBRICATION_EARLY_WARN = 6;//临时润滑
+        int LUBRICATION_EARLY_WARN = 7;//润滑预警
 
-        int WXGD = 14;  //维修工单
+        int DAILY_WXGD = 10;  //日常维修工单
+        int REPAIR_WXGD = 11;  //周期维修工单
+        int OHAUL_WXGD = 12;  //年底大修维修工单
+        int SPARE_EARLY_WARN = 13;//备件更换预警
+        int MAINTENANCE_EARLY_WARN = 14;//维保预警
 
-        int STOP_POLICE = 24;  //停机报警
+
+        int XJ_STATISTICS = 17;  //巡检统计
+        int YH_STATISTICS = 18;  //隐患统计
+        int WXGD_STATISTICS = 19;  //工单统计
+        int STOP_POLICE = 20;  //停机报警
     }
 
     interface HSProcesskey {
@@ -487,6 +498,9 @@ public interface Constant {
         String FIND_TIME = "FIND_TIME";
         String YH_DATE_START = "YH_DATE_START";
         String YH_DATE_END = "YH_DATE_END";
+        String CREATE_DATE_START = "CREATE_DATE_START";
+        String CREATE_DATE_END = "CREATE_DATE_END";
+        String CREATE_TIME = "CREATE_TIME";
         String YH_AREA = "YH_AREA";
         String REPAIR_TYPE = "REPAIR_TYPE";
         String PRIORITY = "PRIORITY";
@@ -561,6 +575,11 @@ public interface Constant {
         String SCORE_DATA = "SCORE_DATA";//时间
 
         String SCORE_TABLE_NO = "SCORE_TABLE_NO";//单据编号
+
+        String SOURCE_TYPE = "SOURCE_TYPE";//隐患来源
+
+        String OVERALLSTATE = "OVERALLSTATE";//工作状态
+        String OVERDATEFLAG = "OVERDATEFLAG";//是否超期
     }
 
 
@@ -595,23 +614,32 @@ public interface Constant {
     /**
      * 维修工单单据状态
      */
+    interface YHStatus {
+        String WAIT = "BEAM2004/01";//待处理
+        String IMPLEMENT = "BEAM2004/02";//处理中
+        String COMPLETE = "BEAM2004/04";//以处理
+    }
+
+    /**
+     * 维修工单单据状态
+     */
     interface WxgdStatus {
-        String DISPATCH = "BEAM049/01";
-        String CONFIRM = "BEAM049/02";
+        String DISPATCH = "BEAM049/01";//派单
+        String CONFIRM = "BEAM049/02";//接单
         String IMPLEMENT = "BEAM049/03";
         String ACCEPTANCE = "BEAM049/04";
-        String COMPLETE = "BEAM049/05";
+        String COMPLETE = "BEAM049/05";//完成
     }
 
     /**
      * 维修工单单据状态
      */
     interface WxgdStatus_CH {
-        String DISPATCH = "待派工";
-        String CONFIRM = "待接收";
-        String IMPLEMENT = "待执行";
-        String ACCEPTANCE = "待验收";
-        String COMPLETE = "已完成";
+        String DISPATCH = "派工";
+        String CONFIRM = "接收";
+        String IMPLEMENT = "执行";
+        String ACCEPTANCE = "验收";
+        String COMPLETE = "完成";
     }
 
     interface WxgdWorkSource {
@@ -622,7 +650,16 @@ public interface Constant {
         String other = "BEAM2003/05";//其它
     }
 
-    interface WxgdWorkSource_CN {
+    interface YhglWorkSource {
+        String patrolcheck = "BEAM2006/01";//巡检
+        String other = "BEAM2006/02";//其它
+        String maintenance = "BEAM2006/03";//维保
+        String sparepart = "BEAM2006/04";//备件
+        String lubrication = "BEAM2006/05";//润滑
+
+    }
+
+    interface WorkSource_CN {
         String patrolcheck = "巡检";//巡检
         String lubrication = "润滑";//润滑
         String maintenance = "维保";//维保

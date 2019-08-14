@@ -44,4 +44,12 @@
     <color name="confuse">#2799C9</color>
     <color name="operate">#E05543</color>
     <color name="txl_view_title">#16B1E6</color>
+
+    <color name="gray">#a5a5a5</color>
+    <color name="yellow">#ffc000</color>
+    <color name="blue">#5b9bd5</color>
+    <color name="orange">#ed7d31</color>
+    <color name="green">#70ad57</color>
+    <color name="color_ffa000">#ffa000</color>
+    <color name="color_dddddd">#dddddd</color>
 </resources>

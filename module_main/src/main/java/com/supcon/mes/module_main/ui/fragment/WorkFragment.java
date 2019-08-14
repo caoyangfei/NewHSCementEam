@@ -43,6 +43,7 @@ import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.presenter.EamPresenter;
+import com.supcon.mes.middleware.ui.view.MarqueeTextView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
@@ -74,6 +75,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -128,6 +130,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private CommonSearchStaff proxyStaff;
     private CustomDialog customDialog;
     private String reason;
+    private MarqueeTextView marqueeTextView;
 
     @Override
     protected int getLayoutID() {
@@ -158,6 +161,12 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+
+        if (isWorkTime()) {
+            marqueeTextView.setText("早上清新的空气伴随你,愉快的心情跟随你,新的一天新的开始,用生命度过每一秒,用每一秒做好工作!");
+        } else {
+            marqueeTextView.setText("一天的忙碌结束了,非常感谢大家对企业的支持,在回家路上请注意安全,祝你们幸福!");
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -174,6 +183,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         waitMore.setOnClickListener(v -> IntentRouter.go(getActivity(), Constant.Router.WAIT_DEALT));
         View workTitle = rootView.findViewById(R.id.hs_work_title);
         ((TextView) workTitle.findViewById(R.id.contentTitleLabel)).setText("我的工作");
+        marqueeTextView = workTitle.findViewById(R.id.contentTitleTips);
+        marqueeTextView.setVisibility(View.VISIBLE);
 
         waitDealtRecycler.setLayoutManager(new LinearLayoutManager(context));
         waitDealtAdapter = new WaitDealtAdapter(getActivity());
@@ -185,6 +196,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workRecycler.setAdapter(workAdapter);
         menuPopwindow = new MenuPopwindow(getActivity(), new LinkedList<>());
     }
+
 
     @SuppressLint("CheckResult")
     @Override
@@ -280,7 +292,20 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 oldPosition = -1;
                 MenuPopwindowBean menuPopwindowBean = (MenuPopwindowBean) obj;
                 if (!TextUtils.isEmpty(menuPopwindowBean.getRouter())) {
-                    IntentRouter.go(getContext(), menuPopwindowBean.getRouter());
+
+                    Bundle bundle = new Bundle();
+                    switch (menuPopwindowBean.getType()) {
+                        case Constant.HSWorkType.DAILY_WXGD:
+                            bundle.putString(Constant.IntentKey.REPAIR_TYPE, "日常");
+                            break;
+                        case Constant.HSWorkType.REPAIR_WXGD:
+                            bundle.putString(Constant.IntentKey.REPAIR_TYPE, "检修");
+                            break;
+                        case Constant.HSWorkType.OHAUL_WXGD:
+                            bundle.putString(Constant.IntentKey.REPAIR_TYPE, "大修");
+                            break;
+                    }
+                    IntentRouter.go(getContext(), menuPopwindowBean.getRouter(), bundle);
                 } else {
                     ToastUtils.show(getActivity(), menuPopwindowBean.getName());
                 }
@@ -461,6 +486,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
+        if (menuPopwindow != null && menuPopwindow.isShowing()) {
+            menuPopwindow.dismiss();
+        }
         if (entity.result.size() > 0) {
             waitDealtLayout.setVisibility(View.GONE);
         } else {
@@ -472,6 +500,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getWaitDealtFailed(String errorMsg) {
+        if (menuPopwindow != null && menuPopwindow.isShowing()) {
+            menuPopwindow.dismiss();
+        }
         LogUtil.e("获取待办失败:" + errorMsg);
         if (errorMsg.contains("401")) {
             SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
@@ -569,5 +600,15 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 return filter;
             }
         }).subscribe();
+    }
+
+    private boolean isWorkTime() {
+        Calendar cal = Calendar.getInstance();// 当前日期
+        int hour = cal.get(Calendar.HOUR_OF_DAY);// 获取小时
+        if (hour > 8 && hour < 17) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
