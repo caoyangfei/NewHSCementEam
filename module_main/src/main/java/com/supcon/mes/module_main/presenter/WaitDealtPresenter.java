@@ -26,6 +26,7 @@ import io.reactivex.functions.Function;
  * ------------- Description -------------
  */
 public class WaitDealtPresenter extends WaitDealtContract.Presenter {
+    //工作提醒
     @Override
     public void getWaitDealt(int page, int pageSize, Map<String, Object> params) {
         FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(params);
@@ -62,6 +63,7 @@ public class WaitDealtPresenter extends WaitDealtContract.Presenter {
                 }));
     }
 
+    //工作提醒委托
     @Override
     public void proxyPending(long pendingId, long proxyUserId, String proxDesc) {
         Map<String, Object> pageQueryParams = new HashMap<>();

@@ -163,12 +163,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-
-        if (isWorkTime()) {
-            marqueeTextView.setText("早上清新的空气伴随你,愉快的心情跟随你,新的一天新的开始,用生命度过每一秒,用每一秒做好工作!");
-        } else {
-            marqueeTextView.setText("一天的忙碌结束了,非常感谢大家对企业的支持,在回家路上请注意安全,祝你们幸福!");
-        }
+        presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
     }
 
     @SuppressLint("CheckResult")
@@ -575,6 +570,21 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     public void getMainWorkCountFailed(String errorMsg) {
         LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
+    }
+
+    @Override
+    public void getSloganInfoSuccess(CommonEntity entity) {
+        String result = (String) entity.result;
+        if (!TextUtils.isEmpty(result)) {
+            marqueeTextView.setText(result);
+        } else {
+            marqueeTextView.setText("祝您工作愉快，生活幸福!");
+        }
+    }
+
+    @Override
+    public void getSloganInfoFailed(String errorMsg) {
+        marqueeTextView.setText("祝您工作愉快，生活幸福!");
     }
 
     @Override

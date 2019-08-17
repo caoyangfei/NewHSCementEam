@@ -57,4 +57,8 @@ public interface MainService {
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getMainButtonWorkCount.action")
     Flowable<CommonBAPListEntity<WorkNumEntity>> getMainWorkCount();
 
+    //提示信息
+    @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getSloganInfo.action")
+    Flowable<CommonEntity<String>> getSloganInfo();
+
 }
