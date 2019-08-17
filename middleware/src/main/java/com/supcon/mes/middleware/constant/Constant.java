@@ -580,6 +580,8 @@ public interface Constant {
 
         String OVERALLSTATE = "OVERALLSTATE";//工作状态
         String OVERDATEFLAG = "OVERDATEFLAG";//是否超期
+
+        String IS_RUN = "IS_RUN";//是否启用
     }
 
 

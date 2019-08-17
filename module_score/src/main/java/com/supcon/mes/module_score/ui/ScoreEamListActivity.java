@@ -129,7 +129,7 @@ public class ScoreEamListActivity extends BaseRefreshRecyclerActivity implements
         searchTitleBar.setTitleText("设备评分绩效");
         startTime.setDate(getThreeDay());
         stopTime.setDate(dateFormat.format(System.currentTimeMillis()));
-
+        customSearchView.setInput(selecStr);
         if (TextUtils.isEmpty(scoreTableNo)) {
             queryParam.put(Constant.BAPQuery.SCORE_TIME_START, getThreeDay());
             queryParam.put(Constant.BAPQuery.SCORE_TIME_STOP, dateFormat.format(System.currentTimeMillis()));

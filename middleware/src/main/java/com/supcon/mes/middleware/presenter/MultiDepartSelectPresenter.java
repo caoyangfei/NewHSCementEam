@@ -1,18 +1,16 @@
 package com.supcon.mes.middleware.presenter;
 
 import android.annotation.SuppressLint;
-import android.util.Log;
 
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.middleware.model.bean.AreaMultiStageEntity;
 import com.supcon.mes.middleware.model.bean.DepartmentInfo;
 import com.supcon.mes.middleware.model.bean.DepartmentInfoDao;
 import com.supcon.mes.middleware.model.bean.TxlEntityDao;
 import com.supcon.mes.middleware.model.contract.MultiDepartSelectContract;
-import com.supcon.mes.middleware.ui.view.CustomMultiStageView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.Flowable;
 
@@ -88,119 +86,7 @@ public class MultiDepartSelectPresenter extends MultiDepartSelectContract.Presen
 //                    cloneCurrent.childNodeList.get(0)..add(0, cloneCurrent);
                 });
     }
-    
-    public class AreaMultiStageEntity implements CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>, Cloneable {
-        private CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo> fatherNode;
-        private DepartmentInfo currentEntity;
-        private List<CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>> childNodeList = new ArrayList<>();
-        private Boolean isExpanded = false;
-        
-        public AreaMultiStageEntity setCurrentEntity(DepartmentInfo currentEntity) {
-            this.currentEntity = currentEntity;
-            return this;
-        }
-        
-        public AreaMultiStageEntity setFatherNode(CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo> fatherNode) {
-            this.fatherNode = fatherNode;
-            return this;
-        }
-        
-        public AreaMultiStageEntity setChildNodeList(List<CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>> childNodeList) {
-            this.childNodeList = childNodeList;
-            return this;
-        }
-        
-        @Override
-        public Boolean isLeafNode() {
-            if (fatherNode() == null) {
-                return false;
-            }
-            return getInfo().equals(fatherNode().getInfo());
-        }
-        
-        @Override
-        public Boolean isRootEntity() {
-            return currentEntity.id == null;
-        }
-        
-        @Override
-        public Boolean isExpanded() {
-            return isExpanded;
-        }
-        
-        @Override
-        public String getInfo() {
-            return currentEntity.layRec;
-        }
-        
-        @Override
-        public void setInfo(String info) {
-            currentEntity.layRec = info;
-        }
-        
-        @Override
-        public void changeExpandStatus() {
-            isExpanded = !isExpanded;
-        }
-        
-        @Override
-        public void setExpanded(Boolean isExpanded) {
-            this.isExpanded = isExpanded;
-        }
-        
-        @Override
-        public CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo> fatherNode() {
-            return fatherNode;
-        }
-        
-        @Override
-        public DepartmentInfo getCurrentEntity() {
-            return currentEntity;
-        }
-        
-        @Override
-        public Integer getChildListSize() {
-            if (childNodeList == null || childNodeList.size() == 0) {
-                return 0;
-            }
-            return childNodeList.size();
-        }
-        
-        
-        @Override
-        public Flowable<List<CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>>> getChildNodeList() {
-            return Flowable.just(childNodeList)
-                    .doOnNext(customMultiStageEntities -> {
-                        if (customMultiStageEntities == null) {
-                            customMultiStageEntities = new ArrayList<>();
-                        }
-                        if (customMultiStageEntities.size() == 0) {
-                            //Todo: For test,
-                            List<CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>> finalCustomMultiStageEntities = customMultiStageEntities;
-                            Log.e("ciruy", getCurrentEntity().fullPathName + "\n"
-                                    + EamApplication.dao()
-                                    .getTxlEntityDao().queryBuilder()
-                                    .where(TxlEntityDao.Properties.FULLPATHNAME.eq(getCurrentEntity().fullPathName))
-                                    .list().toString());
-                        }
-                    });
-            
-            
-        }
-        
-        @Override
-        protected AreaMultiStageEntity clone() throws CloneNotSupportedException {
-            AreaMultiStageEntity areaMultiStageEntity = (AreaMultiStageEntity) super.clone();
-            areaMultiStageEntity.setChildNodeList(new ArrayList<>());
-            return areaMultiStageEntity;
-        }
-        
-        @Override
-        public List<CustomMultiStageView.CustomMultiStageEntity<DepartmentInfo>> getActualChildNodeList() {
-            return childNodeList;
-        }
-    }
-    
+
     private AreaMultiStageEntity insertNode(AreaMultiStageEntity currentNode, DepartmentInfo area) {
         DepartmentInfo currentEntity = currentNode.currentEntity;
         AreaMultiStageEntity insertedreaMultiStageEntity = new AreaMultiStageEntity()

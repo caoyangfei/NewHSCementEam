@@ -89,7 +89,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
                 @Override
                 public void onNFCReceived(String nfc) {
                     LogUtil.d("NFC Received : " + nfc);
-                    EventBus.getDefault().post(new NFCEvent(nfc));
+                    EventBus.getDefault().post(new NFCEvent(nfc, "Main"));
                 }
             });
         }

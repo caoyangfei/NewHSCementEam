@@ -13,6 +13,7 @@ import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.R;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.api.MultiDepartSelectAPI;
+import com.supcon.mes.middleware.model.bean.AreaMultiStageEntity;
 import com.supcon.mes.middleware.model.contract.MultiDepartSelectContract;
 import com.supcon.mes.middleware.presenter.MultiDepartSelectPresenter;
 import com.supcon.mes.middleware.ui.view.CustomMultiStageView;
@@ -41,38 +42,38 @@ public class MultiDepartSelectActivity extends BasePresenterActivity implements 
     RelativeLayout titleBarLayout;
     @BindByTag("customSearchView")
     CustomSearchView customSearchView;
-    
+
     @Override
     protected void initListener() {
         super.initListener();
         leftBtn.setOnClickListener(v -> back());
     }
-    
+
     @Override
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
         titleText.setText("组织");
     }
-    
+
     @Override
     protected void initData() {
         super.initData();
         presenterRouter.create(MultiDepartSelectAPI.class).getDepartmentInfoList("");
     }
-    
+
     @Override
     protected int getLayoutID() {
         return R.layout.ac_multi_depart_select;
     }
-    
+
     @Override
-    public void getDepartmentInfoListSuccess(MultiDepartSelectPresenter.AreaMultiStageEntity entity) {
+    public void getDepartmentInfoListSuccess(AreaMultiStageEntity entity) {
         customMultiStageView.setRootEntity(entity);
     }
-    
+
     @Override
     public void getDepartmentInfoListFailed(String errorMsg) {
-    
+
     }
 }

@@ -78,6 +78,7 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
 
     private NFCHelper nfcHelper;
     private boolean isMainEam;
+    private String searchTag;
 
     @Override
     protected IListAdapter<CommonSearchEntity> createAdapter() {
@@ -95,6 +96,7 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
         eamCode = getIntent().getStringExtra(Constant.IntentKey.EAM_CODE);
         areaName = getIntent().getStringExtra(Constant.IntentKey.AREA_NAME);
         isMainEam = getIntent().getBooleanExtra(Constant.IntentKey.IS_MAIN_EAM, false);
+        searchTag = getIntent().getStringExtra(Constant.IntentKey.COMMON_SEARCH_TAG);
 
         nfcHelper = NFCHelper.getInstance();
         if (nfcHelper != null) {
@@ -150,6 +152,7 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
             CommonSearchEntity commonSearchEntity = (CommonSearchEntity) obj;
             CommonSearchEvent commonSearchEvent = new CommonSearchEvent();
             commonSearchEvent.commonSearchEntity = commonSearchEntity;
+            commonSearchEvent.flag = searchTag;
             finish();
             EventBus.getDefault().post(commonSearchEvent);
         });

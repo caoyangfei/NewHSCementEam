@@ -129,7 +129,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
 
         @Override
         protected void update(WaitDealtEntity data) {
-            waitDealtEamName.setText(Util.strFormat(data.eamname));
+            waitDealtEamName.setText(Util.strFormat(TextUtils.isEmpty(data.eamname) ? data.eamcode : data.eamname));
             if (data.nextduration != null) {
                 waitDealtTime.setText(Util.strFormat2(data.nextduration));
             } else {

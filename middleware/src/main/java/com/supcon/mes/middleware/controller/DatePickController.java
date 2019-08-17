@@ -10,6 +10,7 @@ import com.supcon.mes.mbap.utils.controllers.BasePickerController;
 import com.supcon.mes.middleware.util.AnimatorUtil;
 
 import static com.supcon.common.view.view.picker.DateTimePicker.NONE;
+import static com.supcon.common.view.view.picker.DateTimePicker.YEAR_MONTH;
 import static com.supcon.common.view.view.picker.DateTimePicker.YEAR_MONTH_DAY;
 
 /**
@@ -25,6 +26,7 @@ public class DatePickController extends BasePickerController<DateTimePicker> imp
 
     private String[] dateStrs;
     private DateTimePicker.OnYearMonthDayTimePickListener mListener;
+    private DateTimePicker.OnYearMonthTimePickListener mTimePickListener;
     private DateTimePicker dateTimePicker;
     private ImageView expend;
 
@@ -44,6 +46,12 @@ public class DatePickController extends BasePickerController<DateTimePicker> imp
 
     }
 
+    public DatePickController listener(DateTimePicker.OnYearMonthTimePickListener listener) {
+        this.mTimePickListener = listener;
+        return this;
+
+    }
+
     public void show(long time) {
         parseTime(time);
         show();
@@ -54,6 +62,19 @@ public class DatePickController extends BasePickerController<DateTimePicker> imp
         this.expend = expend;
         parseTime(time);
         show();
+
+    }
+
+    public void showMonth(long time) {
+        parseTime(time);
+        showMonth();
+
+    }
+
+    public void showMonth(long time, ImageView expend) {
+        this.expend = expend;
+        parseTime(time);
+        showMonth();
 
     }
 
@@ -86,6 +107,26 @@ public class DatePickController extends BasePickerController<DateTimePicker> imp
                     Integer.valueOf(dateStrs[3]), Integer.valueOf(dateStrs[4]));
         if (mListener != null) {
             dateTimePicker.setOnDateTimePickListener(mListener);
+        }
+        dateTimePicker.show();
+    }
+
+    public void showMonth() {
+        dateTimePicker = new DateTimePicker(activity, YEAR_MONTH, NONE);
+        dateTimePicker.setOnDismissListener(this::onDismiss);
+        dateTimePicker.setDateRangeStart(2017, 1);
+        dateTimePicker.setDateRangeEnd(2025, 11);
+        dateTimePicker.setDividerVisible(isDividerVisible);
+        dateTimePicker.setCycleDisable(isCycleDisable);
+        dateTimePicker.setCanceledOnTouchOutside(isCancelOutside);
+        dateTimePicker.setTextSize(textSize);
+        dateTimePicker.setTextColor(textColorFocus, textColorNormal);
+        dateTimePicker.setLabel("-", "", "", "", "");
+        dateTimePicker.setSelectedItem(Integer.valueOf(dateStrs[0]),
+                Integer.valueOf(dateStrs[1]),
+                Integer.valueOf(dateStrs[3]), Integer.valueOf(dateStrs[4]));
+        if (mTimePickListener != null) {
+            dateTimePicker.setOnDateTimePickListener(mTimePickListener);
         }
         dateTimePicker.show();
     }

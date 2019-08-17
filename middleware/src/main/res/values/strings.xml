@@ -6,7 +6,7 @@
     <string name="device_style3">%1$s \n[%2$s]</string>
     <string name="device_style4">%1$s [%2$s]</string>
     <string name="device_style5">%1$s (%2$s) [%3$s]</string>
-
+    <string name="device_style6">%1$s\t\t%2$s</string>
     <string name="device_style7"><![CDATA[<font color="#FFFFFF" size="15"><b>%1$s</b></font><font color="#FFFFFF" size="12">%2$s</font>]]></string>
     <string name="device_style8"><![CDATA[<font color="#000000" size="16">%1$s</font><font color="#222222" size="16"> %2$s</font><font color="#2f22f1" size="12"> (%3$s)</font>]]></string>
     <string name="device_style10"><![CDATA[<font color="#222222" size="16">%1$s</font><font color="#2f22f1" size="12"> (%2$s)</font>]]></string>

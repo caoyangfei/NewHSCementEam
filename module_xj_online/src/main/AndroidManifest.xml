@@ -9,19 +9,19 @@
             android:launchMode="standard"
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name="com.supcon.mes.module_olxj.ui.OLXJTempTaskListActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name="com.supcon.mes.module_olxj.ui.OLXJTaskListActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name="com.supcon.mes.module_olxj.ui.OLXJGroupListActivity"
             android:screenOrientation="portrait"
@@ -35,6 +35,11 @@
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name="com.supcon.mes.module_olxj.ui.OLXJWorkListHandledActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppNoTitleBarTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <activity
+            android:name="com.supcon.mes.module_olxj.ui.OLXJStatisticsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />

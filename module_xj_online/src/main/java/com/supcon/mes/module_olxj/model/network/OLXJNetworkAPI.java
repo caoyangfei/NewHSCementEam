@@ -11,6 +11,7 @@ import com.supcon.mes.module_olxj.model.bean.AbnormalEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJExemptionEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJGroupEntity;
+import com.supcon.mes.module_olxj.model.bean.OLXJStatisticsEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJTaskEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
 
@@ -41,7 +42,7 @@ public interface OLXJNetworkAPI {
      * @return
      */
     @GET("/mobileEAM/workGroup/workGroup/workGroupList-query.action?page.pageSize=500&page.maxPageSize=500&page.pageNo=1")
-    Flowable<CommonBAPListEntity<OLXJGroupEntity>> queryWorkGroupList();
+    Flowable<CommonBAPListEntity<OLXJGroupEntity>> queryWorkGroupList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity);
 
 
     /**
@@ -158,5 +159,11 @@ public interface OLXJNetworkAPI {
      */
     @GET("/mobileEAM/work/workItem/data-dg1491444225573.action?dgPage.pageSize=65536")
     Flowable<CommonBAPListEntity<OLXJExemptionEntity>> getExemptionEam(@Query("workItem.id") long workItemId);
+
+    /**
+     * 巡检统计
+     */
+    @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getInspectStaticsInfo.action")
+    Flowable<CommonListEntity<OLXJStatisticsEntity>> getInspectStaticsInfo(@QueryMap Map<String, Object> queryParam);
 
 }

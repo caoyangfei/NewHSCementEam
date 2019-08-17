@@ -1,8 +1,7 @@
-package com.supcon.mes.middleware.model.api;
+package com.supcon.mes.module_olxj.model.api;
 
 import com.app.annotation.apt.ContractFactory;
 import com.supcon.mes.middleware.model.bean.AreaMultiStageEntity;
-import com.supcon.mes.middleware.presenter.MultiDepartSelectPresenter;
 
 /**
  * @Author xushiyun
@@ -14,6 +13,6 @@ import com.supcon.mes.middleware.presenter.MultiDepartSelectPresenter;
  * @Desc
  */
 @ContractFactory(entites = AreaMultiStageEntity.class)
-public interface MultiDepartSelectAPI {
+public interface XJMultiDepartSelectAPI {
     void getDepartmentInfoList(String id);
 }

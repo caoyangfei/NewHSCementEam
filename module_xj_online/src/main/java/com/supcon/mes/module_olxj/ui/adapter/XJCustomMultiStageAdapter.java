@@ -1,13 +1,16 @@
-package com.supcon.mes.middleware.ui.adapter;
+package com.supcon.mes.module_olxj.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.app.annotation.BindByTag;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.adapter.BaseRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.mes.middleware.model.bean.CustomMultiStageEntity;
-import com.supcon.mes.middleware.ui.view.CustomMultiStageView;
+import com.supcon.mes.module_olxj.ui.view.XJCustomMultiStageView;
 
 import org.reactivestreams.Publisher;
 
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 /**
@@ -27,11 +31,11 @@ import io.reactivex.functions.Function;
  * @Related-classes
  * @Desc
  */
-public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<CustomMultiStageEntity<Data>> {
+public class XJCustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<CustomMultiStageEntity<Data>> {
     private List<CustomMultiStageEntity<Data>> contentList = new ArrayList<>();
-    private CustomMultiStageView.CustomMultiStageViewController mCustomMultiStageViewController;
+    private XJCustomMultiStageView.CustomMultiStageViewController mCustomMultiStageViewController;
 
-    public void registerController(CustomMultiStageView.CustomMultiStageViewController customMultiStageViewController) {
+    public void registerController(XJCustomMultiStageView.CustomMultiStageViewController customMultiStageViewController) {
         mCustomMultiStageViewController = customMultiStageViewController;
     }
 
@@ -62,7 +66,7 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
         }
     }
 
-    public CustomMultiStageAdapter(Context context) {
+    public XJCustomMultiStageAdapter(Context context) {
         super(context);
     }
 
@@ -93,6 +97,11 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
 
     public class StageViewHolder extends BaseRecyclerViewHolder<CustomMultiStageEntity<Data>> {
 
+        @BindByTag("areaIcon")
+        ImageView areaIcon;
+        @BindByTag("areaName")
+        TextView areaName;
+
         public StageViewHolder(Context context) {
             super(context, parent);
         }
@@ -106,22 +115,13 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
         @Override
         protected void initListener() {
             super.initListener();
-            RxView.clicks(itemView)
+            RxView.clicks(areaIcon)
                     .throttleFirst(200, TimeUnit.MILLISECONDS)
                     .subscribe(o -> {
-//                        Flowable.just(getItem(getAdapterPosition()))
-//                                .doOnNext(customMultiStageEntity -> customMultiStageEntity.changeExpandStatus())
-//                                .flatMap(customMultiStageEntity -> customMultiStageEntity.getChildNodeList())
-//                                .doOnNext(new Consumer<List<CustomMultiStageView.CustomMultiStageEntity<Data>>>() {
-//                                    @Override
-//                                    public void accept(List<CustomMultiStageView.CustomMultiStageEntity<Data>> customMultiStageEntities) throws Exception {
-//                                        for (CustomMultiStageView.CustomMultiStageEntity<Data> customMultiStageEntity:customMultiStageEntities){
-//                                            customMultiStageEntity.setExpanded(false);
-//                                        }
-//                                    }
-//                                });
-
                         CustomMultiStageEntity<Data> customMultiStageEntity = getItem(getAdapterPosition());
+                        if (customMultiStageEntity.isRootEntity()) {
+                            return;
+                        }
                         customMultiStageEntity.changeExpandStatus();
                         Flowable<List<CustomMultiStageEntity<Data>>> customMultiStageEntities = customMultiStageEntity.getChildNodeList();
                         customMultiStageEntities
@@ -142,9 +142,18 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
                         }
                         viewController.changeStatus();
                     });
+
+            RxView.clicks(areaName)
+                    .throttleFirst(200, TimeUnit.MILLISECONDS)
+                    .subscribe(new Consumer<Object>() {
+                        @Override
+                        public void accept(Object o) throws Exception {
+                            onItemChildViewClick(areaName, 0, getItem(getAdapterPosition()));
+                        }
+                    });
         }
 
-        private CustomMultiStageView.CustomMultiStageViewController viewController;
+        private XJCustomMultiStageView.CustomMultiStageViewController viewController;
 
         @Override
         protected void update(CustomMultiStageEntity<Data> data) {

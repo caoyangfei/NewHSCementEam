@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -138,20 +139,21 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     }
 
     @Override
-    protected void onInit() {
-        super.onInit();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         this.hidden = hidden;
         if (menuPopwindow != null && menuPopwindow.isShowing()) {
             menuPopwindow.dismiss();
+            menuPopwindow.changeWindowAlfa(1f);
             if (oldPosition != -1)
                 workRecycler.getChildAt(oldPosition).setSelected(false);
         }
+    }
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+        EventBus.getDefault().register(this);
     }
 
     @SuppressLint("CheckResult")
@@ -313,11 +315,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         });
 
 
-        menuPopwindow.setOnDismissListener(new MenuPopwindow(getActivity(), new ArrayList<>()) {
+        menuPopwindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
-                //在ontouch中切换透明度 防止点击图标闪动
-//                super.onDismiss();
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
             }
@@ -340,6 +340,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 } else {
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+                    bundle.putString(Constant.IntentKey.COMMON_SEARCH_TAG, "Main");
                     IntentRouter.go(getActivity(), Constant.Router.EAM, bundle);
                 }
             }
@@ -409,17 +410,19 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void search(CommonSearchEvent commonSearchEvent) {
-        if (commonSearchEvent.commonSearchEntity != null) {
-            if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
-                proxyStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
-                CustomTextView person = customDialog.getDialog().findViewById(R.id.proxyPerson);
-                person.setContent(Util.strFormat(proxyStaff.name));
-            } else if (commonSearchEvent.commonSearchEntity instanceof EamType) {
-                EamType eamType = (EamType) commonSearchEvent.commonSearchEntity;
-                eamTv.setContent(Util.strFormat(eamType.name));
-                Bundle bundle = new Bundle();
-                bundle.putSerializable(Constant.IntentKey.EAM, eamType);
-                IntentRouter.go(getActivity(), Constant.Router.EAM_DETAIL, bundle);
+        if (!TextUtils.isEmpty(commonSearchEvent.flag) && commonSearchEvent.flag.equals("Main")) {
+            if (commonSearchEvent.commonSearchEntity != null) {
+                if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
+                    proxyStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
+                    CustomTextView person = customDialog.getDialog().findViewById(R.id.proxyPerson);
+                    person.setContent(Util.strFormat(proxyStaff.name));
+                } else if (commonSearchEvent.commonSearchEntity instanceof EamType) {
+                    EamType eamType = (EamType) commonSearchEvent.commonSearchEntity;
+                    eamTv.setContent(Util.strFormat(eamType.name));
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable(Constant.IntentKey.EAM, eamType);
+                    IntentRouter.go(getActivity(), Constant.Router.EAM_DETAIL, bundle);
+                }
             }
         }
     }
@@ -460,17 +463,19 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void getNFC(NFCEvent nfcEvent) {
-        if (!hidden && EamApplication.getAppContext().getCurActivity() instanceof MainActivity) {
-            LogUtil.d("NFC_TAG", nfcEvent.getNfc());
-            Map<String, Object> nfcJson = Util.gsonToMaps(nfcEvent.getNfc());
-            if (nfcJson.get("textRecord") == null) {
-                ToastUtils.show(context, "标签内容空！");
-                return;
+        if (!hidden) {
+            if (!TextUtils.isEmpty(nfcEvent.getTag()) && nfcEvent.getTag().equals("Main")) {
+                LogUtil.d("NFC_TAG", nfcEvent.getNfc());
+                Map<String, Object> nfcJson = Util.gsonToMaps(nfcEvent.getNfc());
+                if (nfcJson.get("textRecord") == null) {
+                    ToastUtils.show(context, "标签内容空！");
+                    return;
+                }
+                eamTv.setContent((String) nfcJson.get("textRecord"));
+                Map<String, Object> params = new HashMap<>();
+                params.put(Constant.IntentKey.EAM_CODE, nfcJson.get("textRecord"));
+                presenterRouter.create(EamAPI.class).getEam(params, 1);
             }
-            eamTv.setContent((String) nfcJson.get("textRecord"));
-            Map<String, Object> params = new HashMap<>();
-            params.put(Constant.IntentKey.EAM_CODE, nfcJson.get("textRecord"));
-            presenterRouter.create(EamAPI.class).getEam(params, 1);
         }
     }
 
@@ -488,6 +493,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
         if (menuPopwindow != null && menuPopwindow.isShowing()) {
             menuPopwindow.dismiss();
+            menuPopwindow.changeWindowAlfa(1f);
         }
         if (entity.result.size() > 0) {
             waitDealtLayout.setVisibility(View.GONE);
@@ -502,6 +508,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     public void getWaitDealtFailed(String errorMsg) {
         if (menuPopwindow != null && menuPopwindow.isShowing()) {
             menuPopwindow.dismiss();
+            menuPopwindow.changeWindowAlfa(1f);
         }
         LogUtil.e("获取待办失败:" + errorMsg);
         if (errorMsg.contains("401")) {
@@ -571,11 +578,20 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (menuPopwindow != null && menuPopwindow.isShowing()) {
+            menuPopwindow.dismiss();
+            menuPopwindow.changeWindowAlfa(1f);
+        }
+
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
 
     @SuppressLint("CheckResult")
     private void updateNum(List<MenuPopwindowBean> menuPopwindowBeans, List<WorkNumEntity> workNumEntities, WorkInfo workInfo) {
