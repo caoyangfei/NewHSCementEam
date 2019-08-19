@@ -11,6 +11,7 @@ public class DeviceDCSEntity extends BaseEntity {
 
     public String name;
     public String itemNumber;
+    //BEAM053/01 	 开关信号,BEAM053/02  非开关信号,BEAM053/03 温度,BEAM053/04 压力
     public String valueType;
     public String latestValue;
     public String maxValue;

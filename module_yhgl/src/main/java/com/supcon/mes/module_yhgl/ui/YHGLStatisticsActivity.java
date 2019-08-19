@@ -33,10 +33,10 @@ import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_yhgl.R;
-import com.supcon.mes.module_yhgl.model.api.YHListAPI;
+import com.supcon.mes.module_yhgl.model.api.YHGLStatisticsAPI;
 import com.supcon.mes.module_yhgl.model.bean.YHListEntity;
-import com.supcon.mes.module_yhgl.model.contract.YHListContract;
-import com.supcon.mes.module_yhgl.presenter.YHListPresenter;
+import com.supcon.mes.module_yhgl.model.contract.YHGLStatisticsContract;
+import com.supcon.mes.module_yhgl.presenter.YHGLStatisticsPresenter;
 import com.supcon.mes.module_yhgl.ui.adapter.YHGLStatisticsAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,8 +59,8 @@ import io.reactivex.functions.Consumer;
  * ------------- Description -------------
  */
 @Router(Constant.Router.YH_STATISTICS)
-@Presenter(value = {WorkCountPresenter.class, YHListPresenter.class})
-public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity> implements YHListContract.View, WorkCountContract.View {
+@Presenter(value = {WorkCountPresenter.class, YHGLStatisticsPresenter.class})
+public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity> implements YHGLStatisticsContract.View, WorkCountContract.View {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -80,6 +80,7 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
     private YHGLStatisticsAdapter yhglStatisticsAdapter;
 
     Map<String, Object> queryParam = new HashMap<>();
+    Map<String, Object> workCountQueryParam = new HashMap<>();
     private View timeStart, timeEnd;
     private DatePickController datePickController;
     private ImageView startExpend, endExpend;
@@ -135,7 +136,10 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
         queryParam.put(Constant.BAPQuery.YH_DATE_END, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd 23:59:59"));
         startDate.setText(DateUtil.dateFormat(getTimeOfMonthStart(), "yyyy-MM-dd"));
         endDate.setText(DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
-        presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getFaultInfoCountByState.action");
+
+        workCountQueryParam.put("startTime", DateUtil.dateFormat(getTimeOfMonthStart(), "yyyy-MM-dd"));
+        workCountQueryParam.put("endTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
+
     }
 
     @SuppressLint("CheckResult")
@@ -148,7 +152,9 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
 
         refreshListController.setOnRefreshPageListener(
                 pageIndex -> {
-                    presenterRouter.create(YHListAPI.class).queryYHList(pageIndex, queryParam);
+                    presenterRouter.create(YHGLStatisticsAPI.class).queryYHList(pageIndex, queryParam);
+
+                    presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getFaultInfoCountByState.action", workCountQueryParam);
                 });
 
         timeStart.setOnClickListener(new View.OnClickListener() {
@@ -159,6 +165,7 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     startDate.setText(year + "-" + month + "-" + day);
                     queryParam.put(Constant.BAPQuery.YH_DATE_START, year + "-" + month + "-" + day + " 00:00:00");
+                    workCountQueryParam.put("startTime", year + "-" + month + "-" + day);
                     refreshListController.refreshBegin();
                 }).show(DateUtil.dateFormat(startDate.getText().toString()), startExpend);
             }
@@ -171,6 +178,7 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     startDate.setText(year + "-" + month + "-" + day);
                     queryParam.put(Constant.BAPQuery.YH_DATE_END, year + "-" + month + "-" + day + " 00:00:00");
+                    workCountQueryParam.put("endTime", year + "-" + month + "-" + day);
                     refreshListController.refreshBegin();
                 }).show(DateUtil.dateFormat(endDate.getText().toString()), endExpend);
             }

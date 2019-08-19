@@ -5,6 +5,8 @@ import com.supcon.mes.middleware.model.bean.WorkCountEntity;
 import com.supcon.mes.middleware.model.contract.WorkCountContract;
 import com.supcon.mes.middleware.model.network.MiddlewareHttpClient;
 
+import java.util.Map;
+
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -16,9 +18,9 @@ import io.reactivex.functions.Function;
  */
 public class WorkCountPresenter extends WorkCountContract.Presenter {
     @Override
-    public void getWorkCount(String url) {
+    public void getWorkCount(String url, Map<String, Object> queryParam) {
         mCompositeSubscription.add(
-                MiddlewareHttpClient.getWorkCount(url)
+                MiddlewareHttpClient.getWorkCount(url,queryParam)
                         .onErrorReturn(new Function<Throwable, CommonListEntity<WorkCountEntity>>() {
                             @Override
                             public CommonListEntity<WorkCountEntity> apply(Throwable throwable) throws Exception {

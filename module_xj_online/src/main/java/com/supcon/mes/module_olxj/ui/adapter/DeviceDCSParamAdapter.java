@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
-import com.supcon.common.view.util.DisplayUtil;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.model.bean.DeviceDCSEntity;
 import com.supcon.mes.module_olxj.R;

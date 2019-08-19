@@ -117,6 +117,11 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @BindByTag("score")
     TextView score;
 
+    @BindByTag("workName")
+    TextView workName;
+    @BindByTag("workDepot")
+    TextView workDepot;
+
     private boolean hidden;
     private WorkAdapter workAdapter;
     private MenuPopwindow menuPopwindow;
@@ -223,6 +228,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         lubricateMenu = MenuHelper.getLubricateMenu(getActivity());
         repairMenu = MenuHelper.getRepairMenu(getActivity());
         formMenu = MenuHelper.getFormMenu(getActivity());
+
+        workName.setText(EamApplication.getAccountInfo().staffName);
+        workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
 
 

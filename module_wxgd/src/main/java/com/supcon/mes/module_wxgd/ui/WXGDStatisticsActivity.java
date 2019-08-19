@@ -33,10 +33,10 @@ import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.R;
-import com.supcon.mes.module_wxgd.model.api.WXGDListAPI;
+import com.supcon.mes.module_wxgd.model.api.WXGDStatisticsAPI;
 import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
-import com.supcon.mes.module_wxgd.model.contract.WXGDListContract;
-import com.supcon.mes.module_wxgd.presenter.WXGDListPresenter;
+import com.supcon.mes.module_wxgd.model.contract.WXGDStatisticsContract;
+import com.supcon.mes.module_wxgd.presenter.WXGDStatisticsPresenter;
 import com.supcon.mes.module_wxgd.ui.adapter.WXGDStatisticsAdapter;
 
 import org.greenrobot.eventbus.EventBus;
@@ -59,8 +59,8 @@ import io.reactivex.functions.Consumer;
  * ------------- Description -------------
  */
 @Router(Constant.Router.WXGD_STATISTICS)
-@Presenter(value = {WorkCountPresenter.class, WXGDListPresenter.class})
-public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEntity> implements WXGDListContract.View, WorkCountContract.View {
+@Presenter(value = {WorkCountPresenter.class, WXGDStatisticsPresenter.class})
+public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEntity> implements WXGDStatisticsContract.View, WorkCountContract.View {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -81,6 +81,7 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
     private WXGDStatisticsAdapter yhglStatisticsAdapter;
 
     Map<String, Object> queryParam = new HashMap<>();
+    Map<String, Object> workCountQueryParam = new HashMap<>();
     private View timeStart, timeEnd;
     private DatePickController datePickController;
     private ImageView startExpend, endExpend;
@@ -137,7 +138,8 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
         startDate.setText(DateUtil.dateFormat(getTimeOfMonthStart(), "yyyy-MM-dd"));
         endDate.setText(DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
 
-        presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getWorkRecordCountByState.action");
+        workCountQueryParam.put("startTime", DateUtil.dateFormat(getTimeOfMonthStart(), "yyyy-MM-dd"));
+        workCountQueryParam.put("endTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
     }
 
     @SuppressLint("CheckResult")
@@ -150,7 +152,9 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
 
         refreshListController.setOnRefreshPageListener(
                 pageIndex -> {
-                    presenterRouter.create(WXGDListAPI.class).listWxgds(pageIndex, queryParam);
+                    presenterRouter.create(WXGDStatisticsAPI.class).listWxgds(pageIndex, queryParam);
+
+                    presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getWorkRecordCountByState.action", workCountQueryParam);
                 });
 
         timeStart.setOnClickListener(new View.OnClickListener() {
@@ -161,6 +165,7 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     startDate.setText(year + "-" + month + "-" + day);
                     queryParam.put(Constant.BAPQuery.CREATE_DATE_START, year + "-" + month + "-" + day + " 00:00:00");
+                    workCountQueryParam.put("startTime", year + "-" + month + "-" + day);
                     refreshListController.refreshBegin();
                 }).show(DateUtil.dateFormat(startDate.getText().toString()), startExpend);
             }
@@ -173,6 +178,7 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     startDate.setText(year + "-" + month + "-" + day);
                     queryParam.put(Constant.BAPQuery.CREATE_DATE_END, year + "-" + month + "-" + day + " 00:00:00");
+                    workCountQueryParam.put("endTime", year + "-" + month + "-" + day);
                     refreshListController.refreshBegin();
                 }).show(DateUtil.dateFormat(endDate.getText().toString()), endExpend);
             }

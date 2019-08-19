@@ -347,5 +347,5 @@ public interface NetworkAPI {
 
     //获取工单,隐患数量
     @GET
-    Flowable<CommonListEntity<WorkCountEntity>> getWorkCount(@Url String url);
+    Flowable<CommonListEntity<WorkCountEntity>> getWorkCount(@Url String url, @QueryMap Map<String, Object> queryMap);
 }

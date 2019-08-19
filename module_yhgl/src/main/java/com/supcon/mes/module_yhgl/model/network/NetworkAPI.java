@@ -7,7 +7,6 @@ import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.module_yhgl.model.bean.LubricateOilsListEntity;
 import com.supcon.mes.module_yhgl.model.bean.MaintenanceListEntity;
-import com.supcon.mes.module_yhgl.model.bean.RefProductListEntity;
 import com.supcon.mes.module_yhgl.model.bean.RepairStaffListEntity;
 import com.supcon.mes.module_yhgl.model.bean.SparePartListEntity;
 import com.supcon.mes.module_yhgl.model.bean.StandingCropResultEntity;
@@ -32,15 +31,26 @@ import retrofit2.http.QueryMap;
 @ApiFactory(name = "YHGLHttpClient")
 public interface NetworkAPI {
 
-     /**
+    /**
      * 查询隐患管理待办
+     *
      * @return
      */
     @GET("/BEAM2/faultInfo/faultInfo/faultInfoList-pending.action?processKey=faultInfoFW")
     Flowable<YHListEntity> faultInfoListPending(@QueryMap Map<String, Object> queryParam, @Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity);
 
     /**
+     * 查询隐患管理全部
+     *
+     * @return
+     */
+    @GET("/BEAM2/faultInfo/faultInfo/faultInfoList-query.action?processKey=faultInfoFW")
+    Flowable<YHListEntity> faultInfoList(@QueryMap Map<String, Object> queryParam, @Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity);
+
+
+    /**
      * 审批提交隐患单
+     *
      * @param map
      * @return
      */
@@ -49,6 +59,7 @@ public interface NetworkAPI {
 
     /**
      * 编辑提交隐患单
+     *
      * @param map
      * @return
      */
@@ -59,6 +70,7 @@ public interface NetworkAPI {
 
     /**
      * 查询隐患管理待办
+     *
      * @return
      */
     @GET("/services/public/BEAM2/faultInfo/getFaultInfos/{pageNo}/{pageSize}?securityKey=securityKey&securityId=restfulKey&returnType=json")
@@ -110,11 +122,10 @@ public interface NetworkAPI {
     Flowable<CommonListEntity<StandingCropResultEntity>> updateStandingCrop(@Query("productCode") String productCode);
 
     /**
-     * @description 备件生成领用出库单
      * @param
      * @return
+     * @description 备件生成领用出库单
      * @author zhangwenshuai1 2018/10/23
-     *
      */
     @POST("/BEAM2/workList/sparePart/generateSparePartApply.action")
     Flowable<ResultEntity> generateSparePartApply(@Query("sparePartJsons") String listStr);

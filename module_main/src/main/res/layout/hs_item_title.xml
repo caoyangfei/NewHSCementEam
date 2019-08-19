@@ -47,7 +47,8 @@
             android:singleLine="true"
             android:textColor="@color/customRed"
             android:textSize="@dimen/fontSize_16sp"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:tag="contentTitleTips" />
 
         <ImageView
             android:id="@+id/contentTitleSettingIc"
