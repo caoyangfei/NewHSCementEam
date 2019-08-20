@@ -1024,7 +1024,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                                             }
                                                         }
                                                         //温度
-                                                        if (deviceDCSEntity.valueType.equals("BEAM053/03")) {
+                                                        if (deviceDCSEntity.valueType.equals("BEAM053/03") || deviceDCSEntity.valueType.equals("BEAM053/04")) {
                                                             mOLXJWorkListAdapter.notifyItemChanged(mXJAreaEntity.workItemEntities.indexOf(olxjWorkItemEntity));
                                                         }
                                                         return true;
