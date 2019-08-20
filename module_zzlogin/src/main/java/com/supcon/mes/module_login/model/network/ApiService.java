@@ -36,6 +36,14 @@ public interface ApiService {
     Flowable<LoginEntity> login(@Query("username") String username, @Query("password") String password, @QueryMap Map<String, Object> map);
 
     /**
+     * 登陆
+     * @param map 默认参数
+     * @return
+     */
+    @GET("/cas/mobile/logon")
+    Flowable<LoginEntity> login(@QueryMap(encoded = true) Map<String, Object> map);
+
+    /**
      * 登出
      * @return
      */

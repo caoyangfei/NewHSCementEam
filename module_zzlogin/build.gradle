@@ -31,6 +31,7 @@ android {
 
     buildTypes {
         release {
+            buildConfigField "boolean", "HAS_SUPOS", "true"
             postprocessing {
                 removeUnusedCode false
                 removeUnusedResources false
@@ -38,6 +39,9 @@ android {
                 optimizeCode false
                 proguardFile 'proguard-rules.pro'
             }
+        }
+        debug{
+            buildConfigField "boolean", "HAS_SUPOS", "false"
         }
     }
 

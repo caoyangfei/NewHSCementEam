@@ -145,24 +145,35 @@ public class EamApplication extends MBapApp {
             }
             setIp(ip);
             setPort(port);
-        }
 
-        String zzIp = SharedPreferencesUtils.getParam(getApplicationContext(), Constant.ZZ.IP, "");
-        LogUtil.d("channel:"+channel+" zzip:"+zzIp);
-        if(!TextUtils.isEmpty(zzIp)){
-            return;
-        }
-        if (channel.equals("hongshi")) {
-            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "zhizhi.hssn.hz.supos.net"/*"192.168.13.113"*/);
-            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "8181");
-        }
-        else if(channel.equals("hailuo")){
-            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "60.167.69.246"/*"192.168.13.113"*/);
-            SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "38043");
+            String zzIp = SharedPreferencesUtils.getParam(getApplicationContext(), Constant.ZZ.IP, "");
+            LogUtil.d("channel:"+channel+" zzip:"+zzIp);
+            if(!TextUtils.isEmpty(zzIp)){
+                return;
+            }
+            if (channel.equals("hongshi")) {
+                SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "zhizhi.hssn.hz.supos.net"/*"192.168.13.113"*/);
+                SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "8181");
+            }
+            else if(channel.equals("hailuo")){
+                SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.IP, "60.167.69.246"/*"192.168.13.113"*/);
+                SharedPreferencesUtils.setParam(getApplicationContext(), Constant.ZZ.PORT, "38043");
+            }
+
         }
 
     }
 
+
+    public static boolean isDev(){
+
+        String channel = ChannelUtil.getUMengChannel();
+        if (channel.equals("dev")) {
+            return true;
+        }
+
+        return false;
+    }
 
     public static boolean isHongshi(){
 

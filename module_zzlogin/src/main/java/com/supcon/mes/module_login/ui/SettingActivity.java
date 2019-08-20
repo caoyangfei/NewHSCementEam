@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.DeviceManager;
+import com.supcon.mes.module_login.BuildConfig;
 import com.supcon.mes.module_login.IntentRouter;
 import com.supcon.mes.module_login.R;
 import com.supcon.mes.module_login.controller.PasswordController;
@@ -57,8 +59,8 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
     CustomEditText portInput;
     @BindByTag("urlSwitchBtn")
     SwitchButton urlSwitchBtn;
-    @BindByTag("qrCodeSwitchBtn")
-    SwitchButton qrCodeSwitchBtn;
+    @BindByTag("SupOSSwitchBtn")
+    SwitchButton SupOSSwitchBtn;
     @BindByTag("offlineSwitchBtn")
     SwitchButton offlineSwitchBtn;
 
@@ -107,6 +109,13 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
         EditTextHelper.setEditTextInhibitInputSpeChat(portInput.editText());
 
         initHost(isUrlEnabled);
+
+
+        if(BuildConfig.HAS_SUPOS || BuildConfig.DEBUG) {
+            ((ViewGroup)SupOSSwitchBtn.getParent()).setVisibility(View.VISIBLE);
+            SupOSSwitchBtn.setChecked(SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true));
+        }
+
     }
 
     private void initHost(boolean isUrlEnabled) {
@@ -179,6 +188,13 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
         });
 
         pwdSettings.setOnClickListener(v -> showPwdDialog());
+
+        SupOSSwitchBtn.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(SwitchButton view, boolean isChecked) {
+                SharedPreferencesUtils.setParam(context, Constant.SPKey.HAS_SUPOS, isChecked);
+            }
+        });
     }
 
     private void showPwdDialog() {

@@ -260,7 +260,7 @@ public interface NetworkAPI {
      * 发送device token
      */
     @POST("/BEAM/loginAndLogout.action")
-    Flowable<CommonEntity> sendDeviceToken(@Query("deviceToken") String deviceToken, @Query("loginStatus") String loginStatus);
+    Flowable<CommonEntity> sendDeviceToken(@Query("deviceToken") String deviceToken, @Query("loginStatus") String loginStatus, @Query("clientType") String clientType);
 
 
     /**

@@ -16,7 +16,7 @@ import io.reactivex.functions.Function;
 public class DeviceTokenPresenter extends DeviceTokenContract.Presenter {
 
     private void sendDeviceToken(String deviceToken, String loginStatus) {
-        mCompositeSubscription.add(MiddlewareHttpClient.sendDeviceToken(deviceToken, loginStatus)
+        mCompositeSubscription.add(MiddlewareHttpClient.sendDeviceToken(deviceToken, loginStatus, "android")
                 .onErrorReturn(new Function<Throwable, CommonEntity>() {
                     @Override
                     public CommonEntity apply(Throwable throwable) throws Exception {

@@ -54,6 +54,16 @@ public class SilentLoginController extends BasePresenterController implements Si
         isLogining = false;
     }
 
+    @Override
+    public void dologinWithSuposPWSuccess(LoginEntity entity) {
+
+    }
+
+    @Override
+    public void dologinWithSuposPWFailed(String errorMsg) {
+
+    }
+
 
     @Override
     public void dologin(String username, String pwd) {
@@ -61,10 +71,17 @@ public class SilentLoginController extends BasePresenterController implements Si
         isLogining = true;
     }
 
+    @Override
+    public void dologinWithSuposPW(String username, String pwd) {
+        presenterRouter.create(SilentLoginAPI.class).dologinWithSuposPW(username, pwd);
+        isLogining = true;
+    }
+
     public void silentLogin(){
         if(isLogining){
             return;
         }
-        dologin(EamApplication.getUserName(), EamApplication.getPassword());
+//        dologin(EamApplication.getUserName(), EamApplication.getPassword());
+        dologinWithSuposPW(EamApplication.getUserName(), EamApplication.getPassword());
     }
 }

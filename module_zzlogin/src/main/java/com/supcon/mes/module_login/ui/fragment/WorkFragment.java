@@ -121,7 +121,18 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
     public void doZhiZhiLogin(){
         String suposTicket = SharedPreferencesUtils.getParam(context, MBapConstant.SPKey.SUPOS_TICKET, "");
         LogUtil.d("suposTicket:"+suposTicket);
-        SLCoreSdk.initialize(getActivity().getApplication(),"http://10.30.55.50:8042", suposTicket, "admin");
+
+        String zzUrl = EamApplication.getZzUrl();
+        if(TextUtils.isEmpty(zzUrl)){
+            String zzIp = SharedPreferencesUtils.getParam(context, Constant.ZZ.IP, "");
+            String zzPort = SharedPreferencesUtils.getParam(context, Constant.ZZ.PORT, "");
+
+            if(!TextUtils.isEmpty(zzIp) && !TextUtils.isEmpty(zzPort)){
+                zzUrl = "http://"+zzIp+":"+zzPort;
+            }
+        }
+
+        SLCoreSdk.initialize(getActivity().getApplication(),TextUtils.isEmpty(zzUrl)?"http://10.30.55.50:8042":zzUrl, suposTicket, EamApplication.getUserName());
         SLCoreSdk.client().getMinAppList(new CoreSdkContract.GetMinAppListCallBack() {
             @Override
             public void onGetMinAppList(List<OwnMinAppItem> list) {

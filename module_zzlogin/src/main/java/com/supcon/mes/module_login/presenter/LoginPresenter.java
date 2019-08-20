@@ -36,8 +36,6 @@ public class LoginPresenter extends LoginContract.Presenter {
 
     @Override
     public void dologin(String username, String pwd) {
-        LogUtil.i("dologin username:"+username);
-
         Map<String, Object> defaultMap = new HashMap<>();
         defaultMap.put("machineId",11111111);
         defaultMap.put("clientType","android");
@@ -69,8 +67,6 @@ public class LoginPresenter extends LoginContract.Presenter {
 
     @Override
     public void dologinWithToken(String username, String pwd, String token1) {
-        LogUtil.i("dologin username:"+username);
-
         Map<String, Object> defaultMap = new HashMap<>();
         defaultMap.put("machineId",11111111);
         defaultMap.put("clientType","android");
@@ -80,6 +76,41 @@ public class LoginPresenter extends LoginContract.Presenter {
 
         mCompositeSubscription.add(
                 LoginHttpClient.login(username, pwd, defaultMap)
+                        .onErrorReturn(throwable -> {
+                            LoginEntity loginEntity = new LoginEntity();
+                            loginEntity.success = false;
+                            loginEntity.errMsg = throwable.toString();
+                            return loginEntity;
+                        })
+                        .subscribe(loginEntity -> {
+                            LogUtil.i( "onNext userEntity:"+loginEntity);
+                            if(loginEntity.success) {
+                                getView().dologinSuccess(loginEntity);
+                            }
+                            else if(loginEntity.errMsg != null && loginEntity.errMsg.contains("401")){
+                                getView().dologinFailed("用户名或密码错误!");
+                            } else {
+                                getView().dologinFailed(loginEntity.errMsg);
+                            }
+                        })
+
+        );
+    }
+
+    @Override
+    public void dologinWithSuposPW(String username, String supospwd) {
+
+        Map<String, Object> defaultMap = new HashMap<>();
+        defaultMap.put("machineId",11111111);
+        defaultMap.put("clientType","android");
+        defaultMap.put("clientVersion","2.1");
+        defaultMap.put("timestamp",new Date().getTime());
+
+        defaultMap.put("username", username);
+        defaultMap.put("suposPassword", supospwd);
+
+        mCompositeSubscription.add(
+                LoginHttpClient.login(defaultMap)
                         .onErrorReturn(throwable -> {
                             LoginEntity loginEntity = new LoginEntity();
                             loginEntity.success = false;

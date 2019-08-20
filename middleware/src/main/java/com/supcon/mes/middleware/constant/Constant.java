@@ -381,7 +381,7 @@ public interface Constant {
     interface SPKey {
         String WORKS = "works";
         String STAFF = "STAFF";
-
+        String HAS_SUPOS = "HAS_SUPOS";
         String DEVICE_TOKEN = "DEVICE_TOKEN";
 
         String RUN_STATES_ON = "RUN_STATES_ON";

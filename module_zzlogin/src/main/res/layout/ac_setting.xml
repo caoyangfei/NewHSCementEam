@@ -114,25 +114,26 @@
                     android:layout_alignParentTop="true"
                     android:gravity="center_vertical"
                     android:padding="5dp"
-
-                    android:text="支持二维码"
+                    android:text="是否SupOS登陆"
                     android:textColor="@color/textColorlightblack"
                     android:textSize="@dimen/fontSize_14sp" />
 
                 <com.supcon.common.view.view.SwitchButton
-                    android:id="@+id/qrCodeSwitchBtn"
-                    android:tag="qrCodeSwitchBtn"
+                    android:id="@+id/SupOSSwitchBtn"
+                    android:tag="SupOSSwitchBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true" />
+                    android:layout_centerVertical="true"
+                    custom:sb_checked="true"
+                    />
             </RelativeLayout>
 
             <com.supcon.mes.mbap.view.CustomArrowView
                 android:id="@+id/pwdSettings"
                 android:tag="pwdSettings"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="60dp"
                 android:layout_marginTop="@dimen/dp_5"
                 custom:arrow_icon="@drawable/ic_user_sz"
                 custom:arrow_text="设置密码"
