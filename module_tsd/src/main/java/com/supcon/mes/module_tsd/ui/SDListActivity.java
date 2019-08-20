@@ -10,7 +10,6 @@ import com.app.annotation.BindByTag;
 import com.app.annotation.apt.Router;
 import com.supcon.common.BaseConstant;
 import com.supcon.common.view.base.activity.BaseWebViewActivity;
-import com.supcon.common.view.util.CookieUtil;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.StatusBarUtils;
 import com.supcon.common.view.view.js.CallBackFunction;
@@ -135,7 +134,7 @@ public class SDListActivity extends BaseWebViewActivity {
         bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
         bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
         bundle.putString(BaseConstant.WEB_URL, url);
-//        CookieUtil.syncCookie(context, url);
+
         IntentRouter.go(context, Constant.Router.SD, bundle);
         if(!isList){
             back();

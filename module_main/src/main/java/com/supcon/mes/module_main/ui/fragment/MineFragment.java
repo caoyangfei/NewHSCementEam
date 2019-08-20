@@ -200,7 +200,6 @@ public class MineFragment extends BaseControllerFragment implements MineContract
 //        //用户信息清空
 //        EamApplication.setAccountInfo(null);
 //        HeartBeatService.stopLoginLoop(getContext());
-//        CookieUtil.clearCookie(context);
 //        DeviceManager.getInstance().release();
         onLoadSuccessAndExit("登出成功！", () -> {
             Bundle bundle = new Bundle();

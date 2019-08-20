@@ -1,7 +1,6 @@
 package com.supcon.mes.module_login.presenter;
 
 import com.supcon.common.view.App;
-import com.supcon.common.view.util.CookieUtil;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.mes.mbap.MBapApp;
@@ -63,7 +62,6 @@ public class MinePresenter extends MineContract.Presenter {
                         //用户信息清空
                         EamApplication.setAccountInfo(null);
                         HeartBeatService.stopLoginLoop(App.getAppContext());
-                        CookieUtil.clearCookie(App.getAppContext());
                         DeviceManager.getInstance().release();
                 })
 

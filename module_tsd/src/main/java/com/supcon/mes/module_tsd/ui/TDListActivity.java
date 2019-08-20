@@ -211,7 +211,6 @@ public class TDListActivity extends BaseWebViewActivity {
         bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
         bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
         bundle.putString(BaseConstant.WEB_URL, url);
-//        CookieUtil.syncCookie(context, url);
         IntentRouter.go(context, Constant.Router.TD, bundle);
         if(!isList){
             back();
