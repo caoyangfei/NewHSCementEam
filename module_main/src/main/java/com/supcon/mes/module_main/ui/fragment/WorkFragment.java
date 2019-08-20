@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
+import com.supcon.common.BaseConstant;
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.fragment.BaseControllerFragment;
 import com.supcon.common.view.listener.OnChildViewClickListener;
@@ -137,7 +138,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private CustomDialog customDialog;
     private String reason;
     private MarqueeTextView marqueeTextView;
-
+    private boolean isRefreshing;
     @Override
     protected int getLayoutID() {
         return R.layout.hs_frag_work;
@@ -169,6 +170,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
+        isRefreshing = true;
     }
 
     @SuppressLint("CheckResult")
@@ -224,10 +226,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workAdapter.setList(workInfos);
         workAdapter.notifyDataSetChanged();
 
-        aewMenu = MenuHelper.getAewMenu(getActivity());
-        lubricateMenu = MenuHelper.getLubricateMenu(getActivity());
-        repairMenu = MenuHelper.getRepairMenu(getActivity());
-        formMenu = MenuHelper.getFormMenu(getActivity());
+        aewMenu = MenuHelper.getAewMenu();
+        lubricateMenu = MenuHelper.getLubricateMenu();
+        repairMenu = MenuHelper.getRepairMenu();
+        formMenu = MenuHelper.getFormMenu();
 
         workName.setText(EamApplication.getAccountInfo().staffName);
         workDepot.setText(EamApplication.getAccountInfo().positionName);
@@ -255,7 +257,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-
+                if (isRefreshing) {
+                    ToastUtils.show(getActivity(), "正在加载待办,请稍后点击!");
+                    return;
+                }
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 if (oldPosition == position) {
@@ -308,6 +313,24 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                             break;
                         case Constant.HSWorkType.OHAUL_WXGD:
                             bundle.putString(Constant.IntentKey.REPAIR_TYPE, "大修");
+                            break;
+                        case Constant.HSWorkType.TD:
+                            String tdurl = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
+                                    + Constant.WebUrl.TD_LIST;
+                            bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
+                            bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
+                            bundle.putString(BaseConstant.WEB_URL, tdurl);
+                            bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
+                            bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
+                            break;
+                        case Constant.HSWorkType.SD:
+                            String sdurl = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
+                                    + Constant.WebUrl.SD_LIST;
+                            bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
+                            bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
+                            bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
+                            bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
+                            bundle.putString(BaseConstant.WEB_URL, sdurl);
                             break;
                     }
                     IntentRouter.go(getContext(), menuPopwindowBean.getRouter(), bundle);
@@ -494,10 +517,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getWaitDealtSuccess(CommonBAPListEntity entity) {
-        if (menuPopwindow != null && menuPopwindow.isShowing()) {
-            menuPopwindow.dismiss();
-            menuPopwindow.changeWindowAlfa(1f);
-        }
+        isRefreshing = false;
         if (entity.result.size() > 0) {
             waitDealtLayout.setVisibility(View.GONE);
         } else {
@@ -509,10 +529,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Override
     public void getWaitDealtFailed(String errorMsg) {
-        if (menuPopwindow != null && menuPopwindow.isShowing()) {
-            menuPopwindow.dismiss();
-            menuPopwindow.changeWindowAlfa(1f);
-        }
+        isRefreshing = false;
         LogUtil.e("获取待办失败:" + errorMsg);
         if (errorMsg.contains("401")) {
             SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
@@ -634,15 +651,5 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 return filter;
             }
         }).subscribe();
-    }
-
-    private boolean isWorkTime() {
-        Calendar cal = Calendar.getInstance();// 当前日期
-        int hour = cal.get(Calendar.HOUR_OF_DAY);// 获取小时
-        if (hour > 8 && hour < 17) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

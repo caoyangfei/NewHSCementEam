@@ -19,7 +19,14 @@ import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
+import com.supcon.common.view.util.SharedPreferencesUtils;
+import com.supcon.common.view.util.ToastUtils;
+import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.ModuleAuthorization;
+import com.supcon.mes.middleware.model.bean.ModuleAuthorizationDao;
 import com.supcon.mes.middleware.ui.view.PopwinBackView;
+import com.supcon.mes.module_login.BuildConfig;
 import com.supcon.mes.module_main.R;
 
 import java.util.List;
@@ -122,6 +129,56 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        MenuPopwindowBean item = getItem(getAdapterPosition());
+                        switch (item.getRouter()) {
+                            case Constant.Router.XJGL_LIST:
+                            case Constant.Router.JHXJ_LIST:
+                            case Constant.Router.LSXJ_LIST:
+                            case Constant.Router.XJLX_LIST:
+                            case Constant.Router.XJQY_LIST:
+                            case Constant.Router.XJBB:
+                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.mobileEAM,false)) {
+                                    if (!queryModuleAuthorized(Constant.ModuleAuthorization.mobileEAM)) {
+                                        ToastUtils.show(context,"移动巡检模块未授权，请联系相关管理人员，确保授权并重启该app");
+                                        return;
+                                    }
+                                }
+                                break;
+                            case Constant.Router.SBDA_LIST:
+                            case Constant.Router.SBDA_ONLINE_LIST:
+                            case Constant.Router.STOP_POLICE:
+                            case Constant.Router.YH_LIST:
+                            case Constant.Router.WXGD_LIST:
+                            case Constant.Router.OFFLINE_YH_LIST:
+                            case Constant.Router.BY:
+                            case Constant.Router.RH:
+                            case Constant.Router.YXJL_LIST:
+                            case Constant.Router.BJSQ_LIST:
+                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.BEAM2,false)) {
+                                    if (!queryModuleAuthorized(Constant.ModuleAuthorization.BEAM2)) {
+                                        ToastUtils.show(context,"设备模块未授权，请联系相关管理人员，确保授权并重启该app");
+                                        return;
+                                    }
+
+                                }
+                                break;
+                            case Constant.Router.SD:
+                            case Constant.Router.TD:
+                            case Constant.Router.SJSC:
+                            case Constant.Router.SJXZ:
+                            case Constant.Router.SPARE_EARLY_WARN:
+                            case Constant.Router.LUBRICATION_EARLY_WARN:
+                            case Constant.Router.DAILY_LUBRICATION_EARLY_WARN:
+                            case Constant.Router.MAINTENANCE_EARLY_WARN:
+                            case Constant.Router.SCORE_EAM_LIST:
+                            case Constant.Router.SCORE_INSPECTOR_STAFF_LIST:
+                            case Constant.Router.SCORE_MECHANIC_STAFF_LIST:
+                            case Constant.Router.ACCEPTANCE_LIST:
+                                break;
+                            default:
+                                ToastUtils.show(context,"暂无数据！");
+                                return;
+                        }
                         onItemChildViewClick(itemView, 0, getItem(getLayoutPosition()));
                     }
                 });
@@ -146,6 +203,13 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
                     menuTip.setSelected(false);
                 }
             }
+        }
+
+        private boolean queryModuleAuthorized(String moduleCode) {
+            ModuleAuthorization moduleAuthorization = EamApplication.dao().getModuleAuthorizationDao().queryBuilder()
+                    .where(ModuleAuthorizationDao.Properties.ModuleCode.eq(moduleCode)).unique();
+
+            return BuildConfig.DEBUG || moduleAuthorization != null && moduleAuthorization.isAuthorized;
         }
     }
 

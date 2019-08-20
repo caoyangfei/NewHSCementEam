@@ -130,7 +130,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
             if (getAdapterPosition() == getListSize() - 1) {
                 itemAreaLineBottom.setVisibility(View.INVISIBLE);
             }
-            itemAreaName.setText((data.sort + 1) + ". " + data.name);
+            itemAreaName.setText((getAdapterPosition() + 1) + ". " + data.name);
 
             if (TextUtils.isEmpty(data.signedTime)) {
                 if (TextUtils.isEmpty(data.oldfaultMsg)) {
@@ -153,13 +153,12 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                     .subscribe(xjWorkItemEntity -> {
                                 if (xjWorkItemEntity.isFinished) {
                                     finishedNum.getAndIncrement();
-
                                     if (!TextUtils.isEmpty(xjWorkItemEntity.conclusionID) && xjWorkItemEntity.conclusionID.equals("realValue/02")) {
                                         faultPosition.getAndIncrement();
                                         isFault = true;
                                         faultMsg.append(faultPosition.get()).append(".")
                                                 .append("设备：").append(xjWorkItemEntity.eamID.code + "(").append(xjWorkItemEntity.eamID.name + ")").append("\n")
-                                                .append("故障现象：").append(xjWorkItemEntity.content).append("\n")
+                                                .append("隐患现象：").append(xjWorkItemEntity.content).append("\n")
                                                 .append("发现人：").append(EamApplication.getAccountInfo().staffName).append("\n");
                                     }
                                 }

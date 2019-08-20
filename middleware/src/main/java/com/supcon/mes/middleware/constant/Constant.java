@@ -364,11 +364,13 @@ public interface Constant {
         int SPARE_EARLY_WARN = 13;//备件更换预警
         int MAINTENANCE_EARLY_WARN = 14;//维保预警
 
+        int TD = 15;//停电
+        int SD = 16;//送电
 
-        int XJ_STATISTICS = 17;  //巡检统计
-        int YH_STATISTICS = 18;  //隐患统计
-        int WXGD_STATISTICS = 19;  //工单统计
-        int STOP_POLICE = 20;  //停机报警
+        int XJ_STATISTICS = 20;  //巡检统计
+        int YH_STATISTICS = 21;  //隐患统计
+        int WXGD_STATISTICS = 22;  //工单统计
+        int STOP_POLICE = 23;  //停机报警
     }
 
     interface HSProcesskey {

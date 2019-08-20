@@ -139,7 +139,7 @@ public interface OLXJNetworkAPI {
     Flowable<CommonBAPListEntity<OLXJAreaEntity>> queryOLXJArea(@Query("workGroupID") long workGroupID, @Query("page.pageNo") int pageNo);
 
     /**
-     * 获取区域列表
+     * 获取区域隐患信息
      */
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getAbnormalInspectTaskPart.action")
     Flowable<CommonListEntity<AbnormalEntity>> getAbnormalInspectTaskPart(@Query("workGroupId") long workGroupID, @Query("isTemp") int isTemp);

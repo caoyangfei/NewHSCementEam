@@ -35,6 +35,18 @@
             android:textSize="@dimen/fontSize_14sp" />
 
         <TextView
+            android:id="@+id/oneKeyFinishBottomBtn"
+            style="@style/OrangeButtonRadius"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginRight="@dimen/dp_5"
+            android:layout_weight="0.8"
+            android:gravity="center"
+            android:tag="oneKeyFinishBottomBtn"
+            android:text="一键完成"
+            android:visibility="invisible" />
+
+        <TextView
             android:id="@+id/submitBottomBtn"
             style="@style/BlueButtonRadius"
             android:layout_width="0dp"
@@ -45,16 +57,5 @@
             android:gravity="center"
             android:tag="submitBottomBtn"
             android:text="提交结果" />
-
-        <TextView
-            android:id="@+id/oneKeyFinishBottomBtn"
-            style="@style/OrangeButtonRadius"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginRight="@dimen/dp_5"
-            android:layout_weight="0.8"
-            android:gravity="center"
-            android:tag="oneKeyFinishBottomBtn"
-            android:text="一键完成" />
     </LinearLayout>
 </RelativeLayout>

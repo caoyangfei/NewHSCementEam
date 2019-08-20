@@ -18,7 +18,7 @@ import java.util.List;
 
 public class MenuHelper {
 
-    public static List<MenuPopwindowBean> getAewMenu(Context context) {
+    public static List<MenuPopwindowBean> getAewMenu() {
         List<MenuPopwindowBean> works = new ArrayList<>();
         JSONArray worksArray = null;
         try {
@@ -43,7 +43,7 @@ public class MenuHelper {
         return works;
     }
 
-    public static List<MenuPopwindowBean> getLubricateMenu(Context context) {
+    public static List<MenuPopwindowBean> getLubricateMenu() {
         List<MenuPopwindowBean> works = new ArrayList<>();
         JSONArray worksArray = null;
         try {
@@ -68,7 +68,7 @@ public class MenuHelper {
         return works;
     }
 
-    public static List<MenuPopwindowBean> getRepairMenu(Context context) {
+    public static List<MenuPopwindowBean> getRepairMenu() {
         List<MenuPopwindowBean> works = new ArrayList<>();
         JSONArray worksArray = null;
         try {
@@ -91,6 +91,12 @@ public class MenuHelper {
                     case Constant.HSWorkType.MAINTENANCE_EARLY_WARN:
                         menuPopwindowBean.setRouter(Constant.Router.MAINTENANCE_EARLY_WARN);
                         break;
+                    case Constant.HSWorkType.TD:
+                        menuPopwindowBean.setRouter(Constant.Router.TD);
+                        break;
+                    case Constant.HSWorkType.SD:
+                        menuPopwindowBean.setRouter(Constant.Router.SD);
+                        break;
                 }
             }
         } catch (JSONException e) {
@@ -99,7 +105,7 @@ public class MenuHelper {
         return works;
     }
 
-    public static List<MenuPopwindowBean> getFormMenu(Context context) {
+    public static List<MenuPopwindowBean> getFormMenu() {
         List<MenuPopwindowBean> works = new ArrayList<>();
         JSONArray worksArray = null;
         try {

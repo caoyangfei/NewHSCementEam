@@ -212,11 +212,11 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
                         @Override
                         public void accept(WorkCountEntity workCountEntity) throws Exception {
                             if (workCountEntity.tagName.equals(Constant.YHStatus.WAIT)) {
-                                statisticsWaitNum.setText(Util.strFormat2(workCountEntity.num));
+                                statisticsWaitNum.setText(String.valueOf(workCountEntity.num));
                             } else if (workCountEntity.tagName.equals(Constant.YHStatus.IMPLEMENT)) {
-                                statisticsProcessingNum.setText(Util.strFormat2(workCountEntity.num));
+                                statisticsProcessingNum.setText(String.valueOf(workCountEntity.num));
                             } else if (workCountEntity.tagName.equals(Constant.YHStatus.COMPLETE)) {
-                                statisticsCompletedNum.setText(Util.strFormat2(workCountEntity.num));
+                                statisticsCompletedNum.setText(String.valueOf(workCountEntity.num));
                             }
                         }
                     });

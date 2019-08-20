@@ -103,17 +103,30 @@
       "type": 14
     },
     {
-      "name": "关联表单",
+      "name": "停电",
       "viewType": 0,
       "num": 0,
       "type": 15
+    },
+    {
+      "name": "送电",
+      "viewType": 0,
+      "tag": "",
+      "num": 0,
+      "type": 16
+    },
+    {
+      "name": "关联表单",
+      "viewType": 0,
+      "num": 0,
+      "type": 17
     },
     {
       "name": "维修手册",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 16
+      "type": 18
     }
   ],
   "form": [
@@ -122,28 +135,28 @@
       "viewType": 1,
       "tag": "",
       "num": 0,
-      "type": 17
+      "type": 20
     },
     {
       "name": "隐患统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 18
+      "type": 21
     },
     {
       "name": "工单统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 19
+      "type": 22
     },
     {
       "name": "停机统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 20
+      "type": 23
     }
   ]
 }

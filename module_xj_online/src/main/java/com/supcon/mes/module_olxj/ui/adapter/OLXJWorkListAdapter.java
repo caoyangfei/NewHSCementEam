@@ -18,6 +18,7 @@ import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.util.DisplayUtil;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.GalleryBean;
 import com.supcon.mes.mbap.constant.ListType;
@@ -31,6 +32,7 @@ import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
@@ -51,7 +53,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,10 +69,11 @@ import java.util.regex.Pattern;
 public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
 
     private SB2ThermometerHelper sp2ThermometerHelper;
+    private HashSet hashSet = new HashSet();//判断dcs是否请求过，防止刷新不断请求
 
     public OLXJWorkListAdapter(Context context) {
         super(context);
-//        initThermometer();  //初始化测温
+        initThermometer();  //初始化测温
     }
 
     public OLXJWorkListAdapter(Context context, List<OLXJWorkItemEntity> list) {
@@ -1188,6 +1194,7 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
         public TitleViewHolder(Context context) {
             super(context, parent);
+
         }
 
         @Override
@@ -1227,13 +1234,15 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
             } else {
                 itemRecyclerTitle.setText(data.eamID.name);
 
-                if (mDeviceDCSParamController == null) {
-                    mDeviceDCSParamController = new DeviceDCSParamController(itemView, data.eamID.id);
-                    mDeviceDCSParamController.initView();
-                    mDeviceDCSParamController.initData();
-                } else {
-                    mDeviceDCSParamController.getDeviceParams(data.eamID.id);
-
+                if (!hashSet.contains(data.eamID.id)) {
+                    hashSet.add(data.eamID.id);
+                    if (mDeviceDCSParamController == null) {
+                        mDeviceDCSParamController = new DeviceDCSParamController(itemView, data.eamID.id);
+                        mDeviceDCSParamController.initView();
+                        mDeviceDCSParamController.initData();
+                    } else {
+                        mDeviceDCSParamController.getDeviceParams(data.eamID.id);
+                    }
                 }
             }
         }

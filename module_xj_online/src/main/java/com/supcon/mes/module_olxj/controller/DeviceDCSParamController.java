@@ -85,7 +85,8 @@ public class DeviceDCSParamController extends BaseViewController implements Devi
 //            contentView.setLayoutParams(lp);
 //        }
         if (!isSwitching) {
-            resetTimer();
+            //去掉30秒刷新一次，现在只进入时候获取dcs数据
+//            resetTimer();
         }
     }
 
