@@ -139,7 +139,16 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
 
                     onLoading("正在登陆...");
                     presenterRouter.create(ZhiZhiUrlQueryAPI.class).getZhizhiUrl();
-                    presenterRouter.create(LoginAPI.class).dologin(usernameInput.getContent(), pwdInput.getContent());
+
+
+                    boolean hasSupOS = SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true);
+
+                    if(hasSupOS) {
+                        presenterRouter.create(LoginAPI.class).dologinWithSuposPW(usernameInput.getContent(), pwdInput.getContent());
+                    }
+                    else{
+                        presenterRouter.create(LoginAPI.class).dologin(usernameInput.getContent(), pwdInput.getContent());
+                    }
                 });
 
 
@@ -201,6 +210,14 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
 
 
         HeartBeatService.stopLoginLoop(this);
+
+        if(SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true)){
+            pwdInput.setHint("输入SupOS密码");
+        }
+        else{
+            pwdInput.setHint("输入密码");
+        }
+
     }
 
     @SuppressWarnings("all")
@@ -239,7 +256,11 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
     @Override
     public void dologinSuccess(LoginEntity userEntity) {
 
+        dologinResult(userEntity);
 
+    }
+
+    private void dologinResult(LoginEntity userEntity) {
         //如果登陆成功, 取出用户必备信息
         if (!loginInvalid) {
             //在线模式使用心跳防止session过期
@@ -263,8 +284,6 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
                         });
             });
         }
-
-
     }
 
     @Override
@@ -282,6 +301,16 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
     public void dologinWithTokenFailed(String errorMsg) {
         dologinFailed(ErrorMsgHelper.msgParse(errorMsg));
 
+    }
+
+    @Override
+    public void dologinWithSuposPWSuccess(LoginEntity entity) {
+        dologinResult(entity);
+    }
+
+    @Override
+    public void dologinWithSuposPWFailed(String errorMsg) {
+        dologinFailed(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     private void doLogout() {
@@ -347,10 +376,10 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
 
             //跳转到主页
             if (isFirstIn) {
-                if (EamApplication.isHailuo()) {
-                    IntentRouter.go(context, Constant.Router.MAIN);
-                } else {
+                if (EamApplication.isDev()) {
                     IntentRouter.go(context, Constant.Router.MAIN_REDLION);
+                } else {
+                    IntentRouter.go(context, Constant.Router.MAIN);
                 }
                 isFirstIn = false;
             }
