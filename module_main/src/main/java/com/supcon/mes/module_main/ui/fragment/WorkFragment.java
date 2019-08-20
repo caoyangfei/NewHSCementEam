@@ -335,7 +335,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     }
                     IntentRouter.go(getContext(), menuPopwindowBean.getRouter(), bundle);
                 } else {
-                    ToastUtils.show(getActivity(), menuPopwindowBean.getName());
+                    ToastUtils.show(getActivity(), "正在开发中,敬请期待!");
                 }
             }
         });
