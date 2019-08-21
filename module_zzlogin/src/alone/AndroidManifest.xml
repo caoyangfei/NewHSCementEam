@@ -1,12 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.supcon.mes.module_login" >
+    package="com.supcon.mes.module_login">
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+
     <application
         android:name=".alone.LoginApp"
         android:allowBackup="true"
@@ -26,6 +28,7 @@
 
         <activity
             android:name=".ui.LoginActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppBottomInTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
@@ -44,6 +47,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Transparent"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+
         <service android:name=".service.HeartBeatService" />
     </application>
 </manifest>

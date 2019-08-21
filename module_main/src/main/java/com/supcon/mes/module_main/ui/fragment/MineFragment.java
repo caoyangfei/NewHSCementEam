@@ -205,6 +205,7 @@ public class MineFragment extends BaseControllerFragment implements MineContract
             Bundle bundle = new Bundle();
             bundle.putBoolean(Constant.IntentKey.FIRST_LOGIN, false);
             IntentRouter.go(getContext(), Constant.Router.LOGIN, bundle);
+            getActivity().finish();
         });
 
     }

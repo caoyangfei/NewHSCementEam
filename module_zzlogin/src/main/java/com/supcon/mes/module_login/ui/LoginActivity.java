@@ -375,15 +375,15 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
         onLoadSuccessAndExit("登陆成功！", () -> {
 
             //跳转到主页
-            if (isFirstIn) {
+//            if (isFirstIn) {
                 if (EamApplication.isHongshi()) {
                     IntentRouter.go(context, Constant.Router.MAIN_REDLION);
                 } else {
                     IntentRouter.go(context, Constant.Router.MAIN);
                 }
                 isFirstIn = false;
-            }
-            LoginActivity.this.finish();
+//            }
+//            LoginActivity.this.finish();
         });
 
     }
