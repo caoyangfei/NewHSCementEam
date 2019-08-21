@@ -52,6 +52,7 @@ import java.util.Map;
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 @Router(Constant.Router.STOP_POLICE)
 @Presenter(value = StopPolicePresenter.class)
@@ -73,12 +74,10 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     
     private Map<String, Object> queryParam = new HashMap<>();
     private DatePickController datePickController;
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-    SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     Calendar calendar;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-    
-    //        startTime = new StringBuilder(sdf.format(calendar.getTime())).append(Constant.TimeString.START_TIME).toString();
+
     @Override
     protected IListAdapter createAdapter() {
         StopPoliceAdapter stopPoliceAdapter = new StopPoliceAdapter(this);
@@ -118,10 +117,9 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         
-        String startTime = new StringBuilder(sdf.format(calendar.getTime())).append(Constant.TimeString.START_TIME).toString();
-        stopPoliceStartTime.setDate(startTime);
+        stopPoliceStartTime.setDate(dateFormat1.format(getTimeOfMonthStart()));
         stopPoliceStopTime.setDate(dateFormat1.format(System.currentTimeMillis()));
-        queryParam.put(Constant.BAPQuery.OPEN_TIME_START, startTime);
+        queryParam.put(Constant.BAPQuery.OPEN_TIME_START, dateFormat.format(getTimeOfMonthStart()));
         queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, dateFormat.format(System.currentTimeMillis()));
     }
     
@@ -141,9 +139,9 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         });
         
         refreshListController.setOnRefreshPageListener((page) -> {
-//            if (!queryParam.containsKey(Constant.BAPQuery.ON_OR_OFF)) {
-//                queryParam.put(Constant.BAPQuery.ON_OR_OFF, "BEAM020/02");
-//            }
+            if (!queryParam.containsKey(Constant.BAPQuery.ON_OR_OFF)) {
+                queryParam.put(Constant.BAPQuery.ON_OR_OFF, "BEAM020/02");
+            }
             presenterRouter.create(StopPoliceAPI.class).runningGatherList(queryParam, page);
         });
         listEamNameFilter.setFilterSelectChangedListener(filterBean -> {
@@ -188,28 +186,29 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     @SuppressLint("CheckResult")
     @Override
     public void runningGatherListSuccess(StopPoliceListEntity entity) {
-        if (entity.pageNo != 1) {
-            refreshListController.refreshComplete(entity.result);
-            return;
-        }
-        Flowable.just(entity)
-                .map(stopPoliceListEntity -> {
-                    List<ScreenEntity> list = FilterHelper.createEamNameFilter();
-                    for (StopPoliceEntity stopPoliceEntity : stopPoliceListEntity.result) {
-                        ScreenEntity screenEntity = new ScreenEntity();
-                        screenEntity.name = stopPoliceEntity.getEamType().name;
-                        if (!list.contains(screenEntity))
-                            list.add(screenEntity);
-                    }
-                    return Pair.create(stopPoliceListEntity, list);
-                })
-//                .observeOn(AndroidSchedulers.mainThread())
-                .compose(RxSchedulers.io_main())
-                .map(stopPoliceListEntityListPair -> {
-                    listEamNameFilter.setData(stopPoliceListEntityListPair.second);
-                    return stopPoliceListEntityListPair.first;
-                })
-                .subscribe(stopPoliceListEntity -> refreshListController.refreshComplete(entity.result));
+//        if (entity.pageNo != 1) {
+//            refreshListController.refreshComplete(entity.result);
+//            return;
+//        }
+        refreshListController.refreshComplete(entity.result);
+//        Flowable.just(entity)
+//                .map(stopPoliceListEntity -> {
+//                    List<ScreenEntity> list = FilterHelper.createEamNameFilter();
+//                    for (StopPoliceEntity stopPoliceEntity : stopPoliceListEntity.result) {
+//                        ScreenEntity screenEntity = new ScreenEntity();
+//                        screenEntity.name = stopPoliceEntity.getEamType().name;
+//                        if (!list.contains(screenEntity))
+//                            list.add(screenEntity);
+//                    }
+//                    return Pair.create(stopPoliceListEntity, list);
+//                })
+////                .observeOn(AndroidSchedulers.mainThread())
+//                .compose(RxSchedulers.io_main())
+//                .map(stopPoliceListEntityListPair -> {
+//                    listEamNameFilter.setData(stopPoliceListEntityListPair.second);
+//                    return stopPoliceListEntityListPair.first;
+//                })
+//                .subscribe(stopPoliceListEntity -> refreshListController.refreshComplete(entity.result));
     }
     
     @Override
@@ -252,5 +251,14 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-    
+
+    public static long getTimeOfMonthStart() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.HOUR_OF_DAY, 0);
+        ca.clear(Calendar.MINUTE);
+        ca.clear(Calendar.SECOND);
+        ca.clear(Calendar.MILLISECOND);
+        ca.set(Calendar.DAY_OF_MONTH, 1);
+        return ca.getTimeInMillis();
+    }
 }

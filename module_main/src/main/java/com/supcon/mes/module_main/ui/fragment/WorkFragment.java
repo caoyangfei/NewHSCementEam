@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +48,8 @@ import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.ui.view.MarqueeTextView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.HtmlParser;
+import com.supcon.mes.middleware.util.HtmlTagHandler;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
@@ -139,6 +142,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private String reason;
     private MarqueeTextView marqueeTextView;
     private boolean isRefreshing;
+    private TextView waitMore;
 
     @Override
     protected int getLayoutID() {
@@ -182,7 +186,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 .subscribe(aLong -> initAd());
         View waitTitle = rootView.findViewById(R.id.hs_wait_title);
         ((TextView) waitTitle.findViewById(R.id.contentTitleLabel)).setText("工作提醒");
-        ImageView waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
+        waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
         waitMore.setVisibility(View.VISIBLE);
         waitMore.setOnClickListener(v -> IntentRouter.go(getActivity(), Constant.Router.WAIT_DEALT));
         View workTitle = rootView.findViewById(R.id.hs_work_title);
@@ -405,7 +409,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                         if (action == -1) {
                             proxyStaff = null;
                         }
-                        IntentRouter.go(context, Constant.Router.STAFF);
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constant.IntentKey.COMMON_SEARCH_TAG, "Main");
+                        IntentRouter.go(context, Constant.Router.STAFF, bundle);
                     }
                 })
                 .bindTextChangeListener(R.id.proxyReason, new OnTextListener() {
@@ -531,6 +537,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         }
         waitDealtAdapter.setList(entity.result);
         waitDealtAdapter.notifyDataSetChanged();
+        if (entity.totalCount > 0) {
+            Spanned item = HtmlParser.buildSpannedText(String.format(context.getString(R.string.device_style15), "更多", entity.totalCount), new HtmlTagHandler());
+            waitMore.setText(item);
+        }
     }
 
     @Override

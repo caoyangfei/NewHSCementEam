@@ -71,6 +71,7 @@ import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapter;
+import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapter;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
 
@@ -134,7 +135,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     private ModifyController<OLXJAreaEntity> mModifyController;
 
-    OLXJWorkListAdapter mOLXJWorkListAdapter;
+    OLXJWorkListEamAdapter mOLXJWorkListAdapter;
     private SinglePickController<String> mSinglePickController;
     private OLXJAreaEntity mXJAreaEntity;
 
@@ -165,7 +166,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
-        mOLXJWorkListAdapter = new OLXJWorkListAdapter(context);
+        mOLXJWorkListAdapter = new OLXJWorkListEamAdapter(context);
         return mOLXJWorkListAdapter;
     }
 
@@ -239,17 +240,12 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @Override
     protected void initListener() {
         super.initListener();
-
         smoothScroller = new LinearSmoothScroller(this) {
-
             @Override
             protected int getVerticalSnapPreference() {
                 return LinearSmoothScroller.SNAP_TO_START;
-
             }
-
         };
-
         RxView.clicks(leftBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> onBackPressed());
@@ -304,27 +300,18 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
             }
         });
 
-
         mOLXJWorkListAdapter.setOnItemChildViewClickListener((childView, position, action, obj) -> {
-
             OLXJWorkItemEntity xjWorkItemEntity;
-
             if (obj instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) obj;
-
                 xjWorkItemEntity = (OLXJWorkItemEntity) map.get("obj");
-
             } else {
                 xjWorkItemEntity = (OLXJWorkItemEntity) obj;
-
             }
-
             String tag = (String) childView.getTag();
-
             switch (tag) {
                 case "vibrationBtn":
                     showViberDialog(position, xjWorkItemEntity);
-
                     break;
                 case "ufItemSelectResult":
                     if (action == -1) {
@@ -338,7 +325,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                             showResultPicker(((CustomSpinner) childView).getSpinnerValue(), xjWorkItemEntity, position);
                         }
                     }
-
                     break;
                 case "ufItemConclusion":
                     if (action == -1) {
@@ -347,7 +333,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                     } else {
                         showConclusionPicker(xjWorkItemEntity, position);
                     }
-
                     break;
 
                 case "ufItemSkipBtn":
@@ -357,29 +342,20 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                         showSkipReasonPicker(xjWorkItemEntity);
                     }
                     break;
-
-
                 case "thermometerBtn":
                     xjWorkItemEntity.result = thermometervalue;
                     mOLXJWorkListAdapter.notifyItemChanged(position);
                     break;
-
                 case "fHistoryBtn":
-
                     showHistories(xjWorkItemEntity);
-
                     break;
-
                 case "ufItemPartEndBtn":
-
                     showPartFinishDialog(xjWorkItemEntity);
                     break;
-
                 default:
             }
 
         });
-
     }
 
     private void showViberDialog(int position, OLXJWorkItemEntity xjWorkItemEntity) {
@@ -456,45 +432,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                 .show();
                     }
                 });
-
-
-//        isAllFinished = true;
-//        Flowable.fromIterable(mXJAreaEntity.workItemEntities)
-//                .subscribe(new Consumer<OLXJWorkItemEntity>() {
-//                    @Override
-//                    public void accept(OLXJWorkItemEntity olxjWorkItemEntity) throws Exception {
-//                        if (!olxjWorkItemEntity.isFinished) {
-//                            isAllFinished = false;
-//                        }
-//                    }
-//                }, new Consumer<Throwable>() {
-//                    @Override
-//                    public void accept(Throwable throwable) throws Exception {
-//
-//                    }
-//                }, new Action() {
-//                    @Override
-//                    public void run() throws Exception {
-//
-//                        if (isAllFinished)
-//                            showSubmitDialog("确定提交巡检数据？");
-//                        else
-//                            ToastUtils.show(context, "还存在未完成的巡检项，请先完成!");
-//                    }
-//                });
-    }
-
-    private void showSubmitDialog(String msg) {
-        new CustomDialog(context)
-                .twoButtonAlertDialog(msg)
-                .bindView(R.id.grayBtn, "否")
-                .bindView(R.id.redBtn, "是")
-                .bindClickListener(R.id.grayBtn, null, true)
-                .bindClickListener(R.id.redBtn, v -> {
-                    onLoading("正在打包并上传巡检数据，请稍后...");
-                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
-                }, true)
-                .show();
     }
 
     @SuppressLint("CheckResult")
@@ -531,9 +468,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                         }
                                         onLoading("正在打包并上传巡检数据，请稍后...");
                                         presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
-//                                        onLoadSuccess("完成");
-//                                        doRefresh();
-//                                        mOLXJWorkListAdapter.notifyDataSetChanged();
                                     } catch (Exception e) {
                                         onLoadFailed("完成操作失败！" + e.getMessage());
                                         e.printStackTrace();
@@ -548,11 +482,9 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @SuppressLint("CheckResult")
     private void doRefresh(boolean isDcs) {
-
         if (mDownloadController == null) {
             mDownloadController = new AttachmentDownloadController(Constant.IMAGE_SAVE_PATH);
         }
-
         if (mXJAreaEntity.eamInspectionGuideImageDocument != null) {
             mXJAreaEntity.eamInspectionGuideImageDocument.name = mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
             mDownloadController.downloadEamPic(mXJAreaEntity.eamInspectionGuideImageDocument, "mobileEAM_1.0.0_work", new OnSuccessListener<File>() {
@@ -619,8 +551,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                 .bindClickListener(R.id.grayBtn, null, true)
                                 .bindClickListener(R.id.redBtn, v -> {
                                     try {
-//                                        onLoading("完成中...");
-
                                         for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
                                             if (set.contains(xjWorkItemEntity.id)) {
                                                 if (!doFinish(xjWorkItemEntity)) {
@@ -628,9 +558,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                                 }
                                             }
                                         }
-//                                        onLoadSuccess("完成");
                                         doRefresh(false);
-
                                     } catch (Exception e) {
                                         onLoadFailed("完成操作失败！" + e.getMessage());
                                         e.printStackTrace();
@@ -640,7 +568,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                 .show();
                     }
                 });
-
     }
 
     @Override
@@ -650,10 +577,8 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         passReasonList = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.PASS_REASON);
         //解析ObjList 到 StrList
         initStrList(conclusionList, passReasonList);
-
         mModifyController = new ModifyController<>(mXJAreaEntity);
     }
-
 
     /**
      * @param
@@ -751,7 +676,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 checkedList.add(false);
             }
         }
-
         new CustomSheetDialog(context)
                 .multiSheet("多选列表", list, checkedList)
                 .setOnItemChildViewClickListener((childView, position, action, obj) -> {

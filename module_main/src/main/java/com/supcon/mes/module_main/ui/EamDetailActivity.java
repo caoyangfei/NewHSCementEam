@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -37,6 +38,8 @@ import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.ui.view.TrapezoidView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.HtmlParser;
+import com.supcon.mes.middleware.util.HtmlTagHandler;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.bean.WorkInfo;
@@ -105,6 +108,7 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     private CustomDialog customDialog;
     private CommonSearchStaff proxyStaff;
     private String reason;
+    private TextView waitMore;
 
     @Override
     protected int getLayoutID() {
@@ -123,7 +127,7 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         super.initView();
         View waitTitle = rootView.findViewById(R.id.hs_anomaly_title);
         ((TextView) waitTitle.findViewById(R.id.contentTitleLabel)).setText("异常记录");
-        ImageView waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
+        waitMore = waitTitle.findViewById(R.id.contentTitleSettingIc);
         waitMore.setVisibility(View.VISIBLE);
         waitMore.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
@@ -305,6 +309,10 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         }
         anomalyAdapter.setList(entity.result);
         anomalyAdapter.notifyDataSetChanged();
+        if (entity.totalCount > 0) {
+            Spanned item = HtmlParser.buildSpannedText(String.format(context.getString(R.string.device_style15), "更多", entity.totalCount), new HtmlTagHandler());
+            waitMore.setText(item);
+        }
     }
 
     @Override

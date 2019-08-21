@@ -67,6 +67,7 @@ public class StaffActivity extends BaseRefreshRecyclerActivity<CommonSearchEntit
     PinyinSearchBar pinyinSearchBar;
 
     private BaseSearchAdapter mBaseSearchAdapter;
+    private String searchTag;
 
     @Override
     protected IListAdapter<CommonSearchEntity> createAdapter() {
@@ -77,6 +78,7 @@ public class StaffActivity extends BaseRefreshRecyclerActivity<CommonSearchEntit
     @Override
     protected void onInit() {
         super.onInit();
+        searchTag = getIntent().getStringExtra(Constant.IntentKey.COMMON_SEARCH_TAG);
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, "没有信息哦~"));
@@ -116,6 +118,7 @@ public class StaffActivity extends BaseRefreshRecyclerActivity<CommonSearchEntit
             CommonSearchEntity commonSearchEntity = (CommonSearchEntity) obj;
             CommonSearchEvent commonSearchEvent = new CommonSearchEvent();
             commonSearchEvent.commonSearchEntity = commonSearchEntity;
+            commonSearchEvent.flag = searchTag;
             finish();
             EventBus.getDefault().post(commonSearchEvent);
         });

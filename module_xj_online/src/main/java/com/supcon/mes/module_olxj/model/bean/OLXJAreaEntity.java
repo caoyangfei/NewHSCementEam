@@ -74,6 +74,6 @@ public class OLXJAreaEntity extends BaseEntity {
     public LinkedList<OLXJWorkItemEntity> workItemEntities = new LinkedList<>();
 
 
-    public String faultMsg;//新故障信息拼接  本地拼接的
+//    public String faultMsg;//新故障信息拼接  本地拼接的
     public String oldfaultMsg;//旧故障信息拼接
 }

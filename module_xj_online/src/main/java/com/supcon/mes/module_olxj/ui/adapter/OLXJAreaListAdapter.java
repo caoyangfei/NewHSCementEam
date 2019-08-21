@@ -99,12 +99,8 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                 @Override
                 public void onClick(View view) {
                     OLXJAreaEntity item = getItem(getAdapterPosition());
-                    if (!TextUtils.isEmpty(item.faultMsg) || !TextUtils.isEmpty(item.oldfaultMsg)) {
-                        if (TextUtils.isEmpty(item.signedTime)) {
-                            tipPopwindow.setContent(item.oldfaultMsg);
-                        } else {
-                            tipPopwindow.setContent(item.faultMsg);
-                        }
+                    if (!TextUtils.isEmpty(item.oldfaultMsg)) {
+                        tipPopwindow.setContent(item.oldfaultMsg);
                         tipPopwindow.showPopupWindow(itemAreaFault);
                     } else {
                         ToastUtils.show(context, "故障信息不存在！");
@@ -147,7 +143,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
             //异常的序号
             AtomicInteger faultPosition = new AtomicInteger();
             //异常信息
-            StringBuffer faultMsg = new StringBuffer();
+//            StringBuffer faultMsg = new StringBuffer();
             AtomicInteger finishedNum = new AtomicInteger();
             Flowable.fromIterable(data.workItemEntities)
                     .subscribe(xjWorkItemEntity -> {
@@ -156,10 +152,10 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                                     if (!TextUtils.isEmpty(xjWorkItemEntity.conclusionID) && xjWorkItemEntity.conclusionID.equals("realValue/02")) {
                                         faultPosition.getAndIncrement();
                                         isFault = true;
-                                        faultMsg.append(faultPosition.get()).append(".")
-                                                .append("设备：").append(xjWorkItemEntity.eamID.code + "(").append(xjWorkItemEntity.eamID.name + ")").append("\n")
-                                                .append("隐患现象：").append(xjWorkItemEntity.content).append("\n")
-                                                .append("发现人：").append(EamApplication.getAccountInfo().staffName).append("\n");
+//                                        faultMsg.append(faultPosition.get()).append(".")
+//                                                .append("设备：").append(xjWorkItemEntity.eamID.code + "(").append(xjWorkItemEntity.eamID.name + ")").append("\n")
+//                                                .append("隐患现象：").append(xjWorkItemEntity.content).append("\n")
+//                                                .append("发现人：").append(EamApplication.getAccountInfo().staffName).append("\n");
                                     }
                                 }
                             },
@@ -178,7 +174,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                                 }
                                 if (!TextUtils.isEmpty(data.signedTime)) {
                                     if (isFault) {
-                                        data.faultMsg = faultMsg.toString();
+//                                        data.faultMsg = faultMsg.toString();
                                         itemAreaFault.setVisibility(View.VISIBLE);
                                         itemAreaDot.setImageDrawable(context.getResources().getDrawable(R.drawable.dot_done_yh));
                                     } else {

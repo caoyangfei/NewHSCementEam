@@ -29,11 +29,11 @@ public class FilterHelper {
     public static List<ScreenEntity> createEamNameFilter() {
         List<ScreenEntity> list = new ArrayList<>();
         list.add(EamName.UNLIMITE.getScreenEntity());
-//        list.add(EamName.CRUSHER.getScreenEntity());
-//        list.add(EamName.RAWMILL.getScreenEntity());
-//        list.add(EamName.CEMENTMILL.getScreenEntity());
-//        list.add(EamName.ROLLERPRESS.getScreenEntity());
-//        list.add(EamName.ROTARYCELLAR.getScreenEntity());
+        list.add(EamName.CRUSHER.getScreenEntity());
+        list.add(EamName.RAWMILL.getScreenEntity());
+        list.add(EamName.CEMENTMILL.getScreenEntity());
+        list.add(EamName.ROLLERPRESS.getScreenEntity());
+        list.add(EamName.ROTARYCELLAR.getScreenEntity());
         return list;
     }
 }

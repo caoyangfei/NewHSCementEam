@@ -45,23 +45,23 @@
             android:focusableInTouchMode="true"
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
+            android:tag="contentTitleTips"
             android:textColor="@color/customRed"
             android:textSize="@dimen/fontSize_16sp"
-            android:visibility="gone"
-            android:tag="contentTitleTips" />
+            android:visibility="gone" />
 
-        <ImageView
+        <TextView
             android:id="@+id/contentTitleSettingIc"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+            android:drawableRight="@drawable/ic_into"
+            android:gravity="center"
             android:paddingLeft="@dimen/dp_10"
-            android:paddingTop="@dimen/dp_5"
             android:paddingRight="@dimen/dp_10"
-            android:paddingBottom="@dimen/dp_5"
-            android:src="@mipmap/btn_more"
             android:tag="contentTitleSettingIc"
+            android:text="更多"
             android:visibility="gone" />
     </RelativeLayout>
 
