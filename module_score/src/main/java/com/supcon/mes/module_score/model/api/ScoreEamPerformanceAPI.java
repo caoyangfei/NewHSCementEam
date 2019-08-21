@@ -6,5 +6,5 @@ import java.util.List;
 
 @ContractFactory(entites = {List.class})
 public interface ScoreEamPerformanceAPI {
-    void getScoreList(int scoreId);
+    void getScorPerformance(int scoreId);
 }

@@ -52,14 +52,18 @@ import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_score.IntentRouter;
 import com.supcon.mes.module_score.R;
+import com.supcon.mes.module_score.model.api.ScoreEamListAPI;
 import com.supcon.mes.module_score.model.api.ScoreEamPerformanceAPI;
 import com.supcon.mes.module_score.model.api.ScoreSubmitAPI;
 import com.supcon.mes.module_score.model.bean.ScoreDeviceCheckResultEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamEntity;
+import com.supcon.mes.module_score.model.bean.ScoreEamListEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamPerformanceEntity;
+import com.supcon.mes.module_score.model.contract.ScoreEamListContract;
 import com.supcon.mes.module_score.model.contract.ScoreEamPerformanceContract;
 import com.supcon.mes.module_score.model.contract.ScoreSubmitContract;
 import com.supcon.mes.module_score.model.network.ScoreHttpClient;
+import com.supcon.mes.module_score.presenter.ScoreEamListPresenter;
 import com.supcon.mes.module_score.presenter.ScoreEamPerformancePresenter;
 import com.supcon.mes.module_score.presenter.ScoreSubmitPresenter;
 import com.supcon.mes.module_score.ui.adapter.ScoreEamPerformanceAdapter;
@@ -88,18 +92,18 @@ import io.reactivex.functions.Function;
  * 设备评分
  */
 @Router(value = Constant.Router.SCORE_EAM_PERFORMANCE)
-@Presenter(value = {ScoreEamPerformancePresenter.class, ScoreSubmitPresenter.class, EamPresenter.class})
-public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity implements ScoreEamPerformanceContract.View, ScoreSubmitContract.View, EamContract.View {
+@Presenter(value = {ScoreEamListPresenter.class, ScoreEamPerformancePresenter.class, ScoreSubmitPresenter.class, EamPresenter.class})
+public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity implements ScoreEamPerformanceContract.View, ScoreSubmitContract.View, EamContract.View, ScoreEamListContract.View {
     @BindByTag("leftBtn")
     ImageButton leftBtn;
     @BindByTag("titleText")
     TextView titleText;
     @BindByTag("rightBtn")
     ImageButton rightBtn;
-    
+
     @BindByTag("contentView")
     RecyclerView contentView;
-    
+
     @BindByTag("eamCode")
     CustomVerticalTextView eamCode;
     @BindByTag("eamName")
@@ -112,34 +116,34 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
     CustomVerticalTextView scoreStaff;
     @BindByTag("scoreTime")
     CustomVerticalTextView scoreTime;
-    
+
     private ScoreEamPerformanceAdapter scoreEamPerformanceAdapter;
     private ScoreEamEntity scoreEamEntity;
     private int scoreId = -1;
     private boolean isEdit;
     private NFCHelper nfcHelper;
     private String eamCodeStr;
-    
+    private String scoreTableNo;
+
     @Override
     protected IListAdapter createAdapter() {
         scoreEamPerformanceAdapter = new ScoreEamPerformanceAdapter(this);
         return scoreEamPerformanceAdapter;
     }
-    
+
     @Override
     protected int getLayoutID() {
         return R.layout.ac_score_eam_performance;
     }
-    
+
     @Override
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
+        scoreTableNo = getIntent().getStringExtra(Constant.IntentKey.SCORETABLENO);
         scoreEamEntity = (ScoreEamEntity) getIntent().getSerializableExtra(Constant.IntentKey.SCORE_ENTITY);
         isEdit = getIntent().getBooleanExtra(Constant.IntentKey.isEdit, false);
-        if (scoreEamEntity != null) {
-            scoreId = scoreEamEntity.id;
-        }
+
         nfcHelper = NFCHelper.getInstance();
         if (nfcHelper != null) {
             nfcHelper.setup(this);
@@ -152,14 +156,14 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             });
         }
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
         if (nfcHelper != null)
             nfcHelper.onResumeNFC(this);
     }
-    
+
     @Override
     protected void initView() {
         super.initView();
@@ -176,10 +180,16 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             rightBtn.setVisibility(View.VISIBLE);
         }
     }
-    
+
     @Override
     protected void initData() {
         super.initData();
+        update();
+    }
+
+    private void update() {
+        if (scoreEamEntity == null) return;
+        scoreId = scoreEamEntity.id;
         Spanned title = HtmlParser.buildSpannedText(String.format(getString(R.string.device_style7), "设备评分表",
                 scoreEamEntity != null ? "(" + scoreEamEntity.scoreTableNo + ")" : ""), new HtmlTagHandler());
         titleText.setText(title);
@@ -200,7 +210,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
         scoreTime.setContent(DateUtil.dateFormat(scoreEamEntity.scoreTime));
         scoreEamPerformanceAdapter.updateTotal(scoreEamEntity.scoreNum);
     }
-    
+
     @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
@@ -208,18 +218,28 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
         refreshListController.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!TextUtils.isEmpty(eamCodeStr)) {
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(Constant.IntentKey.EAM_CODE, eamCodeStr);
-                    presenterRouter.create(EamAPI.class).getEam(params, 1);
+                if (scoreId != -1) {
+                    if (!TextUtils.isEmpty(eamCodeStr)) {
+                        Map<String, Object> params = new HashMap<>();
+                        params.put(Constant.IntentKey.EAM_CODE, eamCodeStr);
+                        presenterRouter.create(EamAPI.class).getEam(params, 1);
+                    }
+                    presenterRouter.create(ScoreEamPerformanceAPI.class).getScorPerformance(scoreId);
+                } else {
+                    if (!TextUtils.isEmpty(scoreTableNo)) {
+                        Map<String, Object> queryParam = new HashMap<>();
+                        queryParam.put(Constant.BAPQuery.SCORE_TABLE_NO, scoreTableNo);
+                        presenterRouter.create(ScoreEamListAPI.class).getScoreList(queryParam, 1);
+                    } else {
+                        refreshListController.refreshComplete(null);
+                    }
                 }
-                presenterRouter.create(ScoreEamPerformanceAPI.class).getScoreList(scoreId);
             }
         });
         RxView.clicks(leftBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> onBackPressed());
-        
+
         RxView.clicks(rightBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> new CustomDialog(context)
@@ -271,7 +291,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             }
         });
     }
-    
+
     /**
      * @param
      * @description NFC事件
@@ -292,13 +312,13 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             refreshListController.refreshBegin();
         }
     }
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
-        
+
         refreshListController.refreshBegin();
     }
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void search(CommonSearchEvent commonSearchEvent) {
         if (commonSearchEvent.commonSearchEntity != null) {
@@ -319,14 +339,14 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
                                 eamName.setContent(Util.strFormat(eamType.name));
                                 eamDept.setContent(Util.strFormat(eamType.getUseDept().name));
                                 scoreEamEntity.beamId = eamType;
-                            }else {
+                            } else {
                                 loaderController.showMsgAndclose(scoreDeviceCheckResultEntity.msg, false, 1500);
                             }
                         });
             }
         }
     }
-    
+
     @Override
     public void getEamSuccess(CommonListEntity entity) {
         if (entity.result.size() > 0) {
@@ -339,15 +359,15 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
         }
         SnackbarHelper.showError(rootView, "未查询到设备：" + eamCodeStr);
     }
-    
+
     @Override
     public void getEamFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
     }
-    
+
     @SuppressLint("CheckResult")
     @Override
-    public void getScoreListSuccess(List entity) {
+    public void getScorPerformanceSuccess(List entity) {
         Flowable.fromIterable(((List<ScoreEamPerformanceEntity>) entity))
                 .filter(scorePerformanceTitleEntity -> {
                     if (scorePerformanceTitleEntity.viewType == ListType.TITLE.value()) {
@@ -372,51 +392,68 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
                     refreshListController.refreshComplete(entity);
                 });
     }
-    
+
+    @Override
+    public void getScorPerformanceFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, errorMsg);
+        refreshListController.refreshComplete(null);
+    }
+
+    @Override
+    public void getScoreListSuccess(ScoreEamListEntity entity) {
+        if (entity.result != null && !TextUtils.isEmpty(scoreTableNo) && entity.result.size() == 1) {
+            scoreEamEntity = entity.result.get(0);
+            update();
+            presenterRouter.create(ScoreEamPerformanceAPI.class).getScorPerformance(scoreId);
+        } else {
+            refreshListController.refreshComplete(null);
+        }
+    }
+
     @Override
     public void getScoreListFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
         refreshListController.refreshComplete(null);
     }
-    
+
     private void doSubmit() {
         ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), scoreEamEntity);
         Map map = ScoreMapManager.createMap(scoreEamEntity);
-        
+
         List list1 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "设备运转率");
         map.put("dg1559647635248ModelCode", "BEAM_1.0.0_scorePerformance_OperateRate");
         map.put("dg1559647635248ListJson", list1.toString());
         map.put("dgLists['dg1559647635248']", list1.toString());
-        
+
         List list2 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "高质量运行");
         map.put("dg1559291491380ModelCode", "BEAM_1.0.0_scorePerformance_HighQualityRun");
         map.put("dg1559291491380ListJson", list2.toString());
         map.put("dgLists['dg1559291491380']", list2.toString());
-        
+
         List list3 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "安全防护");
         map.put("dg1559560003995ModelCode", "BEAM_1.0.0_scorePerformance_Security");
         map.put("dg1559560003995ListJson", list3.toString());
         map.put("dgLists['dg1559560003995']", list3.toString());
-        
+
         List list4 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "外观标识");
         map.put("dg1559619724464ModelCode", "BEAM_1.0.0_scorePerformance_OutwardMark");
         map.put("dg1559619724464ListJson", list4.toString());
         map.put("dgLists['dg1559619724464']", list4.toString());
-        
+
         List list5 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "设备卫生");
         map.put("dg1559631064719ModelCode", "BEAM_1.0.0_scorePerformance_Health");
         map.put("dg1559631064719ListJson", list5.toString());
         map.put("dgLists['dg1559631064719']", list5.toString());
-        
+
         List list6 = ScoreMapManager.dataChange(scoreEamPerformanceAdapter.getList(), "档案管理");
         map.put("dg1559636766020ModelCode", "BEAM_1.0.0_scorePerformance_OutwardMark");
         map.put("dg1559636766020ListJson", list6.toString());
         map.put("dgLists['dg1559636766020']", list6.toString());
-        
+
         map.put("operateType", Constant.Transition.SUBMIT);
         presenterRouter.create(ScoreSubmitAPI.class).doSubmit(map);
     }
-    
+
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -424,14 +461,14 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
         if (nfcHelper != null)
             nfcHelper.dealNFCTag(intent);
     }
-    
+
     @Override
     public void onPause() {
         super.onPause();
         if (nfcHelper != null)
             nfcHelper.onPauseNFC(this);
     }
-    
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -440,14 +477,14 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             nfcHelper.release();
         }
     }
-    
+
     public long getYesterday() {
         Calendar ca = Calendar.getInstance();
         ca.setTime(new Date());
         ca.add(Calendar.DAY_OF_MONTH, -1);
         return ca.getTimeInMillis();
     }
-    
+
     @Override
     public void doSubmitSuccess(BapResultEntity entity) {
         onLoadSuccessAndExit("评分成功", new OnLoaderFinishListener() {
@@ -458,7 +495,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             }
         });
     }
-    
+
     @Override
     public void doSubmitFailed(String errorMsg) {
         if ("本数据已经被其他人修改或删除，请刷页面后重试".equals(errorMsg)) {
@@ -467,7 +504,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
         }
     }
-    
+
     @Override
     public void back() {
         EventBus.getDefault().post(new RefreshEvent());

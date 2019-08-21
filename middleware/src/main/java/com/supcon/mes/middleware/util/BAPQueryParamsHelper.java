@@ -493,6 +493,7 @@ public class BAPQueryParamsHelper {
                 subcondEntity.operator = Constant.BAPQuery.LIKE;
                 subcondEntity.paramStr = LIKE_OPT_BLUR;
                 subcondEntity.value = String.valueOf(value);
+                break;
             case Constant.BAPQuery.OVERALLSTATE:
                 subcondEntity = new SubcondEntity();
                 subcondEntity.columnName = Constant.BAPQuery.OVERALLSTATE;

@@ -24,7 +24,7 @@ public class ScoreEamPerformancePresenter extends ScoreEamPerformanceContract.Pr
     private ScoreEamPerformanceEntity scorePerformanceTitleEntity;
 
     @Override
-    public void getScoreList(int scoreId) {
+    public void getScorPerformance(int scoreId) {
         List<String> urls = new ArrayList<>();
         //设备运转率
         urls.add("/BEAM/scorePerformance/scoreHead/data-dg1559647635248.action");
@@ -92,12 +92,12 @@ public class ScoreEamPerformancePresenter extends ScoreEamPerformanceContract.Pr
                     }
                     scoreMap.put(scorePerformanceOldTitleEntity.itemDetail, scorePerformanceOldTitleEntity);
                 }, throwable -> {
-                    getView().getScoreListFailed(throwable.toString());
+                    getView().getScorPerformanceFailed(throwable.toString());
                 }, new Action() {
                     @Override
                     public void run() throws Exception {
                         category = "";
-                        getView().getScoreListSuccess(new ArrayList<>(scoreMap.values()));
+                        getView().getScorPerformanceSuccess(new ArrayList<>(scoreMap.values()));
                     }
                 }));
     }

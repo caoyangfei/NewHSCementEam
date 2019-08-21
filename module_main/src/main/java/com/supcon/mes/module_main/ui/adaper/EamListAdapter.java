@@ -85,7 +85,8 @@ public class EamListAdapter extends BaseListDataRecyclerViewAdapter<EamEntity> {
                         }
                         Bundle bundle = new Bundle();
                         bundle.putString(Constant.IntentKey.SCORETABLENO, scoreMerity.scoreTableNo);
-                        IntentRouter.go(context, Constant.Router.SCORE_EAM_LIST, bundle);
+                        bundle.putBoolean(Constant.IntentKey.isEdit, true);
+                        IntentRouter.go(context, Constant.Router.SCORE_EAM_PERFORMANCE, bundle);
                     }
                 }
             });

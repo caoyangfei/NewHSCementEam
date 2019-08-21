@@ -85,7 +85,8 @@ public class SBDAOnlineListAdapter extends BaseListDataRecyclerViewAdapter<SBDAO
                         }
                         Bundle bundle = new Bundle();
                         bundle.putString(Constant.IntentKey.SCORETABLENO, scoreMerity.scoreTableNo);
-                        IntentRouter.go(context, Constant.Router.SCORE_EAM_LIST, bundle);
+                        bundle.putBoolean(Constant.IntentKey.isEdit, false);
+                        IntentRouter.go(context, Constant.Router.SCORE_EAM_PERFORMANCE, bundle);
                     }
                 }
             });

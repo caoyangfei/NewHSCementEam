@@ -127,10 +127,10 @@ public class ScoreEamListActivity extends BaseRefreshRecyclerActivity implements
         customSearchView.setHint("请输入设备");
         searchTitleBar.enableRightBtn();
         searchTitleBar.setTitleText("设备评分绩效");
-        startTime.setDate(getThreeDay());
-        stopTime.setDate(dateFormat.format(System.currentTimeMillis()));
         customSearchView.setInput(selecStr);
-        if (TextUtils.isEmpty(scoreTableNo)) {
+        if (TextUtils.isEmpty(scoreTableNo) && TextUtils.isEmpty(selecStr)) {
+            startTime.setDate(getThreeDay());
+            stopTime.setDate(dateFormat.format(System.currentTimeMillis()));
             queryParam.put(Constant.BAPQuery.SCORE_TIME_START, getThreeDay());
             queryParam.put(Constant.BAPQuery.SCORE_TIME_STOP, dateFormat.format(System.currentTimeMillis()));
         }
