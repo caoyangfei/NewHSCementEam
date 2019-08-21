@@ -16,6 +16,9 @@ import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
+/**
+ * 免检规则
+ */
 public class OLXJExemptionPresenter extends OLXJExemptionContract.Presenter {
     @Override
     public void getExemptionEam(List<OLXJWorkItemEntity> olxjWorkItemEntities) {

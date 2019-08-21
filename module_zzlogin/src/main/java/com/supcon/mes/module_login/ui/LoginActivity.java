@@ -376,7 +376,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
 
             //跳转到主页
             if (isFirstIn) {
-                if (EamApplication.isDev()) {
+                if (EamApplication.isHongshi()) {
                     IntentRouter.go(context, Constant.Router.MAIN_REDLION);
                 } else {
                     IntentRouter.go(context, Constant.Router.MAIN);

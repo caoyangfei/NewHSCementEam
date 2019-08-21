@@ -91,6 +91,9 @@ public class MenuHelper {
                     case Constant.HSWorkType.MAINTENANCE_EARLY_WARN:
                         menuPopwindowBean.setRouter(Constant.Router.MAINTENANCE_EARLY_WARN);
                         break;
+                    case Constant.HSWorkType.SPARE_PART_RECEIVE:
+                        menuPopwindowBean.setRouter(Constant.Router.SPARE_PART_RECEIVE);
+                        break;
                     case Constant.HSWorkType.TD:
                         menuPopwindowBean.setRouter(Constant.Router.TD);
                         break;

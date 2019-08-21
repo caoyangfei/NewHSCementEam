@@ -9,9 +9,11 @@ import com.app.annotation.Presenter;
 import com.supcon.common.view.base.controller.BasePresenterController;
 import com.supcon.common.view.base.controller.BaseViewController;
 import com.supcon.common.view.util.LogUtil;
+import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.module_login.model.api.SilentLoginAPI;
 import com.supcon.mes.module_login.model.bean.LoginEntity;
 import com.supcon.mes.module_login.model.contract.SilentLoginContract;
@@ -30,7 +32,7 @@ import io.reactivex.schedulers.Schedulers;
  * Email:wangshizhan@supcom.com
  */
 @Presenter(SilentLoginPresenter.class)
-public class SilentLoginController extends BasePresenterController implements SilentLoginContract.View, SilentLoginAPI{
+public class SilentLoginController extends BasePresenterController implements SilentLoginContract.View, SilentLoginAPI {
 
     private boolean isLogining = false;
 
@@ -49,8 +51,8 @@ public class SilentLoginController extends BasePresenterController implements Si
 
     @Override
     public void dologinFailed(String errorMsg) {
-        LogUtil.e("后台登陆错误："+errorMsg);
-        Toast.makeText(EamApplication.getAppContext(), "后台登陆错误："+errorMsg, Toast.LENGTH_SHORT).show();
+        LogUtil.e("后台登陆错误：" + errorMsg);
+        Toast.makeText(EamApplication.getAppContext(), "后台登陆错误：" + errorMsg, Toast.LENGTH_SHORT).show();
         isLogining = false;
     }
 
@@ -77,11 +79,15 @@ public class SilentLoginController extends BasePresenterController implements Si
         isLogining = true;
     }
 
-    public void silentLogin(){
-        if(isLogining){
+    public void silentLogin(Context context) {
+        if (isLogining) {
             return;
         }
-//        dologin(EamApplication.getUserName(), EamApplication.getPassword());
-        dologinWithSuposPW(EamApplication.getUserName(), EamApplication.getPassword());
+        boolean hasSupOS = SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true);
+        if (hasSupOS) {
+            dologinWithSuposPW(EamApplication.getUserName(), EamApplication.getPassword());
+        } else {
+            dologin(EamApplication.getUserName(), EamApplication.getPassword());
+        }
     }
 }

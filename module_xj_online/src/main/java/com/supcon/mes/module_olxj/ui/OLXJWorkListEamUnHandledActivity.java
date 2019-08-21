@@ -101,11 +101,12 @@ import io.reactivex.functions.Predicate;
 /**
  * Created by wangshizhan on 2019/1/16
  * Email:wangshizhan@supcom.com
+ * 巡检到设备
  */
-@Router(Constant.Router.OLXJ_WORK_LIST_UNHANDLED)
+@Router(Constant.Router.OLXJ_EAM_UNHANDLED)
 @Controller(value = {OLXJTitleController.class, OLXJCameraController.class})
 @Presenter(value = {OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class})
-public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<OLXJWorkItemEntity> implements OLXJWorkSubmitContract.View, OLXJExemptionContract.View {
+public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivity<OLXJWorkItemEntity> implements OLXJWorkSubmitContract.View, OLXJExemptionContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -194,7 +195,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
     @Override
     protected void onResume() {
         super.onResume();
-//        deviceName = null; //清空,已完成页面返回后，因为刷新会重新初始化设备过滤条件
         getWindow().setWindowAnimations(R.style.activityAnimation);
     }
 
@@ -580,7 +580,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                 }, () -> {
                     initWorkItemList(workItems);
                     if (workItems.size() == 0 && isDcs) {
-                        ToastUtils.show(OLXJWorkListUnHandledActivity.this, "当前设备已关机,无巡检设备!");
+                        ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
                         back();
                         Flowable.timer(300, TimeUnit.MILLISECONDS)
                                 .subscribe(v -> {
@@ -1095,11 +1095,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
         LogUtil.e(ErrorMsgHelper.msgParse(errorMsg));
     }
 
-    public void refreshData() {
-        Log.i("mXJAreaEntity:", mXJAreaEntity.toString());
-        initWorkItemList(mXJAreaEntity.workItemEntities);
-    }
-
     @Override
     public void onBackPressed() {
         if (mModifyController.isModifyed(mXJAreaEntity)) {
@@ -1120,10 +1115,8 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
             super.onBackPressed();
     }
 
-
     @SuppressLint("CheckResult")
     public void initWorkItemList(List<OLXJWorkItemEntity> entity) {
-
         List<OLXJWorkItemEntity> xjWorkItemEntities = new ArrayList<>();
         OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
         headerEntity.headerPicPath = TextUtils.isEmpty(mXJAreaEntity.eamInspectionGuideImageAttachementInfo) ? "" : Constant.IMAGE_SAVE_PATH + mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
@@ -1199,6 +1192,4 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
     public void uploadOLXJAreaDataFailed(String errorMsg) {
         onLoadFailed("上传失败：" + ErrorMsgHelper.msgParse(errorMsg));
     }
-
-
 }

@@ -138,7 +138,7 @@ public class HeartBeatService extends IntentService implements HeartBeatContract
             if(mSilentLoginController == null){
                 mSilentLoginController = new SilentLoginController();
             }
-            mSilentLoginController.silentLogin();
+            mSilentLoginController.silentLogin(this);
         }
         resetTimer();
     }

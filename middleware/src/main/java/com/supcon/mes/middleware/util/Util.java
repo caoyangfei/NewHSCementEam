@@ -333,7 +333,7 @@ public class Util {
     }
 
     public static float strToFloat(String str) {
-        if (str == null || TextUtils.isEmpty(str) || !TextUtils.isDigitsOnly(str)) {
+        if (str == null || TextUtils.isEmpty(str)) {
             return 0;
         }
         try {

@@ -93,6 +93,7 @@ public interface Constant {
         String WXGD_SPARE_PART_LIST = "WXGD_SPARE_PART_LIST";//维修工单备件
         String WXGD_LUBRICATE_OIL_LIST = "WXGD_LUBRICATE_OIL_LIST";//维修工单润滑油
         String WXGD_MAINTENANCE_STAFF_LIST = "WXGD_MAINTENANCE_STAFF_LIST";//维修工单润维保
+        String SPARE_PART_RECEIVE = "SPARE_PART_RECEIVE";//备件领用
 
         String YHGL_SPARE_PART_LIST = "WXGD_SPARE_PART_LIST";//隐患管理备件
         String YHGL_LUBRICATE_OIL_LIST = "WXGD_LUBRICATE_OIL_LIST";//隐患管理润滑油
@@ -151,6 +152,7 @@ public interface Constant {
         String XJ_STATISTICS = "XJ_STATISTICS";//巡检统计
         String JHXJ_LX_LIST = "JHXJ_LX_LIST";
         String OLXJ_WORK_LIST_UNHANDLED = "OLXJ_WORK_LIST_UNHANDLED";
+        String OLXJ_EAM_UNHANDLED = "OLXJ_EAM_UNHANDLED";//巡检到设备
         String OLXJ_WORK_LIST_HANDLED = "OLXJ_WORK_LIST_HANDLED";
 
         String STOP_POLICE = "STOP_POLICE";//停机报警
@@ -363,9 +365,9 @@ public interface Constant {
         int OHAUL_WXGD = 12;  //年底大修维修工单
         int SPARE_EARLY_WARN = 13;//备件更换预警
         int MAINTENANCE_EARLY_WARN = 14;//维保预警
-
-        int TD = 15;//停电
-        int SD = 16;//送电
+        int SPARE_PART_RECEIVE = 15;//备件申领
+        int TD = 16;//停电
+        int SD = 17;//送电
 
         int XJ_STATISTICS = 20;  //巡检统计
         int YH_STATISTICS = 21;  //隐患统计

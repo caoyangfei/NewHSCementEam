@@ -7,6 +7,12 @@ public class SparePartId extends BaseEntity {
     public Good productID;
     public Long id;
 
+    public String productCode;
+    public String productName;
+    public String productModel;
+    public String productSpecif;
+    public Unit productBaseUnit;
+
     public Good getProductID() {
         if (productID == null) {
             productID = new Good();

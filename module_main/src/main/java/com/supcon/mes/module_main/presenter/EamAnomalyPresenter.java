@@ -39,6 +39,7 @@ public class EamAnomalyPresenter extends EamAnomalyContract.Presenter {
                 }));
     }
 
+    //提示信息
     @Override
     public void getSloganInfo() {
         mCompositeSubscription.add(MainClient.getSloganInfo()

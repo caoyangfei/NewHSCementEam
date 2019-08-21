@@ -139,6 +139,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private String reason;
     private MarqueeTextView marqueeTextView;
     private boolean isRefreshing;
+
     @Override
     protected int getLayoutID() {
         return R.layout.hs_frag_work;
@@ -166,11 +167,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     public void onResume() {
         super.onResume();
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
-        isRefreshing = true;
+        presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        workName.setText(EamApplication.getAccountInfo().staffName);
+        workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
 
     @SuppressLint("CheckResult")
@@ -206,6 +206,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     protected void initData() {
         super.initData();
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        isRefreshing = true;
+
         workInfos = new ArrayList<>();
         WorkInfo workInfo1 = new WorkInfo();
         workInfo1.name = "巡检预警";
@@ -231,8 +235,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         repairMenu = MenuHelper.getRepairMenu();
         formMenu = MenuHelper.getFormMenu();
 
-        workName.setText(EamApplication.getAccountInfo().staffName);
-        workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
 
 
@@ -508,11 +510,15 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        isRefreshing = true;
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refresh(RefreshEvent event) {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        isRefreshing = true;
     }
 
     @Override

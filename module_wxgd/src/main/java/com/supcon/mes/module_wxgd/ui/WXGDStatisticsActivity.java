@@ -154,7 +154,9 @@ public class WXGDStatisticsActivity extends BaseRefreshRecyclerActivity<WXGDEnti
                 pageIndex -> {
                     presenterRouter.create(WXGDStatisticsAPI.class).listWxgds(pageIndex, queryParam);
 
-                    presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getWorkRecordCountByState.action", workCountQueryParam);
+                    if (pageIndex == 1) {
+                        presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getWorkRecordCountByState.action", workCountQueryParam);
+                    }
                 });
 
         timeStart.setOnClickListener(new View.OnClickListener() {

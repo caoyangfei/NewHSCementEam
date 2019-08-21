@@ -63,6 +63,7 @@ import java.util.concurrent.TimeUnit;
  * @ClassName hongShiCementEam
  * @date 2019/8/14
  * ------------- Description -------------
+ * 巡检统计
  */
 @Router(Constant.Router.XJ_STATISTICS)
 @Presenter(value = {OLXJStatisticsPresenter.class, MultiDepartSelectPresenter.class})

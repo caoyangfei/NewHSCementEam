@@ -24,25 +24,27 @@ public class OnlineStaffListController extends BaseDataController implements Onl
     public OnlineStaffListController(Context context) {
         super(context);
     }
-    
+
     @Override
     public void onInit() {
         super.onInit();
         getAllStaffList();
     }
-    
+
     public void getAllStaffList() {
         presenterRouter.create(OnlineStaffListAPI.class).getOnlineStaffList();
     }
-    
+
     @Override
     public void getOnlineStaffListSuccess(TxlListEntity entity) {
 //        EamApplication.dao().getTxlEntityDao().deleteAll();
-        EamApplication.dao().getTxlEntityDao().insertOrReplaceInTx(entity.result);
+        if (entity.result != null && entity.result.size() > 0) {
+            EamApplication.dao().getTxlEntityDao().insertOrReplaceInTx(entity.result);
+        }
     }
-    
+
     @Override
     public void getOnlineStaffListFailed(String errorMsg) {
-    
+
     }
 }

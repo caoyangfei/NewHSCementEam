@@ -196,4 +196,16 @@ public interface ApiService {
      */
     @GET("/BEAM2/checkApply/checkApply/generateCheckApply.action")
     Flowable<GenerateAcceptanceEntity> generateCheckApply(@Query("workOrderId") long workOrderId, @Query("eamId") long eamId, @Query("describe") String describe, @Query("installId") long installId);
+
+
+
+    /**
+     * @param
+     * @return
+     * @description 备件领用
+     * @author zhangwenshuai1 2018/9/11
+     */
+    @POST("/BEAM2/sparePart/apply/sparePartEdit/submit.action?__pc__=dGFzazM0MHxzcGFyZVBhcnRBcHBseQ__&_bapFieldPermissonModelCode_=BEAM2_1.0.0_sparePart_Apply&_bapFieldPermissonModelName_=Apply&superEdit=false")
+    @Multipart
+    Flowable<BapResultEntity> doSubmitSparePart(@PartMap Map<String, RequestBody> map);
 }

@@ -40,7 +40,6 @@
     {
       "name": "临时润滑",
       "viewType": 0,
-      "tag": "DAILYLUBQTY",
       "num": 0,
       "type": 6
     },
@@ -103,30 +102,36 @@
       "type": 14
     },
     {
-      "name": "停电",
+      "name": "备件申领",
       "viewType": 0,
       "num": 0,
       "type": 15
+    },
+    {
+      "name": "停电",
+      "viewType": 0,
+      "num": 0,
+      "type": 16
     },
     {
       "name": "送电",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 16
+      "type": 17
     },
     {
       "name": "关联表单",
       "viewType": 0,
       "num": 0,
-      "type": 17
+      "type": 18
     },
     {
       "name": "维修手册",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 18
+      "type": 19
     }
   ],
   "form": [

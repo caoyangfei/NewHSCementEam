@@ -153,8 +153,9 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
         refreshListController.setOnRefreshPageListener(
                 pageIndex -> {
                     presenterRouter.create(YHGLStatisticsAPI.class).queryYHList(pageIndex, queryParam);
-
-                    presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getFaultInfoCountByState.action", workCountQueryParam);
+                    if (pageIndex == 1) {
+                        presenterRouter.create(WorkCountAPI.class).getWorkCount("/BEAM2/patrolWorkerScore/workerScoreHead/getFaultInfoCountByState.action", workCountQueryParam);
+                    }
                 });
 
         timeStart.setOnClickListener(new View.OnClickListener() {
