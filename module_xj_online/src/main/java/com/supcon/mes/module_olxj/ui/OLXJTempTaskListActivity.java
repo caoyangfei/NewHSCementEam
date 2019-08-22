@@ -258,6 +258,7 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
 
         //手动刷新事件
         refreshListController.setOnRefreshListener(() -> {
+            queryParam.put(Constant.BAPQuery.IS_EAM_TASK, "0");
             presenterRouter.create(OLXJTempTaskAPI.class).getOJXJTempTaskList(queryParam);
         });
 
@@ -414,7 +415,6 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
                 .bindClickListener(R.id.grayBtn, v -> {
                 }, true)
                 .bindClickListener(R.id.redBtn, v -> {
-
                     onLoading("正在提交任务...");
                     presenterRouter.create(OLXJTaskStatusAPI.class).endTasks(String.valueOf(olxjTaskEntity.id), "结束任务", true);
                 }, true)

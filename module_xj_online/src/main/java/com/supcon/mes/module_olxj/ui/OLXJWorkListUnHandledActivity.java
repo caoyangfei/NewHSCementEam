@@ -232,7 +232,10 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                         }
                     }
                 }, throwable -> {
-                }, () -> listDeviceFilter.setData(filterBeans));
+                }, () -> {
+                    mFilterDeviceName = null;
+                    listDeviceFilter.setData(filterBeans);
+                });
     }
 
     @SuppressLint("CheckResult")

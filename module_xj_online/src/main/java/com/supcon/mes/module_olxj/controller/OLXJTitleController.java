@@ -29,7 +29,7 @@ public class OLXJTitleController extends BaseViewController {
     RecyclerView contentView;
 
     //    ImageView headerView;
-    CustomAdView headerView;
+    View headerView;
 
     @BindByTag("titleBarLayout")
     RelativeLayout titleBarLayout;
@@ -47,7 +47,7 @@ public class OLXJTitleController extends BaseViewController {
 
     private BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> mAdapter;
 
-    private float currentAlpha = -1;
+    private float currentAlpha = 0;
 
     boolean isTitleVisible = false;
 

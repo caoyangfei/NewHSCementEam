@@ -5,6 +5,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.app.annotation.Presenter;
+import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.controller.BaseDataController;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.middleware.constant.Constant;
@@ -30,8 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -131,34 +134,34 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
     private void updateArea() {
         Flowable.fromIterable(mOLXJWorkItemEntities)
                 .subscribeOn(Schedulers.newThread())
-                .subscribe(new Consumer<OLXJWorkItemEntity>() {
+                .map(new Function<OLXJWorkItemEntity, OLXJWorkItemEntity>() {
                     @Override
-                    public void accept(OLXJWorkItemEntity olxjWorkItemEntity) throws Exception {
+                    public OLXJWorkItemEntity apply(OLXJWorkItemEntity olxjWorkItemEntity) throws Exception {
                         OLXJAreaEntity areaEntity = mAreaEntityMap.get(olxjWorkItemEntity.workID.id);
                         if (areaEntity != null) {
                             areaEntity.workItemEntities.add(olxjWorkItemEntity);
                         }
+                        return olxjWorkItemEntity;
                     }
-                }, new Consumer<Throwable>() {
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<OLXJWorkItemEntity>() {
                     @Override
-                    public void accept(Throwable throwable) throws Exception {
+                    public void accept(OLXJWorkItemEntity olxjWorkItemEntity) throws Exception {
 
                     }
-                }, new Action() {
-                    @Override
-                    public void run() throws Exception {
+                }, throwable -> {
 
-                        for (int i = mAreaEntities.size() - 1; i >= 0; i--) {
-                            if (mAreaEntities.get(i).workItemEntities.size() == 0) {
-                                mAreaEntities.remove(i);
-                            } else {
+                }, () -> {
+                    for (int i = mAreaEntities.size() - 1; i >= 0; i--) {
+                        if (mAreaEntities.get(i).workItemEntities.size() == 0) {
+                            mAreaEntities.remove(i);
+                        } else {
 //                                Collections.sort(mAreaEntities.get(i).workItemEntities);
-                            }
                         }
-
-                        if (mOnSuccessListener != null) {
-                            mOnSuccessListener.onSuccess(true);
-                        }
+                    }
+                    if (mOnSuccessListener != null) {
+                        mOnSuccessListener.onSuccess(true);
                     }
                 });
     }

@@ -142,7 +142,7 @@ public class PushHelper {
                         return builder.getNotification();
                     default:
                         //默认为0，若填写的builder_id并不存在，也使用默认。
-                        return super.getNotification(context, msg);
+                        return super.getNotification(context, msg)Notification;
                 }
             }
         };

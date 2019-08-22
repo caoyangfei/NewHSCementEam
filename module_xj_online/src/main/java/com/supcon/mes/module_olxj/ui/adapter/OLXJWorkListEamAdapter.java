@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -31,15 +32,18 @@ import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.constant.OLXJConstant;
 import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
+import com.supcon.mes.module_olxj.ui.OLXJWorkListEamUnHandledActivity;
 import com.supcon.mes.module_olxj.ui.OLXJWorkListUnHandledActivity;
 import com.supcon.mes.sb2.util.SB2ThermometerHelper;
 
@@ -216,7 +220,7 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
         @Override
         protected void initView() {
             super.initView();
-            mOLXJCameraController = ((OLXJWorkListUnHandledActivity) context).getController(OLXJCameraController.class);
+            mOLXJCameraController = ((OLXJWorkListEamUnHandledActivity) context).getController(OLXJCameraController.class);
             mOLXJCameraController.init(Constant.IMAGE_SAVE_XJPATH, Constant.PicType.XJ_PIC);
         }
 
@@ -1092,8 +1096,7 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
     }
 
     class PicViewHolder extends BaseRecyclerViewHolder<OLXJWorkItemEntity> {
-        private CustomAdView pic;
-        private List<GalleryBean> ads;
+        private ImageView pic;
 
         public PicViewHolder(Context context) {
             super(context, parent);
@@ -1101,7 +1104,7 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
 
         @Override
         protected int layoutId() {
-            return R.layout.item_recycler_pic;
+            return R.layout.item_eam_pic;
         }
 
         @Override
@@ -1111,69 +1114,9 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
         }
 
         @Override
-        protected void initListener() {
-            super.initListener();
-            pic.setOnChildViewClickListener(new OnChildViewClickListener() {
-                @Override
-                public void onChildViewClick(View childView, int action, Object obj) {
-                    String headerPicPath = getItem(getAdapterPosition()).headerPicPath;
-                    if (!headerPicPath.contains("jpg") && !headerPicPath.contains("png")
-                            && !headerPicPath.contains("jfif") && headerPicPath.contains("PNG")) {
-                        ToastUtils.show(context, "无图片显示！");
-                        return;
-                    }
-
-                    Bundle bundle = new Bundle();
-
-                    bundle.putSerializable("images", (Serializable) Arrays.asList(getItem(getAdapterPosition()).headerPicPath.split(",")));
-                    bundle.putInt("position", ads.indexOf(obj));  //点击位置索引
-
-                    int[] location = new int[2];
-                    childView.getLocationOnScreen(location);  //点击图片的位置
-                    bundle.putInt("locationX", location[0]);
-                    bundle.putInt("locationY", location[1]);
-
-                    bundle.putInt("width", DisplayUtil.dip2px(100, context));//必须
-                    bundle.putInt("height", DisplayUtil.dip2px(100, context));//必须
-
-                    bundle.putBoolean("isEditable", false);  //删除图标
-                    ((OLXJWorkListUnHandledActivity) context).getWindow().setWindowAnimations(R.style.fadeStyle);
-                    IntentRouter.go(context, Constant.Router.IMAGE_VIEW, bundle);
-                }
-            });
-        }
-
-        @Override
-
         protected void update(OLXJWorkItemEntity data) {
-            if (pic.getItemCount() != 0) {
-                pic.clear();
-            }
-            ads = new ArrayList<>();
-            GalleryBean galleryBean;
-            if (data.headerPicPath.contains("jpg") || data.headerPicPath.contains("png")
-                    || data.headerPicPath.contains("jfif") || data.headerPicPath.contains("PNG")) {
-                String[] picUrls = data.headerPicPath.split(",");
-                File file;
-                for (String url : picUrls) {
-                    file = new File(url);
-                    if (file.exists() && file.isFile()) {
-                        galleryBean = new GalleryBean();
-                        galleryBean.localPath = url;
-                        ads.add(galleryBean);
-                    } else {//巡检图片被清除了，必须放一个临时的图片
-                        galleryBean = new GalleryBean();
-                        galleryBean.resId = R.drawable.ic_zwtp;
-                        ads.add(galleryBean);
-                    }
-
-                }
-            } else {
-                galleryBean = new GalleryBean();
-                galleryBean.resId = R.drawable.ic_zwtp;
-                ads.add(galleryBean);
-            }
-            pic.setGalleryBeans(ads);
+            Long picPath = Long.valueOf(data.headerPicPath);
+            new EamPicController().initEamPic(pic, picPath);
         }
     }
 

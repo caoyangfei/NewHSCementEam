@@ -305,6 +305,7 @@ public interface Constant {
 
         String REPAIR_TYPE = "REPAIR_TYPE";//维修类型
 
+        String TASKID = "TASKID";//设备巡检任务id
     }
 
     interface FilterSearchParam {
@@ -586,6 +587,7 @@ public interface Constant {
         String OVERDATEFLAG = "OVERDATEFLAG";//是否超期
 
         String IS_RUN = "IS_RUN";//是否启用
+        String IS_EAM_TASK = "IS_EAM_TASK";//是否设备巡检或临时巡检
     }
 
 

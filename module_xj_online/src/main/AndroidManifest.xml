@@ -43,6 +43,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <activity
+            android:name="com.supcon.mes.module_olxj.ui.OLXJWorkListEamUnHandledActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TranslucentTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
 
     </application>
 

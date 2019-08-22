@@ -9,7 +9,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -73,6 +72,7 @@ import com.supcon.mes.module_main.ui.adaper.WorkAdapter;
 import com.supcon.mes.module_main.ui.util.MenuHelper;
 import com.supcon.mes.module_main.ui.view.MenuPopwindow;
 import com.supcon.mes.module_main.ui.view.MenuPopwindowBean;
+import com.supcon.mes.push.event.PushRefreshEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,7 +80,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -173,6 +172,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         super.onResume();
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        isRefreshing = true;
+
         workName.setText(EamApplication.getAccountInfo().staffName);
         workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
@@ -210,10 +213,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     protected void initData() {
         super.initData();
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        isRefreshing = true;
-
         workInfos = new ArrayList<>();
         WorkInfo workInfo1 = new WorkInfo();
         workInfo1.name = "巡检预警";
@@ -520,8 +519,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         isRefreshing = true;
     }
 
+    //有推送待办过来刷新界面
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refresh(RefreshEvent event) {
+    public void refreshPush(PushRefreshEvent event) {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         isRefreshing = true;

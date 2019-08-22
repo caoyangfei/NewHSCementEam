@@ -8,11 +8,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
-import com.supcon.mes.push.R;
+
+import com.supcon.mes.push.event.PushRefreshEvent;
 import com.supcon.mes.push.util.NotificationUtil;
 import com.umeng.message.UTrack;
 import com.umeng.message.entity.UMessage;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -40,6 +42,7 @@ public class MyNotificationService extends Service {
                 UTrack.getInstance(getApplicationContext()).setClearPrevMessage(true);
                 UTrack.getInstance(getApplicationContext()).trackMsgDismissed(oldMessage);
             }
+            EventBus.getDefault().post(new PushRefreshEvent());
             showNotification(msg);
         } catch (JSONException e) {
             e.printStackTrace();
