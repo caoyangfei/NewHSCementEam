@@ -17,7 +17,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableStart="@mipmap/btn_entrust"
+            android:drawableStart="@drawable/btn_entrust"
             android:drawablePadding="@dimen/dp_10"
             android:gravity="center"
             android:text="未委托"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/dp_20"
-            android:drawableStart="@mipmap/btn_entrusted"
+            android:drawableStart="@drawable/btn_entrusted"
             android:drawablePadding="@dimen/dp_10"
             android:gravity="center"
             android:text="已委托"

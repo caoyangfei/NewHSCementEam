@@ -162,9 +162,9 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             }
 
             if (!TextUtils.isEmpty(data.entrflag) && data.entrflag.equals("0")) {
-                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.mipmap.btn_entrust));
+                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.drawable.btn_entrust));
             } else {
-                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.mipmap.btn_entrusted));
+                waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.drawable.btn_entrusted));
             }
         }
 

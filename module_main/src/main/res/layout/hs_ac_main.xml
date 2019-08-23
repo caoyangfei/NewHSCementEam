@@ -62,6 +62,6 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="@dimen/dp_9"
         android:padding="@dimen/dp_10"
-        android:src="@mipmap/tabbar_logo"
+        android:src="@drawable/tabbar_logo"
         android:tag="logo" />
 </RelativeLayout>
