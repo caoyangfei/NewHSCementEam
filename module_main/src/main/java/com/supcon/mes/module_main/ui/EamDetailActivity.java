@@ -6,7 +6,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -26,11 +25,9 @@ import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.listener.OnTextListener;
-import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomTextView;
-import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
@@ -50,7 +47,6 @@ import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.api.EamDetailAPI;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
-import com.supcon.mes.module_main.model.bean.EamXJEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.contract.EamDetailContract;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
@@ -176,18 +172,13 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Constant.IntentKey.EAM, eamType);
                 switch (position) {
                     case 0:
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("tempStartTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-                        map.put("tempEndTime", DateUtil.dateFormat(System.currentTimeMillis() + 1000 * 60 * 60 * 24, "yyyy-MM-dd HH:mm:ss"));
-                        map.put("tempEamID", eamType.id);
-                        map.put("tempStaffId", EamApplication.getAccountInfo().staffId);
-                        presenterRouter.create(EamDetailAPI.class).createTempPotrolTaskByEam(map);
+                        IntentRouter.go(EamDetailActivity.this, Constant.Router.OLXJ_EAM_UNHANDLED, bundle);
                         break;
                     case 1:
-                        Bundle bundle = new Bundle();
-                        bundle.putSerializable(Constant.IntentKey.EAM, eamType);
                         IntentRouter.go(EamDetailActivity.this, Constant.Router.TEMPORARY_LUBRICATION_EARLY_WARN, bundle);
                         break;
                     case 2:
@@ -359,25 +350,6 @@ public class EamDetailActivity extends BaseControllerActivity implements WaitDea
     @Override
     public void getEamScoreFailed(String errorMsg) {
         LogUtil.e(errorMsg);
-    }
-
-    @Override
-    public void createTempPotrolTaskByEamSuccess(CommonEntity entity) {
-        EamXJEntity result = (EamXJEntity) entity.result;
-        if (result != null) {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constant.IntentKey.TASKID, result.taskId);
-            bundle.putString(Constant.IntentKey.TABLENO, result.tableNo);
-            bundle.putSerializable(Constant.IntentKey.EAM, eamType);
-            IntentRouter.go(this, Constant.Router.OLXJ_EAM_UNHANDLED, bundle);
-        } else {
-            SnackbarHelper.showError(rootView, "当前设备没有巡检任务！");
-        }
-    }
-
-    @Override
-    public void createTempPotrolTaskByEamFailed(String errorMsg) {
-        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override

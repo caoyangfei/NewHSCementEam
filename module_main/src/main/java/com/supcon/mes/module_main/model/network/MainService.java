@@ -6,7 +6,6 @@ import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.module_main.model.bean.EamEntity;
-import com.supcon.mes.module_main.model.bean.EamXJEntity;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.bean.WorkNumEntity;
@@ -52,10 +51,6 @@ public interface MainService {
     //设备评分
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getEamScoreInfo.action")
     Flowable<CommonEntity<String>> getEamScore(@Query("deviceID ") long deviceID);
-
-    //设备巡检任务
-    @GET("/mobileEAM/MobileInterfaceForAndroidAction/createTempPotrolTaskByEam.action")
-    Flowable<CommonEntity<EamXJEntity>> createTempPotrolTaskByEam(@QueryMap Map<String, Object> paramMap);
 
     //首页待办数量
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getMainButtonWorkCount.action")

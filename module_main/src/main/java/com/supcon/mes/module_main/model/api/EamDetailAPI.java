@@ -11,9 +11,8 @@ import java.util.Map;
  * @date 2019/7/29
  * ------------- Description -------------
  */
-@ContractFactory(entites = {CommonEntity.class, CommonEntity.class})
+@ContractFactory(entites = {CommonEntity.class})
 public interface EamDetailAPI {
     void getEamScore(long deviceID);
 
-    void createTempPotrolTaskByEam(Map<String, Object> paramMap);
 }

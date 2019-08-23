@@ -1,4 +1,4 @@
-package com.supcon.mes.module_main.model.bean;
+package com.supcon.mes.module_olxj.model.bean;
 
 import com.supcon.common.com_http.BaseEntity;
 

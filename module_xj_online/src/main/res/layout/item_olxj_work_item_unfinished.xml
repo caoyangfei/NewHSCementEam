@@ -331,6 +331,7 @@
             android:tag="thermometerBtn"
             android:text="按住测温"
             android:textColor="@color/customBlue4"
+            android:visibility="gone"
             android:textSize="12sp" />
 
         <Button

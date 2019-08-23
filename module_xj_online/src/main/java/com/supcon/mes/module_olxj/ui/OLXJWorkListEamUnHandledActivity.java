@@ -1,24 +1,18 @@
 package com.supcon.mes.module_olxj.ui;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Controller;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
-import com.bumptech.glide.Glide;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
@@ -34,7 +28,6 @@ import com.supcon.mes.mbap.constant.ListType;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
-import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.utils.controllers.SinglePickController;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomFilterView;
@@ -43,13 +36,8 @@ import com.supcon.mes.mbap.view.CustomSheetDialog;
 import com.supcon.mes.mbap.view.CustomSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.controller.AttachmentController;
-import com.supcon.mes.middleware.controller.AttachmentDownloadController;
 import com.supcon.mes.middleware.controller.ModifyController;
-import com.supcon.mes.middleware.model.bean.AttachmentEntity;
-import com.supcon.mes.middleware.model.bean.AttachmentListEntity;
-import com.supcon.mes.middleware.model.bean.CommonDeviceEntity;
-import com.supcon.mes.middleware.model.bean.CommonDeviceEntityDao;
+import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.DeviceDCSEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
@@ -58,42 +46,40 @@ import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntity;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntityDao;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.listener.OnAPIResultListener;
-import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.ui.view.CustomRadioSheetDialog;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
-import com.supcon.mes.middleware.util.RequestOptionUtil;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.SystemCodeManager;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.constant.OLXJConstant;
-import com.supcon.mes.module_olxj.controller.MapController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.controller.OLXJTaskAreaController;
 import com.supcon.mes.module_olxj.controller.OLXJTitleController;
+import com.supcon.mes.module_olxj.model.api.OLXJEamCreateTempPotrolTaskAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJExemptionAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJTaskStatusAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJTempTaskAPI;
-import com.supcon.mes.module_olxj.model.api.OLXJWorkListAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJWorkSubmitAPI;
+import com.supcon.mes.module_olxj.model.bean.EamXJEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJExemptionEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJHistorySheetEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJTaskEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
+import com.supcon.mes.module_olxj.model.contract.OLXJEamCreateTempPotrolTaskContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJExemptionContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJTaskStatusContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJTempTaskContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJWorkSubmitContract;
 import com.supcon.mes.module_olxj.model.event.AreaRefreshEvent;
+import com.supcon.mes.module_olxj.presenter.OLXJEamCreateTempPotrolTaskPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTaskStatusPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTempTaskListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
-import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapter;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
@@ -103,7 +89,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.reactivestreams.Publisher;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -129,9 +114,9 @@ import io.reactivex.functions.Predicate;
  */
 @Router(Constant.Router.OLXJ_EAM_UNHANDLED)
 @Controller(value = {OLXJTitleController.class, OLXJCameraController.class})
-@Presenter(value = {OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, OLXJTaskStatusPresenter.class, OLXJTempTaskListPresenter.class})
+@Presenter(value = {OLXJEamCreateTempPotrolTaskPresenter.class, OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, OLXJTaskStatusPresenter.class, OLXJTempTaskListPresenter.class})
 public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivity<OLXJWorkItemEntity> implements OLXJWorkSubmitContract.View
-        , OLXJExemptionContract.View, OLXJTaskStatusContract.View, OLXJTempTaskContract.View {
+        , OLXJExemptionContract.View, OLXJTaskStatusContract.View, OLXJTempTaskContract.View, OLXJEamCreateTempPotrolTaskContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -183,11 +168,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     public Map<String, Boolean> isColse = new LinkedHashMap<>();
     private OLXJTitleController titleController;
-    private String taskId;
     private OLXJTaskEntity olxjTaskEntity;//巡检任务
     private OLXJAreaEntity mXJAreaEntity;
-    private String tableNo;
     private EamType eamType;
+    private EamXJEntity eamXJEntity;
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
@@ -204,8 +188,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     protected void onInit() {
         super.onInit();
         eamType = (EamType) getIntent().getSerializableExtra(Constant.IntentKey.EAM);
-        taskId = getIntent().getStringExtra(Constant.IntentKey.TASKID);
-        tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
         EventBus.getDefault().register(this);
         mSinglePickController = new SinglePickController<>(this);
         mSinglePickController.textSize(18);
@@ -221,18 +203,13 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         getWindow().setWindowAnimations(R.style.activityAnimation);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        EventBus.getDefault().unregister(this);
-    }
 
     @Override
     protected void initView() {
         super.initView();
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(DisplayUtil.dip2px(1, context)));
-        finishedBottomBtn.setVisibility(View.INVISIBLE);
+//        finishedBottomBtn.setVisibility(View.INVISIBLE);
         initEmptyView();
         titleController = getController(OLXJTitleController.class);
     }
@@ -319,7 +296,13 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         refreshListController.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                presenterRouter.create(OLXJTaskStatusAPI.class).updateStatus(EamApplication.getAccountInfo().staffId, taskId);
+                Map<String, Object> map = new HashMap<>();
+                map.put("tempStartTime", DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+                map.put("tempEndTime", DateUtil.dateFormat(System.currentTimeMillis() + 1000 * 60 * 60 * 24, "yyyy-MM-dd HH:mm:ss"));
+                map.put("tempEamID", eamType.id);
+                map.put("tempStaffId", EamApplication.getAccountInfo().staffId);
+                presenterRouter.create(OLXJEamCreateTempPotrolTaskAPI.class).createTempPotrolTaskByEam(map);
+
             }
         });
 
@@ -426,34 +409,29 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 })
                 .subscribe(xjWorkItemEntity -> set.add(xjWorkItemEntity.id), throwable -> {
                 }, () -> {
-                    if (set.size() <= 0) {
-                        ToastUtils.show(context, "列表无巡检数据完成！");
-                    } else {
-                        //一键完成
-                        new CustomDialog(context)
-                                .twoButtonAlertDialog("是否提交完成巡检项？")
-                                .bindView(R.id.grayBtn, "否")
-                                .bindView(R.id.redBtn, "是")
-                                .bindClickListener(R.id.grayBtn, null, true)
-                                .bindClickListener(R.id.redBtn, v -> {
-                                    try {
-                                        for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
-                                            if (set.contains(xjWorkItemEntity.id)) {
-                                                if (!doFinish(xjWorkItemEntity)) {
-                                                    return;
-                                                }
+                    new CustomDialog(context)
+                            .twoButtonAlertDialog("是否提交完成巡检项？")
+                            .bindView(R.id.grayBtn, "否")
+                            .bindView(R.id.redBtn, "是")
+                            .bindClickListener(R.id.grayBtn, null, true)
+                            .bindClickListener(R.id.redBtn, v -> {
+                                try {
+                                    for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
+                                        if (set.contains(xjWorkItemEntity.id)) {
+                                            if (!doFinish(xjWorkItemEntity)) {
+                                                return;
                                             }
                                         }
-                                        onLoading("正在打包并上传巡检数据，请稍后...");
-                                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
-                                    } catch (Exception e) {
-                                        onLoadFailed("完成操作失败！" + e.getMessage());
-                                        e.printStackTrace();
-                                    } finally {
                                     }
-                                }, true)
-                                .show();
-                    }
+                                    onLoading("正在打包并上传巡检数据，请稍后...");
+                                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+                                } catch (Exception e) {
+                                    onLoadFailed("完成操作失败！" + e.getMessage());
+                                    e.printStackTrace();
+                                } finally {
+                                }
+                            }, true)
+                            .show();
                 });
     }
 
@@ -522,11 +500,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                     initWorkItemList(workItems);
                     if (workItems.size() == 0 && isDcs) {
                         ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
-                        back();
                         Flowable.timer(300, TimeUnit.MILLISECONDS)
                                 .subscribe(v -> {
-                                    EventBus.getDefault().post(mXJAreaEntity);
-                                    EventBus.getDefault().post(new AreaRefreshEvent());
+                                    onLoading("正在取消任务...");
+                                    presenterRouter.create(OLXJTaskStatusAPI.class).cancelTasks(String.valueOf(olxjTaskEntity.id), "LinkState/04");
                                 });
                     }
                 });
@@ -920,7 +897,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
         titleController.initView();
-        refreshListController.refreshBegin();
+        doRefresh(false);
     }
 
     @SuppressLint("CheckResult")
@@ -1083,7 +1060,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAreaUpdate(OLXJAreaEntity areaEntity) {
         mXJAreaEntity = areaEntity;
-        refreshListController.refreshBegin();
+        doRefresh(false);
     }
 
     @Override
@@ -1107,13 +1084,31 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         onLoadFailed("上传失败：" + ErrorMsgHelper.msgParse(errorMsg));
     }
 
+    //创建任务
+    @Override
+    public void createTempPotrolTaskByEamSuccess(CommonEntity entity) {
+        if (entity.result != null) {
+            eamXJEntity = (EamXJEntity) entity.result;
+            presenterRouter.create(OLXJTaskStatusAPI.class).updateStatus(EamApplication.getAccountInfo().staffId, eamXJEntity.taskId);
+        } else {
+            SnackbarHelper.showError(rootView, "创建任务失败！");
+            back();
+        }
+    }
+
+    @Override
+    public void createTempPotrolTaskByEamFailed(String errorMsg) {
+        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
+        back();
+    }
+
+    //任务下发
     @Override
     public void updateStatusSuccess() {
         //获取巡检路线
         Map<String, Object> queryParam = new HashMap<>();  //参数
-        queryParam.put(Constant.BAPQuery.TABLE_NO, tableNo);
+        queryParam.put(Constant.BAPQuery.TABLE_NO, eamXJEntity.tableNo);
         presenterRouter.create(OLXJTempTaskAPI.class).getOJXJTempTaskList(queryParam);
-
     }
 
     @Override
@@ -1133,6 +1128,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                     List<OLXJAreaEntity> mAreaEntities = mOLXJTaskAreaController.getAreaEntities();
                     if (mAreaEntities != null && mAreaEntities.size() > 0) {
                         mXJAreaEntity = mAreaEntities.get(0);
+                        mXJAreaEntity.signReason = "其它原因";
+                        mXJAreaEntity.isSign = true;
+                        mXJAreaEntity.signType = "cardType/02";
+                        mXJAreaEntity.signedTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                         doRefresh(false);
                     }
                 } else {
@@ -1196,5 +1195,12 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
             back();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
 
 }

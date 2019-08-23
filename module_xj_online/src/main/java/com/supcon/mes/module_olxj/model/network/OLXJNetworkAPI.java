@@ -8,6 +8,7 @@ import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.module_olxj.model.bean.AbnormalEntity;
+import com.supcon.mes.module_olxj.model.bean.EamXJEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJExemptionEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJGroupEntity;
@@ -166,4 +167,8 @@ public interface OLXJNetworkAPI {
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getInspectStaticsInfo.action")
     Flowable<CommonListEntity<OLXJStatisticsEntity>> getInspectStaticsInfo(@QueryMap Map<String, Object> queryParam);
 
+
+    //设备创建巡检任务
+    @GET("/mobileEAM/MobileInterfaceForAndroidAction/createTempPotrolTaskByEam.action")
+    Flowable<CommonEntity<EamXJEntity>> createTempPotrolTaskByEam(@QueryMap Map<String, Object> paramMap);
 }
