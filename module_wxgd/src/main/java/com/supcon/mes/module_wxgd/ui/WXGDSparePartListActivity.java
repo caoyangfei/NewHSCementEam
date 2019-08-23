@@ -303,6 +303,11 @@ public class WXGDSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
                         return;
 
                     }
+                    if (sparePartEntity.standingCrop == null || sparePartEntity.sum.compareTo(sparePartEntity.standingCrop) >= 0) {
+                        ToastUtils.show(context, sparePartEntity.productID.productName + "的计划领用量必须大于现存量！", 2000);
+                        return;
+
+                    }
                 }
                 onLoading("备件生成领用出库单中...");
                 presenterRouter.create(SparePartListAPI.class).generateSparePartApply(generateSparePartApplyList(mSparePartEntityList));
@@ -378,7 +383,7 @@ public class WXGDSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
         SparePartEntity sparePartEntity = new SparePartEntity();
         sparePartEntity.productID = good;
         sparePartEntity.timesNum = (int) repairSum;
-        sparePartEntity.sum = BigDecimal.valueOf(1);
+        sparePartEntity.sum = BigDecimal.valueOf(0);
         sparePartEntity.useState = SystemCodeManager.getInstance().getSystemCodeEntity("BEAM2011/01");
         sparePartEntity.isRef = sparePartAddEvent.isFlag();
         sparePartEntity.lastDuration = sparePartRefEntity.getLastDuration();
@@ -391,7 +396,6 @@ public class WXGDSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
         sparePartEntity.accessoryName = sparePartRefEntity.getAccessoryEamId().getAttachEamId().name;
         sparePartEntity.remark = sparePartRefEntity.getSpareMemo();
         sparePartEntity.standingCrop = sparePartRefEntity.getStandingCrop();
-        sparePartEntity.timesNum = (int) repairSum;
         mSparePartEntityList.add(sparePartEntity);
 
         mSparePartAdapter.setRepairSum((int) repairSum);

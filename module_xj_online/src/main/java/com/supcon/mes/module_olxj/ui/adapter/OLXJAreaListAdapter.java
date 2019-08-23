@@ -175,7 +175,7 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
                                 if (!TextUtils.isEmpty(data.signedTime)) {
                                     if (isFault) {
 //                                        data.faultMsg = faultMsg.toString();
-                                        itemAreaFault.setVisibility(View.VISIBLE);
+//                                        itemAreaFault.setVisibility(View.VISIBLE);
                                         itemAreaDot.setImageDrawable(context.getResources().getDrawable(R.drawable.dot_done_yh));
                                     } else {
                                         itemAreaFault.setVisibility(View.INVISIBLE);

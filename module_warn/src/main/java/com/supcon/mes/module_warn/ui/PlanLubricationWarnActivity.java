@@ -18,7 +18,6 @@ import com.supcon.mes.module_warn.model.event.TabEvent;
 import com.supcon.mes.module_warn.ui.adapter.DailyLubricationWarnAdapter;
 import com.supcon.mes.module_warn.ui.fragment.DailyLubricateReceiveTaskFragment;
 import com.supcon.mes.module_warn.ui.fragment.DailyLubricateTaskFragment;
-import com.supcon.mes.module_warn.ui.fragment.TemporaryTaskFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
