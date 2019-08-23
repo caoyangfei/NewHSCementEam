@@ -482,12 +482,6 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
 
         @Override
         protected void update(OLXJWorkItemEntity data) {
-            //默认隐藏
-            ufBtnLayout.setVisibility(View.GONE);
-            ufResultLayout.setVisibility(View.GONE);
-            ufContentLine.setVisibility(View.GONE);
-            ufResultLine.setVisibility(View.GONE);
-
             boolean showPart = isNeedPart(getAdapterPosition(), data);
             if (showPart) {
                 ufPartLayout.setVisibility(View.VISIBLE);
@@ -518,11 +512,6 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
                 ufItemSelectResult.setVisibility(View.GONE);
                 ufItemInputResult.setVisibility(View.VISIBLE);
                 ufItemSelectResultSwitchLayout.setVisibility(View.GONE);
-
-                ufBtnLayout.setVisibility(View.VISIBLE);
-                ufResultLayout.setVisibility(View.VISIBLE);
-                ufContentLine.setVisibility(View.VISIBLE);
-                ufResultLine.setVisibility(View.VISIBLE);
 
                 if (data.isThermometric) {  //要求测温
                     ufItemInputResult.setEditable(false);
