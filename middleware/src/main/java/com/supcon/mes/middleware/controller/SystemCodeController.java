@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.app.annotation.Presenter;
 import com.supcon.common.view.base.controller.BasePresenterController;
 import com.supcon.common.view.util.LogUtil;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.api.SystemCodeAPI;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
@@ -55,6 +56,8 @@ public class SystemCodeController extends BasePresenterController implements Sys
     @Override
     public void onInit() {
         super.onInit();
+        //暂时先每次加载时清除数据库
+        EamApplication.dao().getSystemCodeEntityDao().deleteAll();
         queryAll(entityCodes);
     }
 
@@ -110,8 +113,8 @@ public class SystemCodeController extends BasePresenterController implements Sys
         return SystemCodeManager.getInstance().getSystemCodeEntityId(entityCode, entityName);
     }
 
-    public List<SystemCodeEntity> getSystemCodeEntities(int pageIndex,String entityCode, String mes) {
-        return SystemCodeManager.getInstance().getSystemCodeListByCode(pageIndex,entityCode, mes);
+    public List<SystemCodeEntity> getSystemCodeEntities(int pageIndex, String entityCode, String mes) {
+        return SystemCodeManager.getInstance().getSystemCodeListByCode(pageIndex, entityCode, mes);
     }
 
 
