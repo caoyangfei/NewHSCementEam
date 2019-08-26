@@ -172,9 +172,6 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         super.onResume();
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        isRefreshing = true;
 
         workName.setText(EamApplication.getAccountInfo().staffName);
         workDepot.setText(EamApplication.getAccountInfo().positionName);
@@ -514,6 +511,14 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
+        isRefreshing = true;
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void refreshPush(RefreshEvent event) {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         isRefreshing = true;

@@ -1,5 +1,6 @@
 package com.supcon.mes.module_wxgd.presenter;
 
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.StandingCropEntity;
@@ -7,6 +8,7 @@ import com.supcon.mes.middleware.model.network.MiddlewareHttpClient;
 import com.supcon.mes.module_wxgd.model.contract.SparePartListContract;
 import com.supcon.mes.module_wxgd.model.network.HttpClient;
 
+import io.reactivex.Flowable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
@@ -15,10 +17,17 @@ import io.reactivex.functions.Function;
  * created by zhangwenshuai1 2018/10/10
  */
 public class SparePartListPresenter extends SparePartListContract.Presenter {
+
     @Override
     public void updateStandingCrop(String productCode) {
+        Flowable<CommonListEntity<StandingCropEntity>> commonListEntityFlowable;
+        if (EamApplication.isHongshi()) {
+            commonListEntityFlowable = MiddlewareHttpClient.updateStandingCrop(productCode);
+        } else {
+            commonListEntityFlowable = HttpClient.updateStandingCrop(productCode);
+        }
         mCompositeSubscription.add(
-                MiddlewareHttpClient.updateStandingCrop(productCode)
+                commonListEntityFlowable
                         .onErrorReturn(new Function<Throwable, CommonListEntity<StandingCropEntity>>() {
                             @Override
                             public CommonListEntity<StandingCropEntity> apply(Throwable throwable) throws Exception {
@@ -46,20 +55,20 @@ public class SparePartListPresenter extends SparePartListContract.Presenter {
 //        Map<String, RequestBody> formBody = FormDataHelper.createDataFormBody(map);
         mCompositeSubscription.add(
                 HttpClient.generateSparePartApply(listStr)
-                .onErrorReturn(new Function<Throwable, ResultEntity>() {
-                    @Override
-                    public ResultEntity apply(Throwable throwable) throws Exception {
-                        ResultEntity resultEntity = new ResultEntity();
-                        resultEntity.success = false;
-                        resultEntity.errMsg = throwable.toString();
-                        return resultEntity;
-                    }
-                }).subscribe(new Consumer<ResultEntity>() {
+                        .onErrorReturn(new Function<Throwable, ResultEntity>() {
+                            @Override
+                            public ResultEntity apply(Throwable throwable) throws Exception {
+                                ResultEntity resultEntity = new ResultEntity();
+                                resultEntity.success = false;
+                                resultEntity.errMsg = throwable.toString();
+                                return resultEntity;
+                            }
+                        }).subscribe(new Consumer<ResultEntity>() {
                     @Override
                     public void accept(ResultEntity resultEntity) throws Exception {
-                        if (resultEntity.success){
+                        if (resultEntity.success) {
                             getView().generateSparePartApplySuccess(resultEntity);
-                        }else {
+                        } else {
                             getView().generateSparePartApplyFailed(resultEntity.errMsg);
                         }
                     }

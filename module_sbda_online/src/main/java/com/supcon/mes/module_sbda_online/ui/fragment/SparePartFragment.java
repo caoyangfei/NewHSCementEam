@@ -3,13 +3,13 @@ package com.supcon.mes.module_sbda_online.ui.fragment;
 import android.annotation.SuppressLint;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.base.fragment.BaseRefreshRecyclerFragment;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.model.api.UpdateSupOSStandingCropAPI;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.StandingCropEntity;
@@ -18,7 +18,6 @@ import com.supcon.mes.middleware.presenter.UpdateSupOSStandingCropPresenter;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
-import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_sbda_online.R;
 import com.supcon.mes.module_sbda_online.model.api.SpareAPI;
 import com.supcon.mes.module_sbda_online.model.bean.SparePartEntity;
@@ -27,16 +26,10 @@ import com.supcon.mes.module_sbda_online.model.contract.SpareContract;
 import com.supcon.mes.module_sbda_online.presenter.SparePresenter;
 import com.supcon.mes.module_sbda_online.ui.adapter.SparePartAdapter;
 
-import org.reactivestreams.Publisher;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 /**
  * @author yangfei.cao
@@ -96,10 +89,16 @@ public class SparePartFragment extends BaseRefreshRecyclerFragment<SparePartEnti
     public void spareRecordSuccess(SparePartListEntity entity) {
         if (entity.result != null && entity.result.size() > 0) {
             sparePartEntities = entity.result;
-            StringBuffer sparePartCodes = new StringBuffer();
-            Flowable.fromIterable(entity.result)
-                    .subscribe(sparePartEntity -> sparePartCodes.append(sparePartEntity.getProductID().productCode).append(","), throwable -> {
-                    }, () -> presenterRouter.create(UpdateSupOSStandingCropAPI.class).updateStandingCrop(sparePartCodes.toString()));
+            if (EamApplication.isHongshi()) {
+                StringBuffer sparePartCodes = new StringBuffer();
+                Flowable.fromIterable(entity.result)
+                        .subscribe(sparePartEntity -> sparePartCodes.append(sparePartEntity.getProductID().productCode).append(","), throwable -> {
+                        }, () -> {
+                            presenterRouter.create(UpdateSupOSStandingCropAPI.class).updateStandingCrop(sparePartCodes.toString());
+                        });
+            } else {
+                refreshListController.refreshComplete(sparePartEntities);
+            }
         } else {
             refreshListController.refreshComplete(null);
         }

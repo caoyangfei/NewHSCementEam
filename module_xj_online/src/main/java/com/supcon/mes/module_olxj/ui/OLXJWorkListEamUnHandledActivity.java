@@ -1107,10 +1107,17 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         }
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void createTempPotrolTaskByEamFailed(String errorMsg) {
         ToastUtils.show(this, ErrorMsgHelper.msgParse(errorMsg));
-        back();
+        Flowable.timer(500, TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        back();
+                    }
+                });
     }
 
     @Override

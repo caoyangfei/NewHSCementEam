@@ -43,6 +43,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/dp_5"
             android:tag="itemSparePartStandingCropTv"
+            android:visibility="gone"
             app:content_hint="--"
             app:key="现   存   量:"
             app:max_lines="1" />

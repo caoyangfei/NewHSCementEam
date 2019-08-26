@@ -10,6 +10,7 @@ import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.mes.mbap.view.CustomTextView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.HtmlParser;
 import com.supcon.mes.middleware.util.HtmlTagHandler;
@@ -91,6 +92,9 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
         @Override
         protected void update(SparePartEntity data) {
 
+            if (EamApplication.isHongshi()) {
+                itemSparePartStandingCropTv.setVisibility(View.VISIBLE);
+            }
             String eam = String.format(context.getString(R.string.device_style10), Util.strFormat(data.getProductID().productName)
                     , Util.strFormat(data.getProductID().productCode));
             itemSparePartNameTv.contentView().setText(HtmlParser.buildSpannedText(eam, new HtmlTagHandler()));
