@@ -1,20 +1,14 @@
 package com.supcon.mes.push.util;
 
 import android.content.Context;
-import android.os.Handler;
-import android.text.TextUtils;
-import android.util.Log;
 
-import com.supcon.common.view.App;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.mes.push.UmengNotificationService;
-import com.supcon.mes.push.event.DeviceTokenEvent;
 import com.umeng.commonsdk.UMConfigure;
 import com.umeng.message.IUmengRegisterCallback;
 import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.lang.reflect.Field;
 
@@ -31,7 +25,7 @@ public class PushHelper {
     }
 
     public static final String UPDATE_STATUS_ACTION = "com.umeng.message.example.action.UPDATE_STATUS";
-    private Handler handler;
+//    private Handler handler;
     private Context context;
 
     public static PushHelper getInstance(){
@@ -55,7 +49,7 @@ public class PushHelper {
             Class<?> aClass = Class.forName("com.umeng.commonsdk.UMConfigure");
             Field[] fs = aClass.getDeclaredFields();
             for (Field f:fs){
-                Log.d("UMLog", "ff="+f.getName()+"   "+f.getType().getName());
+                LogUtil.d("UMLog ff="+f.getName()+"   "+f.getType().getName());
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -71,7 +65,7 @@ public class PushHelper {
     private void initUpush() {
 
         PushAgent mPushAgent = PushAgent.getInstance(context);
-        handler = new Handler(context.getMainLooper());
+//        handler = new Handler(context.getMainLooper());
 
         //sdk开启通知声音
         mPushAgent.setNotificationPlaySound(MsgConstant.NOTIFICATION_PLAY_SDK_ENABLE);
@@ -142,7 +136,7 @@ public class PushHelper {
                         return builder.getNotification();
                     default:
                         //默认为0，若填写的builder_id并不存在，也使用默认。
-                        return super.getNotification(context, msg)Notification;
+                        return super.getNotification(context, msg);
                 }
             }
         };
@@ -182,15 +176,15 @@ public class PushHelper {
         mPushAgent.register(new IUmengRegisterCallback() {
             @Override
             public void onSuccess(String deviceToken) {
-                Log.d("UMLog","device token: " + deviceToken);
-                SharedPreferencesUtils.setParam(context, "DEVICE_TOKEN", deviceToken);
+                LogUtil.d("UMLog device token: " + deviceToken);
 //                context.sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
-                EventBus.getDefault().post(new DeviceTokenEvent(deviceToken));
+                SharedPreferencesUtils.setParam(context, "DEVICE_TOKEN", deviceToken);
+//                EventBus.getDefault().post(new DeviceTokenEvent(deviceToken));
             }
 
             @Override
             public void onFailure(String s, String s1) {
-                Log.e("UMLog","register failed: " + s + " " + s1);
+                LogUtil.e("UMLog register failed: " + s + " " + s1);
 //                context.sendBroadcast(new Intent(UPDATE_STATUS_ACTION));
             }
         });

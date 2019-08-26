@@ -7,8 +7,8 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
 
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.push.event.PushRefreshEvent;
 import com.supcon.mes.push.util.NotificationUtil;
 import com.umeng.message.UTrack;
@@ -37,7 +37,7 @@ public class MyNotificationService extends Service {
         String message = intent.getStringExtra("UmengMsg");
         try {
             UMessage msg = new UMessage(new JSONObject(message));
-            Log.d("MyNotificationService","msg:"+msg);
+            LogUtil.d("MyNotificationService msg:"+msg);
             if (oldMessage != null) {
                 UTrack.getInstance(getApplicationContext()).setClearPrevMessage(true);
                 UTrack.getInstance(getApplicationContext()).trackMsgDismissed(oldMessage);

@@ -38,16 +38,18 @@ public class AccountInfo extends BaseEntity {
     public String roleNames;	//角色名字
     public String uuid;		//uuid
     public String loginTime;
+    public String mobile;
+    public String email;
     public long firstDepartmentId;      //第一部门id
     public String firstDepartmentName;  //第一部门名称
-    @Generated(hash = 626301931)
+    @Generated(hash = 108112198)
     public AccountInfo(long id, long userId, String userName, long staffId,
             String staffCode, String staffName, long departmentId,
             String departmentName, long cid, String companyName, long positionId,
             String positionName, String password, String ip, String date,
             long imageId, String imagePath, String roleIds, String roleNames,
-            String uuid, String loginTime, long firstDepartmentId,
-            String firstDepartmentName) {
+            String uuid, String loginTime, String mobile, String email,
+            long firstDepartmentId, String firstDepartmentName) {
         this.id = id;
         this.userId = userId;
         this.userName = userName;
@@ -69,6 +71,8 @@ public class AccountInfo extends BaseEntity {
         this.roleNames = roleNames;
         this.uuid = uuid;
         this.loginTime = loginTime;
+        this.mobile = mobile;
+        this.email = email;
         this.firstDepartmentId = firstDepartmentId;
         this.firstDepartmentName = firstDepartmentName;
     }
@@ -212,6 +216,18 @@ public class AccountInfo extends BaseEntity {
     }
     public void setFirstDepartmentName(String firstDepartmentName) {
         this.firstDepartmentName = firstDepartmentName;
+    }
+    public String getMobile() {
+        return this.mobile;
+    }
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+    public String getEmail() {
+        return this.email;
+    }
+    public void setEmail(String email) {
+        this.email = email;
     }
 
 }

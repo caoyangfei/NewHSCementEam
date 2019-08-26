@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/line_gray"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <com.supcon.mes.mbap.view.CustomAdView
@@ -11,19 +11,22 @@
         android:layout_height="150dp"
         android:tag="workCustomAd" />
 
-    <LinearLayout
-        android:id="@+id/workLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/workCustomAd"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:tag="workLayout">
+    <!--<LinearLayout-->
+        <!--android:id="@+id/workLayout"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@+id/workCustomAd"-->
+        <!--android:background="@color/white"-->
+        <!--android:orientation="vertical"-->
+        <!--android:paddingLeft="@dimen/dp_5"-->
+        <!--android:paddingRight="@dimen/dp_5"-->
+        <!--android:tag="workLayout">-->
 
-        <include layout="@layout/ly_recyclerview" />
+        <!--<include layout="@layout/ly_recyclerview" />-->
 
-    </LinearLayout>
-
+    <!--</LinearLayout>-->
+    <include layout="@layout/ly_recyclerview" android:layout_below="@id/workCustomAd" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp" android:layout_marginRight="@dimen/dp_5"/>
     <include
         layout="@layout/ly_titlebar_transparent"
         android:layout_width="match_parent"

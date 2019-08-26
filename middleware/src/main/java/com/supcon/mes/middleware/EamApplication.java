@@ -2,7 +2,6 @@ package com.supcon.mes.middleware;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
@@ -22,7 +21,6 @@ import com.supcon.mes.middleware.model.bean.DaoSession;
 import com.supcon.mes.middleware.model.bean.Staff;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.CrashHandler;
-import com.supcon.mes.push.PushController;
 
 import java.util.List;
 
@@ -96,14 +94,9 @@ public class EamApplication extends MBapApp {
 
     private void initUMeng() {
 
-//        String appKey =  ManifestUtil.getAppkeyByXML(this);
-//        String pushSecret =  ManifestUtil.getMessageSecretByXML(this);
-//
-//        PushHelper.getInstance().init(this, appKey, pushSecret);
 
-        //MainActivity 处理
-        PushController pushController = new PushController();
-        pushController.onInit();
+//        PushController pushController = new PushController();
+//        pushController.onInit();
 
     }
 

@@ -1,7 +1,5 @@
 package com.supcon.mes.module_main.ui.util;
 
-import android.content.Context;
-
 import com.supcon.mes.mbap.MBapApp;
 import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.middleware.constant.Constant;

@@ -3,6 +3,7 @@ package com.supcon.mes.module_main.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
 
 import com.app.annotation.BindByTag;
@@ -16,13 +17,10 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.AreaController;
 import com.supcon.mes.middleware.controller.DepartmentController;
-import com.supcon.mes.middleware.controller.DeviceTokenController;
 import com.supcon.mes.middleware.controller.OnlineStaffListController;
-import com.supcon.mes.middleware.controller.PendingController;
 import com.supcon.mes.middleware.controller.RepairGroupController;
 import com.supcon.mes.middleware.controller.SystemCodeController;
 import com.supcon.mes.middleware.controller.UserInfoListController;
-import com.supcon.mes.middleware.model.bean.PushEntity;
 import com.supcon.mes.middleware.model.event.AppExitEvent;
 import com.supcon.mes.middleware.model.event.DownloadDataEvent;
 import com.supcon.mes.middleware.model.event.LoginValidEvent;
@@ -39,6 +37,8 @@ import com.supcon.mes.module_main.ui.fragment.EamFragment;
 import com.supcon.mes.module_main.ui.fragment.MineFragment;
 import com.supcon.mes.module_main.ui.fragment.WorkFragment;
 import com.supcon.mes.module_txl.ui.fragment.TxlListFragment;
+import com.supcon.mes.push.controller.DeviceTokenController;
+import com.supcon.mes.push.controller.PendingController;
 import com.supcon.mes.push.event.DeviceTokenEvent;
 import com.supcon.mes.push.event.PushOpenEvent;
 import com.umeng.analytics.MobclickAgent;
@@ -65,6 +65,9 @@ public class MainActivity extends BaseMultiFragmentActivity {
 
     @BindByTag("tabRadioGroup")
     RadioGroup tabRadioGroup;
+
+    @BindByTag("logo")
+    ImageView logo;
 
     private String initIp = ""; // 记录原超时IP
 
@@ -98,17 +101,6 @@ public class MainActivity extends BaseMultiFragmentActivity {
         Api.getInstance().setDebug(BuildConfig.DEBUG);
         LogUtil.showLog = BuildConfig.DEBUG;
 
-/*        //通讯录同步
-        mCommonSearchStaffController = new ContractController();
-        mCommonSearchStaffController.listStaff("", 1);*/
-//
-        getController(SystemCodeController.class).onInit();
-        getController(AreaController.class).onInit();
-        getController(DepartmentController.class).onInit();
-        getController(RepairGroupController.class).onInit();
-        getController(UserInfoListController.class).onInit();
-        getController(OnlineStaffListController.class).onInit();
-
         PushAgent.getInstance(context).onAppStart();
     }
 
@@ -134,30 +126,6 @@ public class MainActivity extends BaseMultiFragmentActivity {
     public void onAppExit(AppExitEvent event) {
         System.exit(0);
     }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDeviceToken(DeviceTokenEvent event) {
-
-        LogUtil.e("DeviceTokenEvent:" + event.toString());
-
-        if (event.isLogin()) {
-            getController(DeviceTokenController.class).sendLoginDeviceToken(event.getDeviceToken());
-        } else {
-            getController(DeviceTokenController.class).sendLogoutDeviceToken(event.getDeviceToken());
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPushOpenEvent(PushOpenEvent pushOpenEvent) {
-        PushEntity pushEntity = GsonUtil.gsonToBean(pushOpenEvent.getContent(), PushEntity.class);
-        LogUtil.d("pushEntity :" + pushEntity);
-
-        if (pushEntity.extra != null) {
-            getController(PendingController.class).queryEntieyAndGo(pushEntity.extra);
-        }
-
-    }
-
 
     @Override
     public int getFragmentContainerId() {
@@ -186,7 +154,9 @@ public class MainActivity extends BaseMultiFragmentActivity {
     protected void initView() {
         super.initView();
         showFragment(0);
-
+        if(EamApplication.isHailuo()){
+            logo.setImageResource(R.drawable.tabbar_logo_hl);
+        }
     }
 
     @Override

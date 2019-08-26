@@ -4,12 +4,10 @@ import android.annotation.SuppressLint;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
-import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.util.ToastUtils;
@@ -21,18 +19,17 @@ import com.supcon.mes.mbap.view.CustomFilterView;
 import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_sbda_online.R;
 import com.supcon.mes.module_sbda_online.model.api.StopPoliceAPI;
-import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceListEntity;
 import com.supcon.mes.module_sbda_online.model.contract.StopPoliceContract;
 import com.supcon.mes.module_sbda_online.presenter.StopPolicePresenter;
-import com.supcon.mes.module_sbda_online.screen.EamName;
 import com.supcon.mes.module_sbda_online.screen.FilterHelper;
 import com.supcon.mes.module_sbda_online.ui.adapter.StopPoliceAdapter;
 
@@ -42,17 +39,9 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import io.reactivex.Flowable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 @Router(Constant.Router.STOP_POLICE)
 @Presenter(value = StopPolicePresenter.class)

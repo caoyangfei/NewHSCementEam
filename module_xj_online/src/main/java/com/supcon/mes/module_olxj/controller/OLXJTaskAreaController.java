@@ -5,7 +5,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.app.annotation.Presenter;
-import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.controller.BaseDataController;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.middleware.constant.Constant;
@@ -32,7 +31,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;

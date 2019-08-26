@@ -1,52 +1,50 @@
 apply plugin: 'com.android.library'
 
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion           rootProject.ext.compileSdkVersion
 
-    android {
-        compileSdkVersion           rootProject.ext.compileSdkVersion
+    defaultConfig {
+        minSdkVersion           rootProject.ext.minSdkVersion
+        targetSdkVersion        rootProject.ext.targetSdkVersion
+        versionCode             rootProject.ext.versionCode
+        versionName             rootProject.ext.versionName
 
-        defaultConfig {
-            minSdkVersion           rootProject.ext.minSdkVersion
-            targetSdkVersion        rootProject.ext.targetSdkVersion
-            versionCode             rootProject.ext.versionCode
-            versionName             rootProject.ext.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-            testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
 
-        }
-
-        buildTypes {
-            release {
-                minifyEnabled false
-                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            }
-        }
-
-        //支持Java8
-        defaultConfig.javaCompileOptions {
-            annotationProcessorOptions {
-                includeCompileClasspath = true
-            }
-        }
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
-
-        sourceSets {
-            main {
-                jniLibs.srcDirs = ['libs']
-            }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
-    android {
-        lintOptions {
-            abortOnError false
+    //支持Java8
+    defaultConfig.javaCompileOptions {
+        annotationProcessorOptions {
+            includeCompileClasspath = true
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
         }
     }
 }
+
+//android {
+//    lintOptions {
+//        abortOnError false
+//    }
+//}
+
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -57,9 +55,7 @@ dependencies {
 //    implementation files('libs/alicloud-android-utils-1.0.3.jar')
     implementation files('libs/utdid4all-1.1.5.3_proguard.jar')
 //    implementation files('libs/SecurityEnvSDK-release-1.1.0.jar')
-    implementation 'org.greenrobot:eventbus:3.0.0'
-
-    compileOnly "com.supcon.mes.common:com_view:$rootProject.ext.viewVersion"
-
-    compileOnly 'com.google.code.gson:gson:2.8.5'
+    implementation project(':middleware')
+    implementation 'com.google.code.gson:gson:2.8.5'
+    annotationProcessor "com.supcon.mes.common:apt:$rootProject.ext.aptVersion@jar"
 }

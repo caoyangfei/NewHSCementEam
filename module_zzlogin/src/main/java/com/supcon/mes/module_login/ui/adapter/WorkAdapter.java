@@ -120,6 +120,10 @@ public class WorkAdapter extends HeaderRecyclerViewAdapter<WorkInfo> {
 
                     WorkInfo workInfo = getItem(position);
 
+                    if(workInfo == null){
+                        return;
+                    }
+
                     //添加模块授权判断
                     if(workInfo.appItem == null)
                     switch (workInfo.router) {

@@ -199,6 +199,11 @@ public class SettingActivity extends BasePresenterActivity implements MineContra
 
     private void showPwdDialog() {
 
+        if(!EamApplication.isIsLogin()){
+            ToastUtils.show(context, "请先登录！");
+            return;
+        }
+
         if(mPasswordController == null){
             mPasswordController = new PasswordController(PasswordController.getView(context), true);
             mPasswordController.init();

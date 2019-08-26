@@ -14,7 +14,7 @@
 
 
     <application
-        android:name="com.supcon.mes.middleware.EamApplication"
+        android:name="com.supcon.mes.push.PushApplication"
         android:icon="${APP_ICON}"
         android:label="${APP_NAME}"
         android:largeHeap="true"

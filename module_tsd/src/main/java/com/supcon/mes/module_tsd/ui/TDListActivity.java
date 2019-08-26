@@ -49,8 +49,12 @@ public class TDListActivity extends BaseWebViewActivity {
     @Override
     protected void initView() {
         super.initView();
-        ((ViewGroup)findViewById(R.id.leftBtn).getParent()).setBackgroundResource(R.color.mobileValueColor);
-        StatusBarUtils.setWindowStatusBarColor(this, R.color.mobileValueColor);
+
+        if(!EamApplication.isDev()){
+            ((ViewGroup)findViewById(R.id.leftBtn).getParent()).setBackgroundResource(R.color.mobileValueColor);
+            StatusBarUtils.setWindowStatusBarColor(this, R.color.mobileValueColor);
+        }
+
         titleText.setText("停电申请");
     }
 

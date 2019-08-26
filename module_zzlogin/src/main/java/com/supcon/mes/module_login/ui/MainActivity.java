@@ -21,12 +21,9 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.constant.DataModule;
 import com.supcon.mes.middleware.controller.AreaController;
 import com.supcon.mes.middleware.controller.DepartmentController;
-import com.supcon.mes.middleware.controller.DeviceTokenController;
-import com.supcon.mes.middleware.controller.PendingController;
 import com.supcon.mes.middleware.controller.RepairGroupController;
 import com.supcon.mes.middleware.controller.SystemCodeController;
 import com.supcon.mes.middleware.controller.UserInfoListController;
-import com.supcon.mes.middleware.model.bean.PushEntity;
 import com.supcon.mes.middleware.model.event.AppExitEvent;
 import com.supcon.mes.middleware.model.event.DownloadDataEvent;
 import com.supcon.mes.middleware.model.event.LoginValidEvent;
@@ -38,6 +35,8 @@ import com.supcon.mes.module_login.controller.SilentLoginController;
 import com.supcon.mes.module_login.service.HeartBeatService;
 import com.supcon.mes.module_login.ui.fragment.MineFragment;
 import com.supcon.mes.module_login.ui.fragment.WorkFragment;
+import com.supcon.mes.push.controller.DeviceTokenController;
+import com.supcon.mes.push.controller.PendingController;
 import com.supcon.mes.push.event.DeviceTokenEvent;
 import com.supcon.mes.push.event.PushOpenEvent;
 import com.umeng.analytics.MobclickAgent;
@@ -79,22 +78,23 @@ public class MainActivity extends BaseMultiFragmentActivity {
 
     @Override
     protected void onInit() {
+        Api.getInstance().setDebug(BuildConfig.DEBUG);
+        LogUtil.showLog = BuildConfig.DEBUG;
         super.onInit();
         EventBus.getDefault().register(this);
 
         initIp = EamApplication.getIp();
-        Api.getInstance().setDebug(BuildConfig.DEBUG);
-        LogUtil.showLog = BuildConfig.DEBUG;
+
 
 /*        //通讯录同步
         mCommonSearchStaffController = new ContractController();
         mCommonSearchStaffController.listStaff("", 1);*/
 
-        getController(SystemCodeController.class).onInit();
-        getController(AreaController.class).onInit();
-        getController(DepartmentController.class).onInit();
-        getController(RepairGroupController.class).onInit();
-        getController(UserInfoListController.class).onInit();
+//        getController(SystemCodeController.class).onInit();
+//        getController(AreaController.class).onInit();
+//        getController(DepartmentController.class).onInit();
+//        getController(RepairGroupController.class).onInit();
+//        getController(UserInfoListController.class).onInit();
 
         PushAgent.getInstance(context).onAppStart();
     }
@@ -120,30 +120,6 @@ public class MainActivity extends BaseMultiFragmentActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAppExit(AppExitEvent event) {
         System.exit(0);
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onDeviceToken(DeviceTokenEvent event) {
-
-        LogUtil.e("DeviceTokenEvent:"+event.toString());
-
-        if(event.isLogin()) {
-            getController(DeviceTokenController.class).sendLoginDeviceToken(event.getDeviceToken());
-        }
-        else{
-            getController(DeviceTokenController.class).sendLogoutDeviceToken(event.getDeviceToken());
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onPushOpenEvent(PushOpenEvent pushOpenEvent){
-        PushEntity pushEntity = GsonUtil.gsonToBean(pushOpenEvent.getContent(), PushEntity.class);
-        LogUtil.d("pushEntity :"+pushEntity);
-
-        if(pushEntity.extra!=null){
-            getController(PendingController.class).queryEntieyAndGo(pushEntity.extra);
-        }
-
     }
 
     @Override
@@ -195,10 +171,6 @@ public class MainActivity extends BaseMultiFragmentActivity {
             getController(DepartmentController.class).onInit();
             getController(RepairGroupController.class).onInit();
             getController(UserInfoListController.class).onInit();
-        }
-
-        if(EamApplication.isHailuo()) {
-            workFragment.doZhiZhiLogin();
         }
     }
 

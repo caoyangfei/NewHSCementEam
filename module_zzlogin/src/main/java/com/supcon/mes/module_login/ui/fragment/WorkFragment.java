@@ -83,8 +83,8 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
     @BindByTag("rightBtn")
     ImageButton rightBtn;
 
-    @BindByTag("workLayout")
-    LinearLayout workLayout;
+//    @BindByTag("workLayout")
+//    LinearLayout workLayout;
 
     @BindByTag("workCustomAd")
     CustomAdView workCustomAd;
@@ -132,19 +132,19 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
             }
         }
 
-        SLCoreSdk.initialize(getActivity().getApplication(),TextUtils.isEmpty(zzUrl)?"http://10.30.55.50:8042":zzUrl, suposTicket, EamApplication.getUserName());
+        SLCoreSdk.initialize(EamApplication.getAppContext(),TextUtils.isEmpty(zzUrl)?"http://10.30.55.50:8042":zzUrl, suposTicket, EamApplication.getUserName());
         SLCoreSdk.client().getMinAppList(new CoreSdkContract.GetMinAppListCallBack() {
             @Override
             public void onGetMinAppList(List<OwnMinAppItem> list) {
                 //System.out.println(list);
-                Log.i("tchl","list size:"+list.size());
+                LogUtil.d("zz list size:"+list.size());
                 initZhiZhiApps(list);
             }
 
             @Override
             public void onError(String msg) {
                 //Toast.makeText(MainActivity.this,"getMinAppList error:"+msg,Toast.LENGTH_LONG).show();
-                Log.i("tchl","getMinAppList error");
+                LogUtil.e("zz getMinAppList error");
             }
         });
     }
@@ -175,7 +175,7 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 
             WorkInfo workInfo2 = new WorkInfo();
             workInfo2.viewType = 1;
-            workInfo2.name = "SupOS平台";
+            workInfo2.name = "supOS平台";
             workInfo2.type = -2;
             workInfo2.isOpen = true;
             zzApps.add(0, workInfo2);
@@ -215,11 +215,7 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 //        rightBtn.setImageResource(R.drawable.sl_top_pending);
 //        rightBtn.setVisibility(View.VISIBLE);
 
-        defaultList = WorkHelper.getDefaultWorkList(context);
 
-        if(EamApplication.isHailuo()){
-            doZhiZhiLogin();
-        }
 
 
         Flowable.timer(20, TimeUnit.MILLISECONDS)
@@ -271,32 +267,32 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
 //        }
         list.addAll(defaultList);
         refreshListController.refreshComplete(list);
-        height = DisplayUtil.dip2px(12, context);
-        count = 0;
-        Flowable.fromIterable(list)
-                .compose(RxSchedulers.io_main())
-                .filter(workInfo -> {
-                    if (workInfo.viewType == WorkInfo.VIEW_TYPE_TITLE) {
-                        height += DisplayUtil.dip2px(20, context);
-                        count = 0;
-                    }
-                    return workInfo.viewType == WorkInfo.VIEW_TYPE_CONTENT;
-                })
-                .subscribe(workInfo -> {
-
-                    if (count == LINE_COUT) {
-                        count = 0;
-                    }
-
-                    if (count == 0) {
-                        height += DisplayUtil.dip2px(ITEM_HEIGHT, context);
-                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) workLayout.getLayoutParams();
-                        lp.height = height;
-                        workLayout.setLayoutParams(lp);
-                    }
-
-                    count++;
-                });
+//        height = DisplayUtil.dip2px(12, context);
+//        count = 0;
+//        Flowable.fromIterable(list)
+//                .compose(RxSchedulers.io_main())
+//                .filter(workInfo -> {
+//                    if (workInfo.viewType == WorkInfo.VIEW_TYPE_TITLE) {
+//                        height += DisplayUtil.dip2px(20, context);
+//                        count = 0;
+//                    }
+//                    return workInfo.viewType == WorkInfo.VIEW_TYPE_CONTENT;
+//                })
+//                .subscribe(workInfo -> {
+//
+//                    if (count == LINE_COUT) {
+//                        count = 0;
+//                    }
+//
+//                    if (count == 0) {
+//                        height += DisplayUtil.dip2px(ITEM_HEIGHT, context);
+//                        RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) workLayout.getLayoutParams();
+//                        lp.height = height;
+//                        workLayout.setLayoutParams(lp);
+//                    }
+//
+//                    count++;
+//                });
     }
 
     private void startAnimation(View v, int start, int end) {
@@ -403,19 +399,28 @@ public class WorkFragment extends BaseRefreshRecyclerFragment<WorkInfo> implemen
     @Override
     protected void initData() {
         super.initData();
+        defaultList = WorkHelper.getDefaultWorkList(context);
+
         for (WorkInfo workInfo : defaultList) {
             if (TextUtils.isEmpty(workInfo.pendingUrl)) {
                 continue;
             }
             pendingQueryParams.add(workInfo.pendingUrl);
         }
+
+        if(EamApplication.isHailuo()){
+            doZhiZhiLogin();
+        }
+        refreshList();
     }
+
+
 
     @SuppressLint("CheckResult")
     @Override
     public void onResume() {
         super.onResume();
-        refreshList();
+//        refreshList();
         presenterRouter.create(WorkAPI.class).getPendingsByModule(pendingQueryParams);
 
     }

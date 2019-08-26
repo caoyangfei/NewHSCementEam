@@ -16,6 +16,7 @@ import com.app.annotation.Presenter;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.controller.BaseViewController;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.custom.ICustomView;
 import com.supcon.mes.middleware.EamApplication;
@@ -75,7 +76,7 @@ public class PasswordController extends BaseViewController implements PasswordCo
             }
             mDialog.setCancelable(true);
             mDialog.setCanceledOnTouchOutside(true);
-            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//            mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             mDialog.setContentView(rootView);
         }
 
@@ -119,7 +120,7 @@ public class PasswordController extends BaseViewController implements PasswordCo
 
         RxTextView.textChanges(oldPwdInput.editText())
                 .skipInitialValue()
-                .debounce(200, TimeUnit.MILLISECONDS)
+                .debounce(20, TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<CharSequence>() {
                     @Override
                     public void accept(CharSequence charSequence) throws Exception {
@@ -132,7 +133,7 @@ public class PasswordController extends BaseViewController implements PasswordCo
 
         RxTextView.textChanges(newPwdInput.editText())
                 .skipInitialValue()
-                .debounce(200, TimeUnit.MILLISECONDS)
+                .debounce(20, TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<CharSequence>() {
                     @Override
                     public void accept(CharSequence charSequence) throws Exception {
@@ -147,7 +148,7 @@ public class PasswordController extends BaseViewController implements PasswordCo
 
         RxTextView.textChanges(newPwdConfirmInput.editText())
                 .skipInitialValue()
-                .debounce(200, TimeUnit.MILLISECONDS)
+                .debounce(20, TimeUnit.MILLISECONDS)
                 .subscribe(new Consumer<CharSequence>() {
                     @Override
                     public void accept(CharSequence charSequence) throws Exception {
@@ -236,11 +237,13 @@ public class PasswordController extends BaseViewController implements PasswordCo
 
     @Override
     public void checkPwdSuccess(BapResultEntity entity) {
+        LogUtil.d("checkPwdSuccess");
         isOldPwdRight = true;
     }
 
     @Override
     public void checkPwdFailed(String errorMsg) {
+        LogUtil.e("checkPwdFailed");
         isOldPwdRight = false;
 //        ToastUtils.show(context, "原密码不正确！");
     }

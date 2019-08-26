@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/sl_transparent_press_no_stroke"
-    android:padding="10dp">
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/workIcon"
@@ -22,7 +22,7 @@
         android:layout_marginTop="40dp"
         android:gravity="center"
         android:textColor="@color/black"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/workNum"
