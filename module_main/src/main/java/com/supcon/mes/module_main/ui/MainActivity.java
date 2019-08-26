@@ -12,7 +12,6 @@ import com.app.annotation.apt.Router;
 import com.supcon.common.view.base.activity.BaseMultiFragmentActivity;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.network.Api;
-import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.AreaController;
@@ -39,8 +38,6 @@ import com.supcon.mes.module_main.ui.fragment.WorkFragment;
 import com.supcon.mes.module_txl.ui.fragment.TxlListFragment;
 import com.supcon.mes.push.controller.DeviceTokenController;
 import com.supcon.mes.push.controller.PendingController;
-import com.supcon.mes.push.event.DeviceTokenEvent;
-import com.supcon.mes.push.event.PushOpenEvent;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.message.PushAgent;
 

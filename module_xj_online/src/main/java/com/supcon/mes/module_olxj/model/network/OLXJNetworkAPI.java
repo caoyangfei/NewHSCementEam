@@ -171,4 +171,9 @@ public interface OLXJNetworkAPI {
     //设备创建巡检任务
     @GET("/mobileEAM/MobileInterfaceForAndroidAction/createTempPotrolTaskByEam.action")
     Flowable<CommonEntity<EamXJEntity>> createTempPotrolTaskByEam(@QueryMap Map<String, Object> paramMap);
+
+
+    //生成任务
+    @GET("/mobileEAM/potrolTaskNew/potrolTaskWF/updateTaskById.action")
+    Flowable<ResultEntity> updateTaskById(@Query("taskID") long taskID);
 }

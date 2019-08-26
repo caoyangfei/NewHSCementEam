@@ -1,8 +1,9 @@
 package com.supcon.mes.module_olxj.presenter;
 
 import com.supcon.mes.middleware.model.bean.CommonEntity;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.module_olxj.model.bean.EamXJEntity;
-import com.supcon.mes.module_olxj.model.contract.OLXJEamCreateTempPotrolTaskContract;
+import com.supcon.mes.module_olxj.model.contract.OLXJEamTaskContract;
 import com.supcon.mes.module_olxj.model.network.OLXJClient;
 
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
-public class OLXJEamCreateTempPotrolTaskPresenter extends OLXJEamCreateTempPotrolTaskContract.Presenter {
+public class OLXJEamTaskPresenter extends OLXJEamTaskContract.Presenter {
     @Override
     public void createTempPotrolTaskByEam(Map<String, Object> paramMap) {
         mCompositeSubscription.add(OLXJClient.createTempPotrolTaskByEam(paramMap)
@@ -28,6 +29,28 @@ public class OLXJEamCreateTempPotrolTaskPresenter extends OLXJEamCreateTempPotro
                             getView().createTempPotrolTaskByEamSuccess(result);
                         } else {
                             getView().createTempPotrolTaskByEamFailed(result.errMsg);
+                        }
+                    }
+                }));
+    }
+
+    @Override
+    public void updateTaskById(long taskID) {
+        mCompositeSubscription.add(OLXJClient.updateTaskById(taskID)
+                .onErrorReturn(new Function<Throwable, ResultEntity>() {
+                    @Override
+                    public ResultEntity apply(Throwable throwable) throws Exception {
+                        ResultEntity resultEntity = new ResultEntity();
+                        resultEntity.errMsg = throwable.toString();
+                        return resultEntity;
+                    }
+                }).subscribe(new Consumer<ResultEntity>() {
+                    @Override
+                    public void accept(ResultEntity resultEntity) throws Exception {
+                        if (resultEntity.success) {
+                            getView().updateTaskByIdSuccess(resultEntity);
+                        } else {
+                            getView().updateTaskByIdFailed(resultEntity.errMsg);
                         }
                     }
                 }));

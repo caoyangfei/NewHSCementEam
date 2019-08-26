@@ -41,6 +41,7 @@ import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.DeviceDCSEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntity;
@@ -57,24 +58,19 @@ import com.supcon.mes.module_olxj.constant.OLXJConstant;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.controller.OLXJTaskAreaController;
 import com.supcon.mes.module_olxj.controller.OLXJTitleController;
-import com.supcon.mes.module_olxj.model.api.OLXJEamCreateTempPotrolTaskAPI;
+import com.supcon.mes.module_olxj.model.api.OLXJEamTaskAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJExemptionAPI;
-import com.supcon.mes.module_olxj.model.api.OLXJTaskStatusAPI;
-import com.supcon.mes.module_olxj.model.api.OLXJTempTaskAPI;
 import com.supcon.mes.module_olxj.model.api.OLXJWorkSubmitAPI;
 import com.supcon.mes.module_olxj.model.bean.EamXJEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJAreaEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJExemptionEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJHistorySheetEntity;
-import com.supcon.mes.module_olxj.model.bean.OLXJTaskEntity;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
-import com.supcon.mes.module_olxj.model.contract.OLXJEamCreateTempPotrolTaskContract;
+import com.supcon.mes.module_olxj.model.contract.OLXJEamTaskContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJExemptionContract;
-import com.supcon.mes.module_olxj.model.contract.OLXJTaskStatusContract;
-import com.supcon.mes.module_olxj.model.contract.OLXJTempTaskContract;
 import com.supcon.mes.module_olxj.model.contract.OLXJWorkSubmitContract;
 import com.supcon.mes.module_olxj.model.event.AreaRefreshEvent;
-import com.supcon.mes.module_olxj.presenter.OLXJEamCreateTempPotrolTaskPresenter;
+import com.supcon.mes.module_olxj.presenter.OLXJEamTaskPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTaskStatusPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJTempTaskListPresenter;
@@ -114,9 +110,9 @@ import io.reactivex.functions.Predicate;
  */
 @Router(Constant.Router.OLXJ_EAM_UNHANDLED)
 @Controller(value = {OLXJTitleController.class, OLXJCameraController.class})
-@Presenter(value = {OLXJEamCreateTempPotrolTaskPresenter.class, OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, OLXJTaskStatusPresenter.class, OLXJTempTaskListPresenter.class})
+@Presenter(value = {OLXJEamTaskPresenter.class, OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, OLXJTaskStatusPresenter.class, OLXJTempTaskListPresenter.class})
 public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivity<OLXJWorkItemEntity> implements OLXJWorkSubmitContract.View
-        , OLXJExemptionContract.View, OLXJTaskStatusContract.View, OLXJTempTaskContract.View, OLXJEamCreateTempPotrolTaskContract.View {
+        , OLXJExemptionContract.View, OLXJEamTaskContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -168,8 +164,8 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     public Map<String, Boolean> isColse = new LinkedHashMap<>();
     private OLXJTitleController titleController;
-    private OLXJTaskEntity olxjTaskEntity;//巡检任务
     private OLXJAreaEntity mXJAreaEntity;
+    private OLXJAreaEntity oldXJAreaEntity;
     private EamType eamType;
     private EamXJEntity eamXJEntity;
 
@@ -301,7 +297,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 map.put("tempEndTime", DateUtil.dateFormat(System.currentTimeMillis() + 1000 * 60 * 60 * 24, "yyyy-MM-dd HH:mm:ss"));
                 map.put("tempEamID", eamType.id);
                 map.put("tempStaffId", EamApplication.getAccountInfo().staffId);
-                presenterRouter.create(OLXJEamCreateTempPotrolTaskAPI.class).createTempPotrolTaskByEam(map);
+                presenterRouter.create(OLXJEamTaskAPI.class).createTempPotrolTaskByEam(map);
 
             }
         });
@@ -424,7 +420,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                         }
                                     }
                                     onLoading("正在打包并上传巡检数据，请稍后...");
-                                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+                                    presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
                                 } catch (Exception e) {
                                     onLoadFailed("完成操作失败！" + e.getMessage());
                                     e.printStackTrace();
@@ -500,11 +496,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                     initWorkItemList(workItems);
                     if (workItems.size() == 0 && isDcs) {
                         ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
-                        Flowable.timer(300, TimeUnit.MILLISECONDS)
-                                .subscribe(v -> {
-                                    onLoading("正在取消任务...");
-                                    presenterRouter.create(OLXJTaskStatusAPI.class).cancelTasks(String.valueOf(olxjTaskEntity.id), "LinkState/04");
-                                });
+                        back();
                     }
                 });
 
@@ -1089,41 +1081,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     public void createTempPotrolTaskByEamSuccess(CommonEntity entity) {
         if (entity.result != null) {
             eamXJEntity = (EamXJEntity) entity.result;
-            presenterRouter.create(OLXJTaskStatusAPI.class).updateStatus(EamApplication.getAccountInfo().staffId, eamXJEntity.taskId);
-        } else {
-            SnackbarHelper.showError(rootView, "创建任务失败！");
-            back();
-        }
-    }
-
-    @Override
-    public void createTempPotrolTaskByEamFailed(String errorMsg) {
-        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
-        back();
-    }
-
-    //任务下发
-    @Override
-    public void updateStatusSuccess() {
-        //获取巡检路线
-        Map<String, Object> queryParam = new HashMap<>();  //参数
-        queryParam.put(Constant.BAPQuery.TABLE_NO, eamXJEntity.tableNo);
-        presenterRouter.create(OLXJTempTaskAPI.class).getOJXJTempTaskList(queryParam);
-    }
-
-    @Override
-    public void updateStatusFailed(String errorMsg) {
-        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
-        refreshListController.refreshComplete(null);
-    }
-
-
-    @Override
-    public void getOJXJTempTaskListSuccess(List entity) {
-        if (entity != null && entity.size() > 0) {
-            olxjTaskEntity = ((List<OLXJTaskEntity>) entity).get(0);
+            Long taskId = Long.valueOf(eamXJEntity.taskId);
+            Long workGroupId = Long.valueOf(eamXJEntity.workGroupId);
             OLXJTaskAreaController mOLXJTaskAreaController = new OLXJTaskAreaController(context, 1);
-            mOLXJTaskAreaController.getData(olxjTaskEntity, result -> {
+            mOLXJTaskAreaController.getData(taskId, workGroupId, result -> {
                 if (result) {
                     List<OLXJAreaEntity> mAreaEntities = mOLXJTaskAreaController.getAreaEntities();
                     if (mAreaEntities != null && mAreaEntities.size() > 0) {
@@ -1133,63 +1094,48 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                         mXJAreaEntity.signType = "cardType/02";
                         mXJAreaEntity.signedTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                         doRefresh(false);
+                        oldXJAreaEntity = mXJAreaEntity;
                     }
                 } else {
                     refreshListController.refreshComplete(null);
                 }
             });
+
         } else {
-            refreshListController.refreshComplete(null);
+            ToastUtils.show(this, "创建任务失败！");
+            back();
         }
     }
 
     @Override
-    public void getOJXJTempTaskListFailed(String errorMsg) {
-        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
-        refreshListController.refreshComplete(null);
-    }
-
-    @Override
-    public void cancelTasksSuccess() {
-        onLoadSuccessAndExit("任务取消成功", new OnLoaderFinishListener() {
-            @Override
-            public void onLoaderFinished() {
-                back();
-            }
-        });
-    }
-
-    @Override
-    public void cancelTasksFailed(String errorMsg) {
-        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
+    public void createTempPotrolTaskByEamFailed(String errorMsg) {
+        ToastUtils.show(this, ErrorMsgHelper.msgParse(errorMsg));
         back();
     }
 
     @Override
-    public void endTasksSuccess() {
-
+    public void updateTaskByIdSuccess(ResultEntity entity) {
+        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
     }
 
     @Override
-    public void endTasksFailed(String errorMsg) {
-
+    public void updateTaskByIdFailed(String errorMsg) {
+        onLoadFailed("上传失败：" + ErrorMsgHelper.msgParse(errorMsg));
     }
+
 
     @Override
     public void onBackPressed() {
-        if (olxjTaskEntity != null && mXJAreaEntity != null) {
+        if (mXJAreaEntity != null && !oldXJAreaEntity.toString().equals(mXJAreaEntity.toString())) {
             new CustomDialog(context)
-                    .twoButtonAlertDialog("是否保存或取消当前设备巡检任务?")
+                    .twoButtonAlertDialog("是否保存当前设备巡检任务?")
                     .bindView(R.id.grayBtn, "保存")
                     .bindView(R.id.redBtn, "取消")
                     .bindClickListener(R.id.grayBtn, v -> {
                         onLoading("正在打包并上传巡检数据，请稍后...");
-                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+                        presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
                     }, true)
-                    .bindClickListener(R.id.redBtn, v3 -> {
-                        onLoading("正在取消任务...");
-                        presenterRouter.create(OLXJTaskStatusAPI.class).cancelTasks(String.valueOf(olxjTaskEntity.id), "LinkState/04");
-                    }, true)
+                    .bindClickListener(R.id.redBtn, v3 -> back(), true)
                     .show();
         } else {
             back();

@@ -42,13 +42,15 @@ import io.reactivex.schedulers.Schedulers;
 @Presenter(value = {OLXJWorkItemPresenter.class, OLXJAreaListPresenter.class})
 public class OLXJTaskAreaController extends BaseDataController implements OLXJWorkListContract.View, OLXJAreaContract.View {
 
-    private OLXJTaskEntity mTaskEntity;
     private int currentPage = 1, cuttentAreaPage = 1;
     private List<OLXJWorkItemEntity> mOLXJWorkItemEntities = new ArrayList<>();
     private List<OLXJAreaEntity> mAreaEntities = new ArrayList<>();
     private Map<Long, OLXJAreaEntity> mAreaEntityMap = new LinkedHashMap<>();
     private OnSuccessListener<Boolean> mOnSuccessListener;
     private int type;//0  计划巡检 1 临时巡检
+
+    private long taskId;
+    private long groupID;
 
     public OLXJTaskAreaController(Context context, int type) {
         super(context);
@@ -58,10 +60,12 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
     @Override
     public void onInit() {
         super.onInit();
-        mTaskEntity = (OLXJTaskEntity) getIntent().getSerializableExtra(Constant.IntentKey.XJ_TASK_ENTITY);
-        if (mTaskEntity == null) {
+        OLXJTaskEntity taskEntity = (OLXJTaskEntity) getIntent().getSerializableExtra(Constant.IntentKey.XJ_TASK_ENTITY);
+        if (taskEntity == null) {
             throw new IllegalArgumentException("no mTaskEntity, please check it!");
         }
+        taskId = taskEntity.id;
+        groupID = taskEntity.workGroupID.id;
     }
 
     @Override
@@ -73,10 +77,26 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
     }
 
     public void getData(OLXJTaskEntity taskEntity, OnSuccessListener<Boolean> listener) {
-        mTaskEntity = taskEntity;
-        if (mTaskEntity == null) {
+        if (taskEntity == null) {
             throw new IllegalArgumentException("no mTaskEntity, please check it!");
         }
+        taskId = taskEntity.id;
+        groupID = taskEntity.workGroupID.id;
+        mOnSuccessListener = listener;
+        mOLXJWorkItemEntities.clear();
+        mAreaEntities.clear();
+        mAreaEntityMap.clear();
+        currentPage = 1;
+        cuttentAreaPage = 1;
+        getAreaData();
+    }
+
+    public void getData(long taskId, long groupID, OnSuccessListener<Boolean> listener) {
+        if (taskId == 0 || groupID == 0) {
+            throw new IllegalArgumentException("no mTaskEntity, please check it!");
+        }
+        this.taskId = taskId;
+        this.groupID = groupID;
         mOnSuccessListener = listener;
         mOLXJWorkItemEntities.clear();
         mAreaEntities.clear();
@@ -88,18 +108,18 @@ public class OLXJTaskAreaController extends BaseDataController implements OLXJWo
 
     private void getWorkData() {
 
-        presenterRouter.create(OLXJWorkListAPI.class).getWorkItemList(mTaskEntity.id, currentPage);
+        presenterRouter.create(OLXJWorkListAPI.class).getWorkItemList(taskId, currentPage);
     }
 
     private void getAreaData() {
-        presenterRouter.create(OLXJAreaAPI.class).getOJXJAreaList(mTaskEntity.workGroupID.id, cuttentAreaPage);
+        presenterRouter.create(OLXJAreaAPI.class).getOJXJAreaList(groupID, cuttentAreaPage);
     }
 
     /**
      * 获取巡检路线隐患信息
      */
     private void getAbnormalInspectTaskPart() {
-        presenterRouter.create(OLXJAreaAPI.class).getAbnormalInspectTaskPart(mTaskEntity.workGroupID.id, type);
+        presenterRouter.create(OLXJAreaAPI.class).getAbnormalInspectTaskPart(groupID, type);
     }
 
 
