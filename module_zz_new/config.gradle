@@ -42,8 +42,8 @@ dependencies {
     implementation 'com.facebook.stetho:stetho:1.5.0'
     implementation 'com.facebook.stetho:stetho-okhttp3:1.5.0'
     implementation 'com.android.support:multidex:1.0.3'
-    implementation files('libs/libjsapi.aar')
-    implementation files('libs/libwebview.aar')
+    implementation files('libs/libjsapi-release.aar')
+    implementation files('libs/libwebview-release.aar')
     api files('libs/coresdk.aar')
 
     implementation 'com.trello.rxlifecycle2:rxlifecycle:2.2.1'

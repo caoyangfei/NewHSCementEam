@@ -141,7 +141,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
                     presenterRouter.create(ZhiZhiUrlQueryAPI.class).getZhizhiUrl();
 
 
-                    boolean hasSupOS = SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true);
+                    boolean hasSupOS = SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, BuildConfig.HAS_SUPOS);
 
                     if(hasSupOS) {
                         presenterRouter.create(LoginAPI.class).dologinWithSuposPW(usernameInput.getContent(), pwdInput.getContent());
@@ -211,7 +211,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
 
         HeartBeatService.stopLoginLoop(this);
 
-        if(SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, true)){
+        if(SharedPreferencesUtils.getParam(context, Constant.SPKey.HAS_SUPOS, BuildConfig.HAS_SUPOS)){
             pwdInput.setHint("输入SupOS密码");
         }
         else{
