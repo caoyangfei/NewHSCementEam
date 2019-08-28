@@ -114,9 +114,6 @@ public class SDListActivity extends BaseWebViewActivity {
 
     }
 
-    pending
-
-
     @Override
     protected void onReload() {
         webView.reload();

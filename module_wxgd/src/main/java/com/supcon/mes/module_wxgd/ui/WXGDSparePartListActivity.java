@@ -37,6 +37,7 @@ import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.model.event.SparePartAddEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
+import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.SystemCodeManager;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
@@ -482,7 +483,8 @@ public class WXGDSparePartListActivity extends BaseRefreshRecyclerActivity<Spare
 
     @Override
     public void listSparePartListFailed(String errorMsg) {
-        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
+        SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
+        refreshListController.refreshComplete(null);
     }
 
     //排重

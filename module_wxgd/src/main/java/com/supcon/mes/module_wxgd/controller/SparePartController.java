@@ -12,6 +12,7 @@ import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.view.CustomListWidget;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.BaseEvent;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.model.api.SparePartAPI;
 import com.supcon.mes.middleware.model.bean.SparePartEntity;
@@ -87,7 +88,7 @@ public class SparePartController extends BaseViewController implements SparePart
                         bundle.putString(Constant.IntentKey.TABLE_STATUS, mWXGDEntity.getPending().taskDescription);
                         bundle.putString(Constant.IntentKey.TABLE_ACTION, mWXGDEntity.pending.openUrl);
                         bundle.putLong(Constant.IntentKey.LIST_ID, id);
-                        bundle.putLong(Constant.IntentKey.EAM_ID, mWXGDEntity.eamID.id);
+                        bundle.putLong(Constant.IntentKey.EAM_ID, mWXGDEntity.eamID.id != null ? mWXGDEntity.eamID.id : -1);
                         bundle.putSerializable(Constant.IntentKey.WXGD_WARN_ENTITIES, mSparePartOldEntities);
                         IntentRouter.go(context, Constant.Router.WXGD_SPARE_PART_LIST, bundle);
                         break;

@@ -29,7 +29,13 @@ import com.supcon.mes.middleware.ui.view.PopwinBackView;
 import com.supcon.mes.module_login.BuildConfig;
 import com.supcon.mes.module_main.R;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 /**
  * @author yangfei.cao
@@ -79,7 +85,8 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
         // mPopupWindow.setAnimationStyle(android.R.style.Animation_Dialog);
         // 设置SelectPicPopupWindow弹出窗体动画效果
         this.setAnimationStyle(R.style.AnimationPreview);
-        beans = list;
+        beans = new LinkedList<>();
+        beans.addAll(list);
         setOnDismissListener(this::onDismiss);
     }
 
@@ -137,9 +144,9 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
                             case Constant.Router.XJLX_LIST:
                             case Constant.Router.XJQY_LIST:
                             case Constant.Router.XJBB:
-                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.mobileEAM,false)) {
+                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.mobileEAM, false)) {
                                     if (!queryModuleAuthorized(Constant.ModuleAuthorization.mobileEAM)) {
-                                        ToastUtils.show(context,"移动巡检模块未授权，请联系相关管理人员，确保授权并重启该app");
+                                        ToastUtils.show(context, "移动巡检模块未授权，请联系相关管理人员，确保授权并重启该app");
                                         return;
                                     }
                                 }
@@ -154,9 +161,9 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
                             case Constant.Router.RH:
                             case Constant.Router.YXJL_LIST:
                             case Constant.Router.BJSQ_LIST:
-                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.BEAM2,false)) {
+                                if (!SharedPreferencesUtils.getParam(context, Constant.ModuleAuthorization.BEAM2, false)) {
                                     if (!queryModuleAuthorized(Constant.ModuleAuthorization.BEAM2)) {
-                                        ToastUtils.show(context,"设备模块未授权，请联系相关管理人员，确保授权并重启该app");
+                                        ToastUtils.show(context, "设备模块未授权，请联系相关管理人员，确保授权并重启该app");
                                         return;
                                     }
 
@@ -176,7 +183,7 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
                             case Constant.Router.ACCEPTANCE_LIST:
                                 break;
                             default:
-                                ToastUtils.show(context,"暂无数据！");
+                                ToastUtils.show(context, "暂无数据！");
                                 return;
                         }
                         onItemChildViewClick(itemView, 0, getItem(getLayoutPosition()));
@@ -262,10 +269,16 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
         }
     }
 
+    @SuppressLint("CheckResult")
     public void refreshList(List<MenuPopwindowBean> list) {
-        beans = list;
-        myAdapter.setList(list);
-        myAdapter.notifyDataSetChanged();
+        beans = new LinkedList<>();
+        Flowable.fromIterable(list)
+                .filter(MenuPopwindowBean::isPower)
+                .subscribe(menuPopwindowBean -> beans.add(menuPopwindowBean), throwable -> {
+                }, () -> {
+                    myAdapter.setList(beans);
+                    myAdapter.notifyDataSetChanged();
+                });
     }
 
     public List<MenuPopwindowBean> getBeans() {

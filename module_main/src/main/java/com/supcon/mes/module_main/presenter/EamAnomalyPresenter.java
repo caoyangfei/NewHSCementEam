@@ -19,7 +19,7 @@ public class EamAnomalyPresenter extends EamAnomalyContract.Presenter {
     //代办数量
     @Override
     public void getMainWorkCount(String staffID) {
-        mCompositeSubscription.add(MainClient.getMainWorkCount()
+        mCompositeSubscription.add(MainClient.getMainWorkCount(staffID)
                 .onErrorReturn(new Function<Throwable, CommonBAPListEntity<WorkNumEntity>>() {
                     @Override
                     public CommonBAPListEntity<WorkNumEntity> apply(Throwable throwable) throws Exception {

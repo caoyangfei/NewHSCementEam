@@ -74,7 +74,7 @@ public class MaintenanceController extends BaseViewController implements Mainten
                         bundle.putBoolean(Constant.IntentKey.IS_EDITABLE, isEditable);
                         bundle.putBoolean(Constant.IntentKey.IS_ADD, false);
                         bundle.putString(Constant.IntentKey.TABLE_STATUS, wxgdEntity.getPending().taskDescription);
-                        bundle.putLong(Constant.IntentKey.EAM_ID, wxgdEntity.eamID.id);
+                        bundle.putLong(Constant.IntentKey.EAM_ID, wxgdEntity.eamID.id != null ? wxgdEntity.eamID.id : -1);
                         IntentRouter.go(context, Constant.Router.WXGD_MAINTENANCE_STAFF_LIST, bundle);
                         break;
                     default:

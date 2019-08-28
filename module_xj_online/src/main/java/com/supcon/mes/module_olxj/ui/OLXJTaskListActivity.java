@@ -179,7 +179,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
         contentView.addItemDecoration(new SpaceItemDecoration(DisplayUtil.dip2px(1, context)));  //列表项之间间隔
         contentView.addOnItemTouchListener(new CustomSwipeLayout.OnSwipeItemTouchListener(this));
         titleText.setText("计划巡检");
-
+        xjTitleAdd.setVisibility(View.GONE);
         initEmptyView();
 
     }
@@ -229,7 +229,8 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
 
         //手动刷新事件
         refreshListController.setOnRefreshListener(() -> {
-
+            queryParam.put(Constant.BAPQuery.STAR_TIME, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+            queryParam.put(Constant.BAPQuery.END_TIME, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
             presenterRouter.create(OLXJTaskAPI.class).getOJXJLastTaskList(queryParam);
         });
 
@@ -669,15 +670,15 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
             refreshListController.refreshComplete(entities); //成功获取数据
         }
 
-        if (entities.size() == 0) {
-
-            ToastUtils.show(context, "没有巡检任务!");
-            initEmptyView();
-            if (isFirstIn) {
-                goXL();
-                isFirstIn = false;
-            }
-        }
+//        if (entities.size() == 0) {
+//
+//            ToastUtils.show(context, "没有巡检任务!");
+//            initEmptyView();
+//            if (isFirstIn) {
+//                goXL();
+//                isFirstIn = false;
+//            }
+//        }
         if (mOLXJTaskListAdapter.getItemCount() > 0 && xjTitleMap.isSelected())
             getController(MapController.class).show(mOLXJTaskListAdapter.getItem(0));
         else if (mOLXJTaskListAdapter.getItemCount() <= 0)

@@ -383,7 +383,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
                 }
                 isFirstIn = false;
 //            }
-//            LoginActivity.this.finish();
+            LoginActivity.this.finish();
         });
 
     }

@@ -665,39 +665,30 @@ public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJ
             if (postion == 0) {
                 return true;
             }
-
             OLXJWorkItemEntity preEntity = getItem(postion - 1);
-
             String prePart = null;
             String curPart = null;
             String preEam = null;
             String curEam = null;
-
             if (preEntity.eamID != null) {
                 preEam = preEntity.eamID.name;
             }
-
             if (curEntity.eamID != null) {
                 curEam = curEntity.eamID.name;
             }
-
             if (preEntity.part == null) {
                 prePart = "" + preEam + "的部位@SUPCON";
             } else {
                 prePart = preEntity.part;
             }
-
             if (curEntity.part == null) {
                 curPart = "" + curEam + "的部位@SUPCON";
             } else {
                 curPart = curEntity.part;
             }
-
             if (preEam != null && preEam.equals(curEam) && prePart.equals(curPart)) {
                 return false;
             }
-
-
             return true;
         }
 

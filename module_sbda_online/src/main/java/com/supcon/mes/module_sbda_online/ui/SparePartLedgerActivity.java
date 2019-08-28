@@ -119,13 +119,9 @@ public class SparePartLedgerActivity extends BaseRefreshRecyclerActivity impleme
 
             if (queryParam.containsKey(Constant.BAPQuery.EAM_CODE)) {
                 queryParam.remove(Constant.BAPQuery.EAM_CODE);
-                if (TextUtils.isEmpty(selecStr)) {
-                    refreshListController.refreshBegin();
-                }
             }
             if (!TextUtils.isEmpty(selecStr)) {
                 queryParam.put(Constant.BAPQuery.EAM_CODE, selecStr);
-                refreshListController.refreshBegin();
             }
             presenterRouter.create(SparePartsLedgerAPI.class).baseInfoProduct(queryParam, productId, page);
         });

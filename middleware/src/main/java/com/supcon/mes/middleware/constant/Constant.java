@@ -94,6 +94,7 @@ public interface Constant {
         String WXGD_LUBRICATE_OIL_LIST = "WXGD_LUBRICATE_OIL_LIST";//维修工单润滑油
         String WXGD_MAINTENANCE_STAFF_LIST = "WXGD_MAINTENANCE_STAFF_LIST";//维修工单润维保
         String SPARE_PART_RECEIVE = "SPARE_PART_RECEIVE";//备件领用
+        String SPARE_PART_CONSUME_LEDGER = "SPARE_PART_CONSUME_LEDGER";     //备件消耗台账
 
         String YHGL_SPARE_PART_LIST = "WXGD_SPARE_PART_LIST";//隐患管理备件
         String YHGL_LUBRICATE_OIL_LIST = "WXGD_LUBRICATE_OIL_LIST";//隐患管理润滑油
@@ -374,6 +375,7 @@ public interface Constant {
         int YH_STATISTICS = 21;  //隐患统计
         int WXGD_STATISTICS = 22;  //工单统计
         int STOP_POLICE = 23;  //停机报警
+        int SPARE_PART_CONSUME_LEDGER = 24;  //备件消耗台账
     }
 
     interface HSProcesskey {
@@ -588,6 +590,9 @@ public interface Constant {
 
         String IS_RUN = "IS_RUN";//是否启用
         String IS_EAM_TASK = "IS_EAM_TASK";//是否设备巡检或临时巡检
+
+        String STAR_TIME = "STAR_TIME";//巡检开始时间
+        String END_TIME = "END_TIME";//巡检结束时间
     }
 
 

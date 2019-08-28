@@ -54,7 +54,7 @@ public interface MainService {
 
     //首页待办数量
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getMainButtonWorkCount.action")
-    Flowable<CommonBAPListEntity<WorkNumEntity>> getMainWorkCount();
+    Flowable<CommonBAPListEntity<WorkNumEntity>> getMainWorkCount(@Query("staffID") String staffID);
 
     //提示信息
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getSloganInfo.action")

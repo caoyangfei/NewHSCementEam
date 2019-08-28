@@ -62,6 +62,7 @@
             android:paddingRight="@dimen/dp_10"
             android:tag="contentTitleSettingIc"
             android:text="更多"
+            android:textColor="#a2a2a2"
             android:visibility="gone" />
     </RelativeLayout>
 

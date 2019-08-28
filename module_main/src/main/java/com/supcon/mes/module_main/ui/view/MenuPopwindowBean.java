@@ -13,6 +13,7 @@ public class MenuPopwindowBean {
     private int type;
     private String router;
     private String tag;
+    private boolean isPower;
 
     public String getName() {
         return name;
@@ -52,5 +53,13 @@ public class MenuPopwindowBean {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public boolean isPower() {
+        return isPower;
+    }
+
+    public void setPower(boolean power) {
+        isPower = power;
     }
 }

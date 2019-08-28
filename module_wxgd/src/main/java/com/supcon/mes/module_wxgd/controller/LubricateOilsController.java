@@ -79,7 +79,7 @@ public class LubricateOilsController extends BaseViewController implements Lubri
                         bundle.putBoolean(Constant.IntentKey.IS_EDITABLE, isEditable);
                         bundle.putBoolean(Constant.IntentKey.IS_ADD, false);
                         bundle.putString(Constant.IntentKey.TABLE_STATUS, mWXGDEntity.getPending().taskDescription);
-                        bundle.putLong(Constant.IntentKey.EAM_ID, mWXGDEntity.eamID.id);
+                        bundle.putLong(Constant.IntentKey.EAM_ID,mWXGDEntity.eamID.id != null ? mWXGDEntity.eamID.id : -1);
                         IntentRouter.go(context, Constant.Router.WXGD_LUBRICATE_OIL_LIST, bundle);
                         break;
 //                    case CustomListWidget.ACTION_ITEM_DELETE:

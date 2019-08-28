@@ -234,7 +234,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         lubricateMenu = MenuHelper.getLubricateMenu();
         repairMenu = MenuHelper.getRepairMenu();
         formMenu = MenuHelper.getFormMenu();
-
+        getWorkData();
     }
 
 
@@ -511,22 +511,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        isRefreshing = true;
+        getWorkData();
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshPush(RefreshEvent event) {
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
-        presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        isRefreshing = true;
+        getWorkData();
     }
 
     //有推送待办过来刷新界面
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void refreshPush(PushRefreshEvent event) {
+        getWorkData();
+    }
+
+    private void getWorkData() {
         presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         isRefreshing = true;
@@ -545,7 +545,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         if (entity.totalCount > 0) {
             Spanned item = HtmlParser.buildSpannedText(String.format(context.getString(R.string.device_style15), "更多", entity.totalCount), new HtmlTagHandler());
             waitMore.setText(item);
+        } else {
+            waitMore.setText("更多");
         }
+
     }
 
     @Override
@@ -659,7 +662,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                         .filter(new Predicate<MenuPopwindowBean>() {
                             @Override
                             public boolean test(MenuPopwindowBean menuPopwindowBean) throws Exception {
-                                if (TextUtils.isEmpty(menuPopwindowBean.getTag()) || TextUtils.isEmpty(workNumEntity.tagName)) {
+                                if (TextUtils.isEmpty(menuPopwindowBean.getTag()) || TextUtils.isEmpty(workNumEntity.tagName) || !menuPopwindowBean.isPower()) {
                                     return false;
                                 }
                                 if (menuPopwindowBean.getTag().equals(workNumEntity.tagName)) {

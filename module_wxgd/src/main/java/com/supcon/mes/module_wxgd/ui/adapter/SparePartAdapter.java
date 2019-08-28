@@ -264,11 +264,11 @@ public class SparePartAdapter extends BaseListDataRecyclerViewAdapter<SparePartE
                 chkBox.setVisibility(View.GONE);
             }
             chkBox.setChecked(false);//还原状态false
-            if ((Constant.WxgdView.DISPATCH_OPEN_URL.equals(tableAction) || Constant.WxgdView.RECEIVE_OPEN_URL.equals(tableAction)) && data.timesNum == repairSum) {
-                actualQuantity.setVisibility(View.GONE);
-            } else {
-                actualQuantity.setVisibility(View.VISIBLE);
-            }
+//            if ((Constant.WxgdView.DISPATCH_OPEN_URL.equals(tableAction) || Constant.WxgdView.RECEIVE_OPEN_URL.equals(tableAction)) && data.timesNum == repairSum) {
+//                actualQuantity.setVisibility(View.GONE);
+//            } else {
+//                actualQuantity.setVisibility(View.VISIBLE);
+//            }
             if (Constant.WxgdView.EXECUTE_OPEN_URL.equals(tableAction) && Constant.SparePartUseStatus.NO_USE.equals(data.getUseState().id) && data.timesNum == repairSum) {
                 actualQuantity.setEditable(true);
                 actualQuantity.getNumViewInput().setEnabled(true);

@@ -2,6 +2,7 @@ package com.supcon.mes.module_wxgd.model.network;
 
 import com.app.annotation.apt.ApiFactory;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
+import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
@@ -13,6 +14,7 @@ import com.supcon.mes.module_wxgd.model.bean.MaintenanceListEntity;
 import com.supcon.mes.module_wxgd.model.bean.RepairStaffListEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartListEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartRefListEntity;
+import com.supcon.mes.module_wxgd.model.bean.SparePartsConsumeEntity;
 import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
 
 import java.util.Map;
@@ -208,4 +210,13 @@ public interface ApiService {
     @POST("/BEAM2/sparePart/apply/sparePartEdit/submit.action?__pc__=dGFzazM0MHxzcGFyZVBhcnRBcHBseQ__&_bapFieldPermissonModelCode_=BEAM2_1.0.0_sparePart_Apply&_bapFieldPermissonModelName_=Apply&superEdit=false")
     @Multipart
     Flowable<BapResultEntity> doSubmitSparePart(@PartMap Map<String, RequestBody> map);
+
+    /**
+     * @param
+     * @return
+     * @description 备件消耗台账
+     * @author zhangwenshuai1 2018/9/11
+     */
+    @GET("/BEAM2/workList/sparePart/productConsumeList-query.action")
+    Flowable<CommonBAPListEntity<SparePartsConsumeEntity>> productConsumeList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 }

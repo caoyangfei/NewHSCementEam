@@ -126,6 +126,9 @@ public class MenuHelper {
                     case Constant.HSWorkType.STOP_POLICE:
                         menuPopwindowBean.setRouter(Constant.Router.STOP_POLICE);
                         break;
+                    case Constant.HSWorkType.SPARE_PART_CONSUME_LEDGER:
+                        menuPopwindowBean.setRouter(Constant.Router.SPARE_PART_CONSUME_LEDGER);
+                        break;
 
                 }
             }

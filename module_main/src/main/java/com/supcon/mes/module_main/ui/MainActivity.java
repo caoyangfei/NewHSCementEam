@@ -151,7 +151,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
     protected void initView() {
         super.initView();
         showFragment(0);
-        if(EamApplication.isHailuo()){
+        if (EamApplication.isHailuo()) {
             logo.setImageResource(R.drawable.tabbar_logo_hl);
         }
     }

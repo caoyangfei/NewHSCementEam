@@ -61,7 +61,7 @@ public interface ApiService {
     @GET("/BEAM/baseInfo/baseInfo/getEamOtherInfo.action")
     Flowable<RoutineCommonEntity> getEamOtherInfo(@Query("eamID") Long eamID);
 
-    //查看设备
+    //备件台账
     @GET("/BEAM/baseInfo/baseInfo/baseInfoProduct-query.action")
     Flowable<SparePartsLedgerListEntity> baseInfoProduct(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @Query("productID") Long productID, @QueryMap Map<String, Object> pageQueryMap);
 

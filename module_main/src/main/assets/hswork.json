@@ -5,28 +5,32 @@
       "viewType": 1,
       "tag": "PlANTASKQTY",
       "num": 0,
-      "type": 1
+      "type": 1,
+      "isPower": true
     },
     {
       "name": "临时巡检",
       "viewType": 0,
       "tag": "TEMPTASKQTY",
       "num": 0,
-      "type": 2
+      "type": 2,
+      "isPower": true
     },
     {
       "name": "隐患清单",
       "viewType": 0,
       "tag": "INSPANDSPFLTQTY",
       "num": 0,
-      "type": 3
+      "type": 3,
+      "isPower": true
     },
     {
       "name": "巡检手册",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 4
+      "type": 4,
+      "isPower": true
     }
   ],
   "lubricate": [
@@ -35,34 +39,39 @@
       "viewType": 1,
       "tag": "PLANLUBQTY",
       "num": 0,
-      "type": 5
+      "type": 5,
+      "isPower": true
     },
     {
       "name": "临时润滑",
       "viewType": 0,
       "num": 0,
-      "type": 6
+      "type": 6,
+      "isPower": true
     },
     {
       "name": "润滑预警",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 7
+      "type": 7,
+      "isPower": true
     },
     {
       "name": "润滑记录",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 8
+      "type": 8,
+      "isPower": true
     },
     {
       "name": "润滑手册",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 9
+      "type": 9,
+      "isPower": true
     }
   ],
   "repair": [
@@ -71,67 +80,77 @@
       "viewType": 1,
       "tag": "DAILYWORKQTY",
       "num": 0,
-      "type": 10
+      "type": 10,
+      "isPower": true
     },
     {
       "name": "周期维修",
       "viewType": 0,
       "tag": "REPAIRWORKQTY",
       "num": 0,
-      "type": 11
+      "type": 11,
+      "isPower": true
     },
     {
       "name": "年底大修",
       "viewType": 0,
       "tag": "OHAULWORKQTY",
       "num": 0,
-      "type": 12
+      "type": 12,
+      "isPower": true
     },
     {
       "name": "零部件预警",
       "viewType": 0,
       "tag": "SPWARNINGQRY",
       "num": 0,
-      "type": 13
+      "type": 13,
+      "isPower": true
     },
     {
       "name": "运维预警",
       "viewType": 0,
       "tag": "MAINTAINWARNING",
       "num": 0,
-      "type": 14
+      "type": 14,
+      "isPower": true
     },
     {
       "name": "备件申领",
       "viewType": 0,
       "num": 0,
-      "type": 15
+      "type": 15,
+      "isPower": false
     },
     {
       "name": "停电",
       "viewType": 0,
       "num": 0,
-      "type": 16
+      "type": 16,
+      "isPower": true
     },
     {
       "name": "送电",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 17
+      "type": 17,
+      "isPower": true
     },
     {
       "name": "关联表单",
       "viewType": 0,
       "num": 0,
-      "type": 18
+      "type": 18,
+      "isPower": true
     },
     {
       "name": "维修手册",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 19
+      "type": 19,
+      "isPower": true
     }
   ],
   "form": [
@@ -140,28 +159,40 @@
       "viewType": 1,
       "tag": "",
       "num": 0,
-      "type": 20
+      "type": 20,
+      "isPower": true
     },
     {
       "name": "隐患统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 21
+      "type": 21,
+      "isPower": true
     },
     {
       "name": "工单统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 22
+      "type": 22,
+      "isPower": true
     },
     {
       "name": "停机统计",
       "viewType": 0,
       "tag": "",
       "num": 0,
-      "type": 23
+      "type": 23,
+      "isPower": true
+    },
+    {
+      "name": "备件消耗台账",
+      "viewType": 0,
+      "tag": "",
+      "num": 0,
+      "type": 24,
+      "isPower": true
     }
   ]
 }
