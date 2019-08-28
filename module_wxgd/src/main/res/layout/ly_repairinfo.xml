@@ -10,6 +10,25 @@
     <include layout="@layout/ly_repairinfo_title" />
 
     <LinearLayout
+        android:id="@+id/dispatcherLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:tag="dispatcherLayout">
+
+        <com.supcon.mes.mbap.view.CustomTextView
+            android:id="@+id/dispatcherStaff"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/white"
+            android:paddingStart="@dimen/dp_10"
+            android:tag="dispatcherStaff"
+            app:key="派单人:" />
+
+        <include layout="@layout/ly_line_light_light" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/dp_70"
         android:layout_marginTop="@dimen/dp_1"

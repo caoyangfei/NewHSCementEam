@@ -130,6 +130,8 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
     CustomEditText commentInput;
     @BindByTag("transition")
     CustomWorkFlowView transition;
+    @BindByTag("dispatcherStaff")
+    CustomTextView dispatcherStaff;
 
     @BindByTag("workContext")
     CustomVerticalTextView workContext;
@@ -271,7 +273,7 @@ public class WXGDReceiveActivity extends BaseRefreshActivity implements WXGDSubm
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-
+        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : "");
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);

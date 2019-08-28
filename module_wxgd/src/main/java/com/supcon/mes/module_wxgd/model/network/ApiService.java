@@ -200,7 +200,6 @@ public interface ApiService {
     Flowable<GenerateAcceptanceEntity> generateCheckApply(@Query("workOrderId") long workOrderId, @Query("eamId") long eamId, @Query("describe") String describe, @Query("installId") long installId);
 
 
-
     /**
      * @param
      * @return
@@ -219,4 +218,13 @@ public interface ApiService {
      */
     @GET("/BEAM2/workList/sparePart/productConsumeList-query.action")
     Flowable<CommonBAPListEntity<SparePartsConsumeEntity>> productConsumeList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
+
+    /**
+     * @param
+     * @return
+     * @description 备件领用记录
+     * @author zhangwenshuai1 2018/9/11
+     */
+    @GET("/BEAM2/workList/sparePart/sparePartList-query.action?1=1&permissionCode=BEAM2_1.0.0_workList_sparePartList")
+    Flowable<CommonBAPListEntity<SparePartsConsumeEntity>> sparePartList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 }

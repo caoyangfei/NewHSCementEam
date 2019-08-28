@@ -15,12 +15,12 @@
         android:orientation="vertical">
 
         <com.supcon.mes.mbap.view.CustomTextView
-            android:id="@+id/itemSparePartTv"
+            android:id="@+id/itemSparePartReceiveTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/dp_30"
             android:paddingLeft="@dimen/dp_5"
-            android:tag="itemSparePartTv"
+            android:tag="itemSparePartReceiveTv"
             app:content_hint="--"
             app:gravity="center"
             app:key="零部件:"
@@ -28,82 +28,56 @@
 
 
         <com.supcon.mes.mbap.view.CustomTextView
-            android:id="@+id/itemSpareModelTv"
+            android:id="@+id/itemSpareReceiveModelTv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/dp_5"
-            android:tag="itemSpareModelTv"
+            android:tag="itemSpareReceiveModelTv"
             app:content_hint="--"
             app:gravity="center"
             app:key="规格型号:"
             app:max_lines="100" />
 
+        <com.supcon.mes.mbap.view.CustomTextView
+            android:id="@+id/itemSpareReceiveEamTv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/dp_5"
+            android:tag="itemSpareReceiveEamTv"
+            app:content_hint="--"
+            app:gravity="center"
+            app:key="所属设备:"
+            app:max_lines="100" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.supcon.mes.mbap.view.CustomTextView
-                android:id="@+id/itemSpareUsageTv"
+                android:id="@+id/itemSpareReceiveStaffTv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:paddingLeft="@dimen/dp_5"
-                android:tag="itemSpareUsageTv"
+                android:tag="itemSpareReceiveStaffTv"
+                app:content_hint="--"
+                app:gravity="center"
+                app:key="领用人:"
+                app:max_lines="100" />
+
+            <com.supcon.mes.mbap.view.CustomTextView
+                android:id="@+id/itemSpareReceiveUsageTv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/dp_5"
+                android:tag="itemSpareReceiveUsageTv"
                 app:content_hint="--"
                 app:gravity="center"
                 app:key="领用量:" />
 
-            <com.supcon.mes.mbap.view.CustomTextView
-                android:id="@+id/itemSpareConsumptionTv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingLeft="@dimen/dp_5"
-                android:tag="itemSpareConsumptionTv"
-                app:content_hint="--"
-                app:gravity="center"
-                app:key="消耗量:"
-                app:max_lines="100" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_5"
-            android:orientation="horizontal">
-
-            <com.supcon.mes.mbap.view.CustomVerticalTextView
-                android:id="@+id/itemSpareTeamTv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="@dimen/dp_5"
-                android:tag="itemSpareTeamTv"
-                app:text="维修组："
-                app:text_size="16" />
-
-            <com.supcon.mes.mbap.view.CustomVerticalTextView
-                android:id="@+id/itemSpareStaffTv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="@dimen/dp_5"
-                android:tag="itemSpareStaffTv"
-                app:text="负责人："
-                app:text_size="16" />
-        </LinearLayout>
-
-        <com.supcon.mes.mbap.view.CustomTextView
-            android:id="@+id/itemSpareTableNoTv"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/dp_5"
-            android:tag="itemSpareTableNoTv"
-            app:content_color="@color/themeColor"
-            app:content_hint="--"
-            app:gravity="center"
-            app:key="工单编号:"
-            app:max_lines="100" />
     </LinearLayout>
 </RelativeLayout>

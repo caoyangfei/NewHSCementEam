@@ -81,6 +81,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -150,6 +151,8 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
     CustomWorkFlowView transition;
     @BindByTag("repairAdvise")
     CustomVerticalEditText repairAdvise;
+    @BindByTag("dispatcherStaff")
+    CustomTextView dispatcherStaff;
 
     @BindByTag("stop")
     Button stop;
@@ -326,6 +329,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
+        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : "");
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
@@ -333,7 +337,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : sdf.format(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : sdf.format(mWXGDEntity.planEndDate));
-        realEndTime.setDate(mWXGDEntity.realEndDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
+        realEndTime.setDate(DateUtil.dateFormat(mWXGDEntity.realEndDate == null ? System.currentTimeMillis() : mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
 
         workContext.setContent(mWXGDEntity.workOrderContext);
     }

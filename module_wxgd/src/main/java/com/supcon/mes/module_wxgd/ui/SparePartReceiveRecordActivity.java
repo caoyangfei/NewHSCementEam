@@ -1,7 +1,6 @@
 package com.supcon.mes.module_wxgd.ui;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +14,6 @@ import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
-import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
@@ -23,24 +21,20 @@ import com.supcon.mes.mbap.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
-import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.KeyExpandHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
-import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
+import com.supcon.mes.module_wxgd.model.api.SparePartReceiveRecordAPI;
 import com.supcon.mes.module_wxgd.model.api.SparePartsConsumeLedgerAPI;
 import com.supcon.mes.module_wxgd.model.api.WXGDStatisticsAPI;
 import com.supcon.mes.module_wxgd.model.bean.SparePartsConsumeEntity;
-import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
-import com.supcon.mes.module_wxgd.model.contract.SparePartsConsumeLedgerContract;
-import com.supcon.mes.module_wxgd.model.contract.WXGDStatisticsContract;
-import com.supcon.mes.module_wxgd.presenter.SparePartsConsumeLedgerPresenter;
-import com.supcon.mes.module_wxgd.presenter.WXGDStatisticsPresenter;
-import com.supcon.mes.module_wxgd.ui.adapter.SparePartConsumeLedgerAdapter;
+import com.supcon.mes.module_wxgd.model.contract.SparePartReceiveRecordContract;
+import com.supcon.mes.module_wxgd.presenter.SparePartReceiveRecordPresenter;
+import com.supcon.mes.module_wxgd.ui.adapter.SparePartReceiveRecordAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -55,12 +49,11 @@ import java.util.concurrent.TimeUnit;
  * @ClassName hongShiCementEam
  * @date 2019/4/3
  * ------------- Description -------------
- * 备件消耗台账
+ * 备件领用记录
  */
-@Router(Constant.Router.SPARE_PART_CONSUME_LEDGER)
-@Presenter(value = {SparePartsConsumeLedgerPresenter.class, WXGDStatisticsPresenter.class})
-public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<SparePartsConsumeEntity> implements SparePartsConsumeLedgerContract.View
-        , WXGDStatisticsContract.View {
+@Router(Constant.Router.SPARE_PART_RECEIVE_RECORD)
+@Presenter(value = {SparePartReceiveRecordPresenter.class})
+public class SparePartReceiveRecordActivity extends BaseRefreshRecyclerActivity<SparePartsConsumeEntity> implements SparePartReceiveRecordContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -76,12 +69,12 @@ public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<
 
     private String selecStr;
     private final Map<String, Object> queryParam = new HashMap<>();
-    private SparePartConsumeLedgerAdapter sparePartLedgerAdapter;
+    private SparePartReceiveRecordAdapter sparePartReceiveRecordAdapter;
 
     @Override
     protected IListAdapter createAdapter() {
-        sparePartLedgerAdapter = new SparePartConsumeLedgerAdapter(this);
-        return sparePartLedgerAdapter;
+        sparePartReceiveRecordAdapter = new SparePartReceiveRecordAdapter(this);
+        return sparePartReceiveRecordAdapter;
     }
 
     @Override
@@ -110,7 +103,7 @@ public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<
 
     @Override
     protected int getLayoutID() {
-        return R.layout.ac_sparepart_consume_ledger;
+        return R.layout.ac_sparepart_receive_record;
     }
 
     @SuppressLint("CheckResult")
@@ -139,22 +132,9 @@ public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<
                     queryParam.put(Constant.BAPQuery.PRODUCT_CODE, selecStr);
                 }
             }
-            presenterRouter.create(SparePartsConsumeLedgerAPI.class).productConsumeList(queryParam, page);
+            presenterRouter.create(SparePartReceiveRecordAPI.class).sparePartList(queryParam, page);
         });
         leftBtn.setOnClickListener(v -> onBackPressed());
-
-        sparePartLedgerAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
-            @Override
-            public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-                SparePartsConsumeEntity item = sparePartLedgerAdapter.getItem(position);
-                if (!TextUtils.isEmpty(item.getWorkList().tableNo)) {
-                    Map<String, Object> queryParam = new HashMap<>();
-                    queryParam.put(Constant.BAPQuery.TABLE_NO, item.getWorkList().tableNo);
-                    onLoading("正在查询工单...");
-                    presenterRouter.create(WXGDStatisticsAPI.class).listWxgds(1, queryParam);
-                }
-            }
-        });
     }
 
     public void doSearchTableNo(String search) {
@@ -163,12 +143,12 @@ public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<
     }
 
     @Override
-    public void productConsumeListSuccess(CommonBAPListEntity entity) {
+    public void sparePartListSuccess(CommonBAPListEntity entity) {
         refreshListController.refreshComplete(entity.result);
     }
 
     @Override
-    public void productConsumeListFailed(String errorMsg) {
+    public void sparePartListFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         refreshListController.refreshComplete(null);
     }
@@ -183,45 +163,6 @@ public class SparePartConsumeLedgerActivity extends BaseRefreshRecyclerActivity<
     public void onRefresh(RefreshEvent event) {
 
         refreshListController.refreshBegin();
-    }
-
-    @Override
-    public void listWxgdsSuccess(WXGDListEntity entity) {
-        if (entity.result != null && entity.result.size() > 0) {
-            onLoadSuccess();
-            WXGDEntity wxgdEntity = entity.result.get(0);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(Constant.IntentKey.WXGD_ENTITY, wxgdEntity);
-            if (wxgdEntity.pending != null && !TextUtils.isEmpty(wxgdEntity.pending.openUrl)) {
-                switch (wxgdEntity.pending.openUrl) {
-                    case Constant.WxgdView.RECEIVE_OPEN_URL:
-                        IntentRouter.go(context, Constant.Router.WXGD_RECEIVE, bundle);
-                        break;
-                    case Constant.WxgdView.DISPATCH_OPEN_URL:
-                        IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
-                        break;
-
-                    case Constant.WxgdView.EXECUTE_OPEN_URL:
-                        IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
-                        break;
-                    case Constant.WxgdView.ACCEPTANCE_OPEN_URL:
-                        IntentRouter.go(context, Constant.Router.WXGD_ACCEPTANCE, bundle);
-                        break;
-                    default:
-                        IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
-                        break;
-                }
-            } else {
-                IntentRouter.go(context, Constant.Router.WXGD_COMPLETE, bundle);
-            }
-        } else {
-            onLoadSuccess("没有查询到工单！");
-        }
-    }
-
-    @Override
-    public void listWxgdsFailed(String errorMsg) {
-        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Override

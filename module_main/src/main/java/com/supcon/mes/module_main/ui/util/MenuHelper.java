@@ -129,6 +129,9 @@ public class MenuHelper {
                     case Constant.HSWorkType.SPARE_PART_CONSUME_LEDGER:
                         menuPopwindowBean.setRouter(Constant.Router.SPARE_PART_CONSUME_LEDGER);
                         break;
+                    case Constant.HSWorkType.SPARE_PART_RECEIVE_RECORD:
+                        menuPopwindowBean.setRouter(Constant.Router.SPARE_PART_RECEIVE_RECORD);
+                        break;
 
                 }
             }

@@ -147,6 +147,8 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     CustomVerticalDateView realEndTime;
     @BindByTag("repairAdvise")
     CustomVerticalEditText repairAdvise;
+    @BindByTag("dispatcherLayout")
+    LinearLayout dispatcherLayout;
 
     @BindByTag("commentInput")
     CustomEditText commentInput;
@@ -296,6 +298,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
 //            }
         }
         realEndTime.setVisibility(View.GONE);
+        dispatcherLayout.setVisibility(View.GONE);
     }
 
     @Override

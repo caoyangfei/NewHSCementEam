@@ -193,6 +193,14 @@
       "num": 0,
       "type": 24,
       "isPower": true
+    },
+    {
+      "name": "备件领用记录",
+      "viewType": 0,
+      "tag": "",
+      "num": 0,
+      "type": 25,
+      "isPower": true
     }
   ]
 }

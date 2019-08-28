@@ -139,6 +139,9 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     CustomVerticalDateView planEndTime;
     @BindByTag("realEndTime")
     CustomVerticalDateView realEndTime;
+    @BindByTag("dispatcherStaff")
+    CustomTextView dispatcherStaff;
+
     @BindByTag("acceptChkStaff")
     CustomVerticalTextView acceptChkStaff;
     @BindByTag("acceptChkStaffCode")
@@ -151,6 +154,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
     CustomEditText commentInput;
     @BindByTag("transition")
     CustomWorkFlowView transition;
+
 
     @BindByTag("workContext")
     CustomVerticalTextView workContext;
@@ -325,7 +329,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-
+        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : "");
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);

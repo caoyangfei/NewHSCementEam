@@ -16,6 +16,8 @@ public class WXGDEntity extends BaseEntity implements Cloneable {
 
     public Staff chargeStaff; //负责人
 
+    public Staff dispatcher; //派单人
+
     public SystemCodeEntity checkResult; //验收结论
 
     public String claim; //要求
