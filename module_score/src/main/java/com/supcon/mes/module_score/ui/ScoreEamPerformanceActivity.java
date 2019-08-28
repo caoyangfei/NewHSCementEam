@@ -217,7 +217,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
         refreshListController.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (scoreId != -1) {
+                if (TextUtils.isEmpty(scoreTableNo)) {
                     if (!TextUtils.isEmpty(eamCodeStr)) {
                         Map<String, Object> params = new HashMap<>();
                         params.put(Constant.IntentKey.EAM_CODE, eamCodeStr);
@@ -225,13 +225,9 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
                     }
                     presenterRouter.create(ScoreEamPerformanceAPI.class).getScorPerformance(scoreId);
                 } else {
-                    if (!TextUtils.isEmpty(scoreTableNo)) {
-                        Map<String, Object> queryParam = new HashMap<>();
-                        queryParam.put(Constant.BAPQuery.SCORE_TABLE_NO, scoreTableNo);
-                        presenterRouter.create(ScoreEamListAPI.class).getScoreList(queryParam, 1);
-                    } else {
-                        refreshListController.refreshComplete(null);
-                    }
+                    Map<String, Object> queryParam = new HashMap<>();
+                    queryParam.put(Constant.BAPQuery.SCORE_TABLE_NO, scoreTableNo);
+                    presenterRouter.create(ScoreEamListAPI.class).getScoreList(queryParam, 1);
                 }
             }
         });
