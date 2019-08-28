@@ -188,12 +188,11 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
     }
 
     private void update() {
-        if (scoreEamEntity == null) return;
-        scoreId = scoreEamEntity.id;
         Spanned title = HtmlParser.buildSpannedText(String.format(getString(R.string.device_style7), "设备评分表",
                 scoreEamEntity != null ? "(" + scoreEamEntity.scoreTableNo + ")" : ""), new HtmlTagHandler());
         titleText.setText(title);
         if (scoreEamEntity != null) {
+            scoreId = scoreEamEntity.id;
             eamCode.setContent(Util.strFormat(scoreEamEntity.getBeamId().code));
             eamName.setContent(Util.strFormat(scoreEamEntity.getBeamId().name));
             eamDept.setContent(Util.strFormat(scoreEamEntity.getBeamId().getUseDept().name));
@@ -204,7 +203,7 @@ public class ScoreEamPerformanceActivity extends BaseRefreshRecyclerActivity imp
             scoreEamEntity.scoreStaff.code = EamApplication.getAccountInfo().staffCode;
             scoreEamEntity.scoreStaff.id = EamApplication.getAccountInfo().staffId;
         }
-        scoreEamEntity.scoreTime = (scoreEamEntity != null && scoreEamEntity.scoreTime != null) ? scoreEamEntity.scoreTime : getYesterday();
+        scoreEamEntity.scoreTime = scoreEamEntity.scoreTime != null ? scoreEamEntity.scoreTime : getYesterday();
         eamScore.setContent(Util.big0(scoreEamEntity.scoreNum));
         scoreStaff.setContent(scoreEamEntity.getScoreStaff().name);
         scoreTime.setContent(DateUtil.dateFormat(scoreEamEntity.scoreTime));
