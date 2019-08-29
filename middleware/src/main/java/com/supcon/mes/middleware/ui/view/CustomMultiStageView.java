@@ -1,6 +1,7 @@
 package com.supcon.mes.middleware.ui.view;
 
 import android.content.Context;
+import android.os.Binder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -12,15 +13,18 @@ import android.widget.TextView;
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.controller.BaseViewController;
 import com.supcon.common.view.base.view.BaseLinearLayout;
+import com.supcon.common.view.ptr.PtrFrameLayout;
+import com.supcon.common.view.util.LogUtil;
+import com.supcon.common.view.util.ViewBinder;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.ViewUtil;
 import com.supcon.mes.mbap.view.CustomCircleTextImageView;
 import com.supcon.mes.middleware.R;
-import com.supcon.mes.middleware.model.bean.CustomMultiStageEntity;
 import com.supcon.mes.middleware.model.bean.DepartmentInfo;
 import com.supcon.mes.middleware.model.bean.IDataInjector;
 import com.supcon.mes.middleware.model.bean.ILayoutProvider;
 import com.supcon.mes.middleware.ui.adapter.CustomMultiStageAdapter;
+import com.supcon.mes.middleware.util.Util;
 
 import java.util.List;
 
@@ -74,7 +78,34 @@ public class CustomMultiStageView<Data> extends BaseLinearLayout {
     protected void initListener() {
         super.initListener();
     }
-
+    
+    public interface CustomMultiStageEntity<Data> {
+        Boolean isLeafNode();
+        
+        Boolean isRootEntity();
+        
+        Boolean isExpanded();
+        
+        String getInfo();
+        
+        void setInfo(String info);
+        
+        void changeExpandStatus();
+        
+        void setExpanded(Boolean isExpanded);
+        
+        CustomMultiStageEntity<Data> fatherNode();
+        
+        Data getCurrentEntity();
+        
+        Integer getChildListSize();
+        
+        Flowable<List<CustomMultiStageEntity<Data>>> getChildNodeList();
+        
+        List<CustomMultiStageEntity<Data>> getActualChildNodeList();
+        
+    }
+    
     public class CustomMultiStageViewController extends BaseViewController implements ILayoutProvider, IDataInjector<CustomMultiStageEntity<DepartmentInfo>> {
         
         @BindByTag("areaName")
@@ -92,7 +123,7 @@ public class CustomMultiStageView<Data> extends BaseLinearLayout {
         ImageView spaceView;
         @BindByTag("detailInfo")
         TextView detailInfo;
-    
+        
         public CustomMultiStageViewController(View rootView) {
             super(rootView);
         }
@@ -113,11 +144,9 @@ public class CustomMultiStageView<Data> extends BaseLinearLayout {
             if (data.isLeafNode()) {
                 userIcon.setVisibility(VISIBLE);
                 areaIcon.setVisibility(GONE);
-                if (data.getCurrentEntity().userInfo!=null) {
-                    String name = data.getCurrentEntity().userInfo.getNAME();
-                    areaName.setText(name);
-                    userIcon.setText(name.substring((name.length() - 2 < 0 ? 0 : name.length() - 2)));
-                }
+                String name = data.getCurrentEntity().userInfo.getNAME();
+                areaName.setText(name);
+                userIcon.setText(name.substring((name.length() - 2 < 0 ? 0 : name.length() - 2)));
                 detailInfo.setVisibility(VISIBLE);
 //                detailInfo.setText(data.getCurrentEntity().userInfo.et());
                 return;
@@ -140,8 +169,8 @@ public class CustomMultiStageView<Data> extends BaseLinearLayout {
 //            LogUtil.e(data.getCurrentEntity().toString(), "徐诗韵1234444: " + type + "");
             spaceView.setVisibility(data.isRootEntity()?GONE:INVISIBLE);
             areaIconContainer.post(() ->{
-                    spaceView.setVisibility(GONE);
-                    ViewUtil.setMarginLeft(areaIconContainer, (data.isRootEntity() || type <= 0 ? 0 : type) * areaIcon.getWidth());
+                        spaceView.setVisibility(GONE);
+                        ViewUtil.setMarginLeft(areaIconContainer, (data.isRootEntity() || type <= 0 ? 0 : type) * areaIcon.getWidth());
                     }
             );
         }

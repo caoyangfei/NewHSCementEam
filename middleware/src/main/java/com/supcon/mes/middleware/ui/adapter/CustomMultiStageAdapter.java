@@ -6,7 +6,8 @@ import android.content.Context;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.adapter.BaseRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
-import com.supcon.mes.middleware.model.bean.CustomMultiStageEntity;
+import com.supcon.mes.middleware.R;
+import com.supcon.mes.middleware.model.bean.TxlEntity;
 import com.supcon.mes.middleware.ui.view.CustomMultiStageView;
 
 import org.reactivestreams.Publisher;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 
 /**
@@ -27,26 +29,26 @@ import io.reactivex.functions.Function;
  * @Related-classes
  * @Desc
  */
-public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<CustomMultiStageEntity<Data>> {
-    private List<CustomMultiStageEntity<Data>> contentList = new ArrayList<>();
+public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<CustomMultiStageView.CustomMultiStageEntity<Data>> {
+    private List<CustomMultiStageView.CustomMultiStageEntity<Data>> contentList = new ArrayList<>();
     private CustomMultiStageView.CustomMultiStageViewController mCustomMultiStageViewController;
-
+    
     public void registerController(CustomMultiStageView.CustomMultiStageViewController customMultiStageViewController) {
         mCustomMultiStageViewController = customMultiStageViewController;
     }
-
-    public void setRootEntity(CustomMultiStageEntity<Data> customMultiStageEntity) {
+    
+    public void setRootEntity(CustomMultiStageView.CustomMultiStageEntity<Data> customMultiStageEntity) {
         contentList.clear();
         initContentList(customMultiStageEntity);
         notifyDataSetChanged();
     }
-
-    public void initContentList(CustomMultiStageEntity<Data> rootEntity) {
+    
+    public void initContentList(CustomMultiStageView.CustomMultiStageEntity<Data> rootEntity) {
         rootEntity.setExpanded(true);
         contentList.add(rootEntity);
         rootEntity.getChildNodeList().subscribe(list -> contentList.addAll(list));
     }
-
+    
     private int getLastChildNodeIndex(int pos) {
         int leftIndex = pos;
         int rightIndex = contentList.size() - 1;
@@ -61,47 +63,47 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
             }
         }
     }
-
+    
     public CustomMultiStageAdapter(Context context) {
         super(context);
     }
-
+    
     private int getSpanSize(int position) {
         return getItem(position).getInfo().split("-").length;
     }
-
+    
     @Override
     public int getItemViewType(int position) {
         if (getItem(position).isLeafNode()) return -1;
         return getSpanSize(position);
     }
-
+    
     @Override
     protected BaseRecyclerViewHolder getViewHolder(int viewType) {
         return new StageViewHolder(context);
     }
-
+    
     @Override
-    public CustomMultiStageEntity<Data> getItem(int position) {
+    public CustomMultiStageView.CustomMultiStageEntity<Data> getItem(int position) {
         return contentList.get(position);
     }
-
+    
     @Override
     public int getItemCount() {
         return contentList.size();
     }
-
-    public class StageViewHolder extends BaseRecyclerViewHolder<CustomMultiStageEntity<Data>> {
-
+    
+    public class StageViewHolder extends BaseRecyclerViewHolder<CustomMultiStageView.CustomMultiStageEntity<Data>> {
+        
         public StageViewHolder(Context context) {
             super(context, parent);
         }
-
+        
         @Override
         protected int layoutId() {
             return mCustomMultiStageViewController.layout();
         }
-
+        
         @SuppressLint("CheckResult")
         @Override
         protected void initListener() {
@@ -120,18 +122,18 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
 //                                        }
 //                                    }
 //                                });
-
-                        CustomMultiStageEntity<Data> customMultiStageEntity = getItem(getAdapterPosition());
+                        
+                        CustomMultiStageView.CustomMultiStageEntity<Data> customMultiStageEntity = getItem(getAdapterPosition());
                         customMultiStageEntity.changeExpandStatus();
-                        Flowable<List<CustomMultiStageEntity<Data>>> customMultiStageEntities = customMultiStageEntity.getChildNodeList();
+                        Flowable<List<CustomMultiStageView.CustomMultiStageEntity<Data>>> customMultiStageEntities = customMultiStageEntity.getChildNodeList();
                         customMultiStageEntities
-                                .flatMap((Function<List<CustomMultiStageEntity<Data>>,
-                                        Publisher<CustomMultiStageEntity<Data>>>)
+                                .flatMap((Function<List<CustomMultiStageView.CustomMultiStageEntity<Data>>,
+                                        Publisher<CustomMultiStageView.CustomMultiStageEntity<Data>>>)
                                         customMultiStageEntities1 -> Flowable.fromIterable(customMultiStageEntities1))
                                 .subscribe(customMultiStageEntity1 -> customMultiStageEntity1.setExpanded(false));
                         if (!customMultiStageEntity.isExpanded()) {
                             int lastIndex = getLastChildNodeIndex(getAdapterPosition());
-                            List<CustomMultiStageEntity<Data>> sub = new ArrayList<>();
+                            List<CustomMultiStageView.CustomMultiStageEntity<Data>> sub = new ArrayList<>();
                             sub.addAll(contentList.subList(getAdapterPosition() + 1, lastIndex + 1));
                             contentList.removeAll(sub);
                             notifyItemRangeRemoved(getAdapterPosition() + 1, lastIndex - getAdapterPosition());
@@ -143,11 +145,12 @@ public class CustomMultiStageAdapter<Data> extends BaseRecyclerViewAdapter<Custo
                         viewController.changeStatus();
                     });
         }
-
+        
         private CustomMultiStageView.CustomMultiStageViewController viewController;
-
+        
         @Override
-        protected void update(CustomMultiStageEntity<Data> data) {
+        protected void update(CustomMultiStageView.CustomMultiStageEntity<Data> data) {
+            itemView.setClickable(!data.isLeafNode());
             viewController = mCustomMultiStageViewController.newInstance(itemView);
             viewController.inject(data, getItemViewType());
         }

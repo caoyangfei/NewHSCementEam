@@ -5,7 +5,7 @@ import android.view.View;
 
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
-import com.supcon.mes.middleware.model.bean.ITxlEntity;
+import com.supcon.mes.middleware.model.inter.ITxlEntity;
 import com.supcon.mes.module_txl.controller.TxlListItemViewController;
 
 /**

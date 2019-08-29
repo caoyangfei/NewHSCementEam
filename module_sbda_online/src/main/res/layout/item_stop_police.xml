@@ -11,7 +11,7 @@
     <com.supcon.mes.mbap.view.CustomTextView
         android:id="@+id/itemStopPoliceName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:tag="itemStopPoliceName"
         app:key="报警设备:"
         app:key_size="14" />
@@ -19,7 +19,7 @@
     <com.supcon.mes.mbap.view.CustomTextView
         android:id="@+id/itemStopPoliceStartTime"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:tag="itemStopPoliceStartTime"
         app:key="开始时间:"
         app:key_size="14" />
@@ -39,4 +39,7 @@
         android:tag="itemStopPoliceTotalTime"
         app:key="持续时长:"
         app:key_size="14" />
+
+
+    <!--<include layout="@layout/ly_stop_police_popup" />-->
 </LinearLayout>

@@ -13,7 +13,7 @@ import com.supcon.mes.middleware.presenter.MultiDepartSelectPresenter;
  * @Related-classes
  * @Desc
  */
-@ContractFactory(entites = AreaMultiStageEntity.class)
+@ContractFactory(entites = MultiDepartSelectPresenter.AreaMultiStageEntity.class)
 public interface MultiDepartSelectAPI {
     void getDepartmentInfoList(String id);
 }

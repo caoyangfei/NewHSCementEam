@@ -14,10 +14,10 @@ import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomCircleTextImageView;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.TxlEntity;
 import com.supcon.mes.middleware.util.RequestOptionUtil;
 import com.supcon.mes.middleware.util.SystemUtil;
 import com.supcon.mes.module_txl.R;
-import com.supcon.mes.middleware.model.bean.TxlEntity;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @Project eamtest
  * @Email ciruy.victory@gmail.com
  * @Related-classes
- * @Desc
+ * @Desc 通讯录详细视图界面
  */
 @Router(Constant.Router.TXL_VIEW)
 public class TxlViewActivity extends BasePresenterActivity {
@@ -56,13 +56,18 @@ public class TxlViewActivity extends BasePresenterActivity {
     CustomTextView flow;
     @BindByTag("userName")
     TextView userName;
-    @BindByTag("ivTelphone")
-    ImageView ivTelphone;
     @BindByTag("userWork")
     TextView userWork;
+    @BindByTag("ivTelphone")
+    ImageView ivTelphone;
+    @BindByTag("ivSms")
+    ImageView ivSms;
+    @BindByTag("ivEmail")
+    ImageView ivEmail;
     private TxlEntity mData;
     //匹配手机号码的正则表达式
     private Pattern mPattern = Pattern.compile("^(13[0-9]|14[5|7]|15[0|1|2|3|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\\d{8}$");
+    
     @Override
     protected int getLayoutID() {
         return R.layout.activity_txl_view;
@@ -85,11 +90,25 @@ public class TxlViewActivity extends BasePresenterActivity {
         super.initListener();
         ivBack.setOnClickListener(v -> back());
         tvBack.setOnClickListener(v -> back());
-        ivTelphone.setOnClickListener(v-> {
-            if(!TextUtils.isEmpty(mData.getMOBILE())&& mPattern.matcher(mData.getMOBILE()).find())
-                SystemUtil.callPhone(context,mData.getMOBILE());
-            else ToastUtils.show(context,"未设置通话信息！");
+        //电话拨打功能开发
+        ivTelphone.setOnClickListener(v -> {
+            if (!TextUtils.isEmpty(mData.getMOBILE()) && mPattern.matcher(mData.getMOBILE()).find())
+                SystemUtil.callPhone(context, mData.getMOBILE());
+            else ToastUtils.show(context, "未设置通话信息！");
         });
+        //短信发送功能开发
+        ivSms.setOnClickListener(v -> {
+                    if (!TextUtils.isEmpty(mData.getMOBILE()) && mPattern.matcher(mData.getMOBILE()).find())
+                        SystemUtil.sendSms(context, mData.getMOBILE());
+                    else ToastUtils.show(context, "未设置电话信息！");
+                }
+        );
+        //邮件发送功能开发
+//        ivEmail.setOnClickListener(v -> {
+//            if (!TextUtils.isEmpty(mData.getEMAIL()) && mPattern.matcher(mData.getEMAIL()).find())
+//                SystemUtil.sendSms(context, mData.getEMAIL());
+//            else ToastUtils.show(context, "未设置邮箱信息！");
+//        });
     }
     
     @Override
@@ -105,9 +124,9 @@ public class TxlViewActivity extends BasePresenterActivity {
         master.setContent((String) mData.getRZSJ());
         department.setContent(mData.getDepartmentName());
         flow.setContent("0");
-    
-        File file = new File(Constant.IMAGE_SAVE_PATH +"TXL_"+ String.valueOf(mData.getStaffId())+".jpg");
-        if(file.exists()) {
+        
+        File file = new File(Constant.IMAGE_SAVE_PATH + "TXL_" + String.valueOf(mData.getStaffId()) + ".jpg");
+        if (file.exists()) {
             CustomCircleTextImageView customCircleTextImageView = findViewById(R.id.userIcon);
             Glide.with(customCircleTextImageView.getContext()).load(file)
                     .apply(RequestOptionUtil.getEamRequestOptions(customCircleTextImageView.getContext()))

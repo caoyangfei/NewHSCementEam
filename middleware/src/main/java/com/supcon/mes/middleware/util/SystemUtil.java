@@ -36,4 +36,10 @@ public class SystemUtil {
         intent.setData(data);
         context.startActivity(intent);
     }
+    
+    public static void sendSms(Context context, String phone){
+        Uri uri = Uri.parse("smsto:"+phone);
+        Intent intentMessage = new Intent(Intent.ACTION_VIEW,uri);
+        context.startActivity(intentMessage);
+    }
 }

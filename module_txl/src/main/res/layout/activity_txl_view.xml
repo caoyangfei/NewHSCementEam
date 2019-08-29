@@ -104,10 +104,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="@dimen/dp_40"
-                android:layout_height="@dimen/dp_40"
                 android:id="@+id/ivTelphone"
                 android:tag="ivTelphone"
+                android:layout_width="@dimen/dp_40"
+                android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_5"
                 android:layout_marginBottom="@dimen/dp_5"
                 android:src="@drawable/txl_view_phone" />
@@ -130,6 +130,8 @@
             <ImageView
                 android:layout_width="@dimen/dp_40"
                 android:layout_height="@dimen/dp_40"
+                android:id="@+id/ivSms"
+                android:tag="ivSms"
                 android:layout_marginTop="@dimen/dp_5"
                 android:layout_marginBottom="@dimen/dp_5"
                 android:src="@drawable/txl_view_message" />
@@ -154,6 +156,8 @@
                 android:layout_height="@dimen/dp_40"
                 android:layout_marginTop="@dimen/dp_5"
                 android:layout_marginBottom="@dimen/dp_5"
+                android:id="@+id/ivEmail"
+                android:tag="ivEmail"
                 android:src="@drawable/txl_view_mail" />
         </LinearLayout>
     </LinearLayout>
@@ -259,6 +263,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:gravity="center"
+        android:visibility="gone"
         android:background="@color/white"
         android:layout_height="wrap_content">
         <ImageView

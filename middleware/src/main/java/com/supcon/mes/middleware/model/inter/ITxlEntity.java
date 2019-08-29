@@ -1,4 +1,4 @@
-package com.supcon.mes.middleware.model.bean;
+package com.supcon.mes.middleware.model.inter;
 
 /**
  * @Author xushiyun
@@ -9,7 +9,7 @@ package com.supcon.mes.middleware.model.bean;
  * @Related-classes
  * @Desc
  */
-public interface ITxlEntity {
+public interface ITxlEntity{
     /**
      * 列表中显示的数据信息
      */

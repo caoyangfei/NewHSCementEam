@@ -1,31 +1,50 @@
 package com.supcon.mes.module_sbda_online.ui;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
+import com.supcon.common.view.listener.OnItemChildViewClickListener;
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
+import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.utils.controllers.DatePickController;
+import com.supcon.mes.mbap.utils.controllers.SinglePickController;
+import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomFilterView;
+import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.CommonDeviceEntity;
+import com.supcon.mes.middleware.model.bean.CommonSearchDeviceListEntity;
+import com.supcon.mes.middleware.model.bean.CommonSearchEntity;
 import com.supcon.mes.middleware.model.bean.ScreenEntity;
+import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.module_sbda_online.IntentRouter;
 import com.supcon.mes.module_sbda_online.R;
 import com.supcon.mes.module_sbda_online.model.api.StopPoliceAPI;
+import com.supcon.mes.module_sbda_online.model.bean.StatusResultEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceListEntity;
 import com.supcon.mes.module_sbda_online.model.contract.StopPoliceContract;
@@ -39,9 +58,25 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import retrofit2.http.PATCH;
+
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_EAM_IDS;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_ID;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STAFF_ID;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_EXPLAIN;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_REASON;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_TYPE;
 
 @Router(Constant.Router.STOP_POLICE)
 @Presenter(value = StopPolicePresenter.class)
@@ -60,16 +95,22 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     CustomVerticalDateView stopPoliceStartTime;
     @BindByTag("stopPoliceStopTime")
     CustomVerticalDateView stopPoliceStopTime;
+    private SinglePickController mSinglePickController;
     
     private Map<String, Object> queryParam = new HashMap<>();
+    /**
+     * 单一停机报警列表项刷新请求列表
+     */
+    private Map<String, String> singleUpdateQueryParam = new HashMap<>();
     private DatePickController datePickController;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     Calendar calendar;
-
+    private StopPoliceAdapter stopPoliceAdapter;
+    
     @Override
     protected IListAdapter createAdapter() {
-        StopPoliceAdapter stopPoliceAdapter = new StopPoliceAdapter(this);
+        stopPoliceAdapter = new StopPoliceAdapter(this);
         return stopPoliceAdapter;
     }
     
@@ -110,11 +151,214 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         stopPoliceStopTime.setDate(dateFormat1.format(System.currentTimeMillis()));
         queryParam.put(Constant.BAPQuery.OPEN_TIME_START, dateFormat.format(getTimeOfMonthStart()));
         queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, dateFormat.format(System.currentTimeMillis()));
+        
+        singlePickerController.textSize(18);
+        singlePickerController.setCanceledOnTouchOutside(true);
+    }
+    
+    private CustomDialog mCustomDialog;
+    private CustomTextView itemStopPoliceStopType;
+    private CustomTextView itemStopPoliceStopReason;
+    private CustomEditText itemStopPoliceStopExplain;
+    private CustomTextView itemStopPoliceEamIds;
+    private SinglePickController singlePickerController = new SinglePickController<String>(this);
+    private static final Map<String, String> TJ_TYPE = new HashMap<>();
+    private static final Map<String, Map<String, String>> TJ_REASON = new HashMap<>();
+    
+    static {
+        String[] STOP_POLICE_TYPES = new String[4];
+        STOP_POLICE_TYPES[0] = "BEAM2009/";
+        for (int i = 1; i < STOP_POLICE_TYPES.length; i++) {
+            STOP_POLICE_TYPES[i] = STOP_POLICE_TYPES[0] + "0" + i;
+        }
+        TJ_TYPE.put("计划停机", STOP_POLICE_TYPES[1]);
+        TJ_TYPE.put("故障停机", STOP_POLICE_TYPES[2]);
+        TJ_TYPE.put("不可控因素停机", STOP_POLICE_TYPES[3]);
+        String[] STOP_POLICE_REASONS = new String[9];
+        STOP_POLICE_REASONS[0] = "BEAM2_2012/";
+        for (int i = 1; i < STOP_POLICE_REASONS.length; i++) {
+            STOP_POLICE_REASONS[i] = STOP_POLICE_REASONS[0] + "0" + i;
+        }
+        Map<String, String> m1 = new HashMap<>();
+        m1.put("计划性停机", STOP_POLICE_REASONS[1]);
+        m1.put("避峰电停机", STOP_POLICE_REASONS[2]);
+        m1.put("限产性停机", STOP_POLICE_REASONS[3]);
+        
+        Map<String, String> m2 = new HashMap<>();
+        m2.put("工艺设备故障", STOP_POLICE_REASONS[4]);
+        m2.put("工艺物料堵料停机", STOP_POLICE_REASONS[5]);
+        m2.put("电器设备故障停机", STOP_POLICE_REASONS[6]);
+        m2.put("设备故障", STOP_POLICE_REASONS[7]);
+        
+        Map<String, String> m3 = new HashMap<>();
+        m3.put("不可控停机", STOP_POLICE_REASONS[8]);
+        TJ_REASON.put("计划停机", m1);
+        TJ_REASON.put("故障停机", m2);
+        TJ_REASON.put("不可控因素停机", m3);
+    }
+    
+    private Map<String, String> paramMap = new HashMap<>();
+    
+    private void showPopUp(StopPoliceEntity stopPoliceEntity) {
+        paramMap.put(STOP_POLICE_STAFF_ID, "" + EamApplication.getAccountInfo().staffId);
+        paramMap.put(STOP_POLICE_ID, stopPoliceEntity.recordId.id);
+        
+        if (mCustomDialog == null) {
+            mCustomDialog = new CustomDialog(context);
+            View view = LayoutInflater.from(context).inflate(R.layout.ly_stop_police_popup, null, false);
+            itemStopPoliceStopType = view.findViewById(R.id.itemStopPoliceStopType);
+            itemStopPoliceStopReason = view.findViewById(R.id.itemStopPoliceStopReason);
+            itemStopPoliceStopExplain = view.findViewById(R.id.itemStopPoliceStopExplain);
+            itemStopPoliceEamIds = view.findViewById(R.id.itemStopPoliceEamIds);
+            mCustomDialog.layout(view);
+            mCustomDialog
+                    .bindChildListener(R.id.itemStopPoliceStopType
+                            , (childView, action, obj) -> {
+                                if (action == -1) {
+                                    paramMap.remove(STOP_POLICE_STOP_TYPE);
+                                    paramMap.remove(STOP_POLICE_STOP_REASON);
+                                    itemStopPoliceStopType.setContent(null);
+                                    return;
+                                }
+                                singlePickerController.list(Arrays.asList(TJ_TYPE.keySet().toArray()))
+                                        .listener((index, item) -> {
+                                            paramMap.put(STOP_POLICE_STOP_TYPE, TJ_TYPE.get(item));
+                                            itemStopPoliceStopType.setContent((String) item);
+                                            itemStopPoliceStopReason.setContent(null);
+                                        }).show();
+                            })
+                    .bindChildListener(R.id.itemStopPoliceStopReason
+                            , (childView, action, obj) -> {
+                                if (action == -1) {
+                                    paramMap.remove(STOP_POLICE_STOP_REASON);
+                                    itemStopPoliceStopReason.setContent(null);
+                                    return;
+                                }
+                                if (TextUtils.isEmpty(itemStopPoliceStopType.getContent())) {
+                                    ToastUtils.show(context, "请先选择停机类别。");
+                                    return;
+                                }
+                                singlePickerController.list(Arrays.asList(TJ_REASON.get(itemStopPoliceStopType.getContent()).keySet().toArray()))
+                                        .listener((index, item) -> {
+                                            paramMap.put(STOP_POLICE_STOP_REASON, TJ_REASON.get(itemStopPoliceStopType.getContent()).get(item));
+                                            itemStopPoliceStopReason.setContent((String) item);
+                                        }).show();
+                            })
+                    .bindChildListener(R.id.itemStopPoliceStopExplain, (childView, action, obj) -> {
+                        if (action == -1) {
+                            paramMap.remove(STOP_POLICE_STOP_EXPLAIN);
+                            itemStopPoliceStopExplain.setContent(null);
+                            return;
+                        }
+                    })
+                    .bindChildListener(R.id.itemStopPoliceEamIds, (childView, action, obj) -> {
+                        if (action == -1) {
+                            paramMap.remove(STOP_POLICE_EAM_IDS);
+                            return;
+                        }
+                        Bundle bundle = new Bundle();
+                        bundle.putBoolean(Constant.IntentKey.IS_MULTI, true);
+                        bundle.putString(Constant.IntentKey.COMMON_SAERCH_MODE, Constant.CommonSearchMode.EAM);
+                        bundle.putString(Constant.IntentKey.COMMON_SEARCH_TAG, "STOP_POLICE_MULTI_DEVICE");
+                        IntentRouter.go(context, Constant.Router.COMMON_SEARCH, bundle);
+                    })
+                    .bindClickListener(R.id.btn_stop_police_save, v -> {
+                        LogUtil.e("ciruy", paramMap.toString());
+                        if (paramMap.containsKey(STOP_POLICE_STAFF_ID) && paramMap.containsKey(STOP_POLICE_ID) && paramMap.containsKey(STOP_POLICE_STOP_TYPE) && paramMap.containsKey(STOP_POLICE_STOP_EXPLAIN)) {
+                            loaderController.showLoader("数据上传中...");
+                            presenterRouter.create(StopPoliceAPI.class).updateStopPoliceItem(paramMap);
+                        }
+                        else {
+                            ToastUtils.show(context, "请确保停机类别和停机说明已填！");
+                        }
+                    }, false)
+                    .bindClickListener(R.id.btn_stop_police_cancel, v -> paramMap.clear(), true);
+            RxTextView.textChanges(itemStopPoliceStopExplain.editText())
+                    .skipInitialValue()
+                    .observeOn(Schedulers.io())
+                    .debounce(200, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(charSequence -> {
+                        if (TextUtils.isEmpty(charSequence))
+                            paramMap.remove(STOP_POLICE_STOP_EXPLAIN);
+                        else
+                            paramMap.put(STOP_POLICE_STOP_EXPLAIN, charSequence.toString());
+                    });
+            
+        }
+        if (stopPoliceEntity.recordId != null && stopPoliceEntity.recordId.closedType != null) {
+            paramMap.put(STOP_POLICE_STOP_TYPE, stopPoliceEntity.recordId.closedType.id);
+            itemStopPoliceStopType.setContent(stopPoliceEntity.recordId.closedType.value);
+        } else {
+            itemStopPoliceStopType.setContent(null);
+        }
+        if (stopPoliceEntity.recordId != null && stopPoliceEntity.recordId.closedReason != null) {
+            paramMap.put(STOP_POLICE_STOP_REASON, stopPoliceEntity.recordId.closedReason.id);
+            itemStopPoliceStopReason.setContent(stopPoliceEntity.recordId.closedReason.value);
+        } else {
+            itemStopPoliceStopReason.setContent(null);
+        }
+        if (stopPoliceEntity.recordId != null) {
+            paramMap.put(STOP_POLICE_STOP_EXPLAIN, stopPoliceEntity.recordId.reason);
+            itemStopPoliceStopExplain.setContent(stopPoliceEntity.recordId.reason);
+        } else {
+            itemStopPoliceStopExplain.setContent(null);
+        }
+        if (stopPoliceEntity.auxiliary != null) {
+            StringBuilder stringBuilderName = new StringBuilder();
+            StringBuilder stringBuilderId = new StringBuilder();
+            List<StopPoliceEntity.EamInfo> eamInfos = GsonUtil.jsonToList(stopPoliceEntity.auxiliary, StopPoliceEntity.EamInfo.class);
+            for (StopPoliceEntity.EamInfo eamInfo : eamInfos) {
+                stringBuilderName.append(eamInfo.eamName + ",");
+                stringBuilderId.append(eamInfo.eamId + ",");
+            }
+            if (stringBuilderName.length() > 0)
+                stringBuilderName.deleteCharAt(stringBuilderName.length() - 1);
+            if (stringBuilderId.length() > 0)
+                stringBuilderId.deleteCharAt(stringBuilderId.length() - 1);
+            
+            paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
+            itemStopPoliceEamIds.setContent(stringBuilderName.toString());
+        } else {
+            itemStopPoliceEamIds.setContent(null);
+        }
+        
+        mCustomDialog.show();
+    }
+    
+    @Subscribe
+    public void receiveMultiDevice(CommonSearchEvent commonSearchEvent) {
+        if (commonSearchEvent.flag.equals("STOP_POLICE_MULTI_DEVICE")) {
+            StringBuilder stringBuilderId = new StringBuilder();
+            StringBuilder stringBuilderName = new StringBuilder();
+            List<CommonSearchEntity> eamInfos = commonSearchEvent.mCommonSearchEntityList;
+            for (CommonSearchEntity eamInfo : eamInfos) {
+                stringBuilderName.append(eamInfo.getSearchName() + ",");
+                stringBuilderId.append(eamInfo.getSearchId() + ",");
+            }
+            if (stringBuilderName.length() > 0)
+                stringBuilderName.deleteCharAt(stringBuilderName.length() - 1);
+            if (stringBuilderId.length() > 0)
+                stringBuilderId.deleteCharAt(stringBuilderId.length() - 1);
+            
+            paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
+            itemStopPoliceEamIds.setContent(stringBuilderName.toString());
+        }
+        
     }
     
     @Override
     protected void initListener() {
         super.initListener();
+        stopPoliceAdapter.setOnItemChildViewClickListener((childView, position, action, obj) -> {
+            StopPoliceEntity stopPoliceEntity = (StopPoliceEntity) obj;
+            if (stopPoliceEntity.onOrOff == null || stopPoliceEntity.onOrOff.value.equals("开")) {
+                ToastUtils.show(context, "该单据的开机状态为“开”");
+                return;
+            }
+            showPopUp(stopPoliceEntity);
+        });
+        
         titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
             @Override
             public void onLeftBtnClick() {
@@ -206,6 +450,27 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         refreshListController.refreshComplete(null);
     }
     
+    @Override
+    public void updateStopPoliceItemSuccess(StatusResultEntity entity) {
+        loaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
+            @Override
+            public void onLoaderFinished() {
+                mCustomDialog.dismiss();
+                EventBus.getDefault().post(new RefreshEvent());
+            }
+        });
+    }
+    
+    private void updateSingleItem() {
+        presenterRouter.create(StopPoliceAPI.class)
+                .updateStopPoliceItem(singleUpdateQueryParam);
+    }
+    
+    @Override
+    public void updateStopPoliceItemFailed(String errorMsg) {
+        loaderController.showMsgAndclose(errorMsg, false, 1500);
+    }
+    
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
         
@@ -240,7 +505,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-
+    
     public static long getTimeOfMonthStart() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.HOUR_OF_DAY, 0);

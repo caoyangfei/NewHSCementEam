@@ -14,5 +14,5 @@ import com.supcon.mes.middleware.model.bean.TxlListEntity;
  */
 @ContractFactory(entites = {TxlListEntity.class})
 public interface TxlListAPI {
-    void getTxlList(int pageNum);
+    void getTxlList(int pageNum,String p1,String p2,String p3);
 }

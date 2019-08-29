@@ -14,6 +14,14 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+        <!--<activity android:name="com.supcon.mes.module_txl.ui.MultiDepartSelectActivity"-->
+            <!--android:screenOrientation="portrait"-->
+            <!--android:theme="@style/AppNoTitleBarTheme"-->
+            <!--android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>-->
+        <activity android:name="com.supcon.mes.module_txl.ui.TxlSearchContactWithHeaderActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppNoTitleBarTheme"
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"/>
     </application>
 
 </manifest>

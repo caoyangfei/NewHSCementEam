@@ -19,21 +19,24 @@ import io.reactivex.functions.Function;
  */
 public class TxlListPresenter extends TxlListContract.Presenter {
     @Override
-    public void getTxlList(int pageNum) {
-        mCompositeSubscription.add(TxlHttpClient.getStaffList(pageNum).onErrorReturn(new Function<Throwable, TxlListEntity>() {
-            @Override
-            public TxlListEntity apply(Throwable throwable) {
-                TxlListEntity txlListEntity = new TxlListEntity();
-                txlListEntity.success =false;
-                txlListEntity.errMsg = throwable.toString();
-                return new TxlListEntity();
-            }
-        }).subscribe(txlListEntity -> {
-            if(!TextUtils.isEmpty(txlListEntity.errMsg)) {
-                getView().getTxlListFailed(txlListEntity.errMsg);
-            } else {
-                getView().getTxlListSuccess(txlListEntity);
-            }
-        }));
+    public void getTxlList(int pageNum,String p1, String p2,String p3) {
+        mCompositeSubscription.add(
+                TxlHttpClient.getStaffList(pageNum, p1, p2,  p3)
+                        .onErrorReturn(new Function<Throwable, TxlListEntity>() {
+                            @Override
+                            public TxlListEntity apply(Throwable throwable) {
+                                TxlListEntity txlListEntity = new TxlListEntity();
+                                txlListEntity.success = false;
+                                txlListEntity.errMsg = throwable.toString();
+                                return new TxlListEntity();
+                            }
+                        }).subscribe(txlListEntity -> {
+                    if (!TextUtils.isEmpty(txlListEntity.errMsg)) {
+                        getView().getTxlListFailed(txlListEntity.errMsg);
+                    } else {
+                        getView().getTxlListSuccess(txlListEntity);
+                    }
+                }));
     }
 }
+

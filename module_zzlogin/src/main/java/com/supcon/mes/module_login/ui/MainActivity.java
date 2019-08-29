@@ -135,16 +135,12 @@ public class MainActivity extends BaseMultiFragmentActivity {
         mineFragment = new MineFragment();
 
         fragments.add(workFragment);
-//        fragments.add(new MineFragment());
 
         Flowable.timer(100, TimeUnit.MILLISECONDS)
                 .compose(RxSchedulers.io_main())
-                .subscribe(new Consumer<Long>() {
-                    @Override
-                    public void accept(Long aLong) throws Exception {
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        fragmentTransaction.replace(R.id.leftDrawer, mineFragment).commit();
-                    }
+                .subscribe(aLong -> {
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.leftDrawer, mineFragment).commit();
                 });
     }
 

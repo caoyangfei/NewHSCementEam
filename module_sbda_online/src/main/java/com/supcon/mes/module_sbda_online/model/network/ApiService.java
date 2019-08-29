@@ -11,13 +11,19 @@ import com.supcon.mes.module_sbda_online.model.bean.SBDAOnlineListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.ScreenListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SparePartListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SparePartsLedgerListEntity;
+import com.supcon.mes.module_sbda_online.model.bean.StatusResultEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SubsidiaryListEntity;
 
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import okhttp3.RequestBody;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
@@ -66,11 +72,15 @@ public interface ApiService {
     Flowable<SparePartsLedgerListEntity> baseInfoProduct(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @Query("productID") Long productID, @QueryMap Map<String, Object> pageQueryMap);
 
     //查看设备
-    @GET("/BEAM2/runningGather/runningGathers/runningGatherList-query.action")
-    Flowable<StopPoliceListEntity> runningGatherList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
+    @POST("/BEAM2/runningGather/runningGathers/runningGatherList-query.action")
+    @Multipart
+    Flowable<StopPoliceListEntity> runningGatherList(@PartMap Map<String, RequestBody> map, @QueryMap Map<String, Object> pageQueryMap);
 
     //技术参数
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461551857214.action")
     Flowable<ParamListEntity> getEamParam(@QueryMap Map<String, Object> pageQueryMap);
+    
+    @GET("/BEAM2/runningState/runningState/setRunningRecord.action")
+    Flowable<StatusResultEntity> setRunningRecord(@QueryMap Map<String, String> pageQueryMap);
 
 }

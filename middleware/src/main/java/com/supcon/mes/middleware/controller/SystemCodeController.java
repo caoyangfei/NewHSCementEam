@@ -14,6 +14,8 @@ import com.supcon.mes.middleware.model.contract.SystemCodeContract;
 import com.supcon.mes.middleware.presenter.SystemCodePresenter;
 import com.supcon.mes.middleware.util.SystemCodeManager;
 
+import org.checkerframework.checker.units.qual.C;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,9 @@ public class SystemCodeController extends BasePresenterController implements Sys
         entityCodes.add(Constant.SystemCode.OIL_TYPE);
         entityCodes.add(Constant.SystemCode.CHECK_RESULT);
         entityCodes.add(Constant.SystemCode.WXGD_SOURCE);
+       //停机类型，停机原因对应的系统编码加载
+        entityCodes.add(Constant.SystemCode.TJ_TYPE);
+        entityCodes.add(Constant.SystemCode.TJ_REASON);
     }
 
     @Override

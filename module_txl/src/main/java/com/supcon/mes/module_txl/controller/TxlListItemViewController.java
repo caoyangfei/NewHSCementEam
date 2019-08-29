@@ -13,12 +13,12 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.api.StaffPicDownloadAPI;
 import com.supcon.mes.middleware.model.bean.IDataInjector;
 import com.supcon.mes.middleware.model.bean.ILayoutProvider;
-import com.supcon.mes.middleware.model.bean.ITxlEntity;
 import com.supcon.mes.middleware.model.contract.StaffPicDownloadContract;
 import com.supcon.mes.middleware.presenter.StaffPicPresenter;
 import com.supcon.mes.middleware.util.RequestOptionUtil;
 import com.supcon.mes.module_txl.IntentRouter;
 import com.supcon.mes.module_txl.R;
+import com.supcon.mes.middleware.model.inter.ITxlEntity;
 
 import java.io.File;
 import java.io.Serializable;
@@ -42,7 +42,7 @@ public class TxlListItemViewController extends BaseViewController implements ILa
     TextView company;
     @BindByTag("department")
     TextView department;
-//    @BindByTag("userIcon")
+    //    @BindByTag("userIcon")
     CustomCircleTextImageView userIcon;
     private View rootView;
     

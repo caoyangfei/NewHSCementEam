@@ -7,7 +7,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -23,7 +22,6 @@ import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
-import com.supcon.common.view.view.loader.base.LoaderController;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.constant.ListType;
@@ -81,8 +79,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 
 /**
  * @author yangfei.cao

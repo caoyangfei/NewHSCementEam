@@ -2,6 +2,7 @@ package com.supcon.mes.middleware.model.bean;
 
 import com.google.gson.annotations.SerializedName;
 import com.supcon.common.com_http.BaseEntity;
+import com.supcon.mes.middleware.model.inter.ITxlEntity;
 
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Generated;

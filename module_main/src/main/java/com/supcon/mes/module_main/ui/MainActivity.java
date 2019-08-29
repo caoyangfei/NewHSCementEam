@@ -11,6 +11,7 @@ import com.app.annotation.Controller;
 import com.app.annotation.apt.Router;
 import com.supcon.common.view.base.activity.BaseMultiFragmentActivity;
 import com.supcon.common.view.util.LogUtil;
+import com.supcon.common.view.util.StatusBarUtils;
 import com.supcon.mes.mbap.network.Api;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
@@ -133,6 +134,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
     public void createFragments() {
         workFragment = new WorkFragment();
         TxlListFragment txlListFragment = new TxlListFragment();
+        txlListFragment.fitInstatusBarEnable(true);
         EamFragment eamFragment = new EamFragment();
         MineFragment mineFragment = new MineFragment();
         fragments.add(workFragment);
@@ -194,6 +196,7 @@ public class MainActivity extends BaseMultiFragmentActivity {
                 }
             }
         });
+        
     }
 
     @Override
@@ -241,4 +244,12 @@ public class MainActivity extends BaseMultiFragmentActivity {
     public interface WorkOnTouchListener {
         boolean onTouch(MotionEvent ev);
     }
+    
+    @Override
+    public void showFragment(int selectIndex) {
+        if(selectIndex ==0) StatusBarUtils.setWindowStatusBarColor(this,R.color.transparent);
+        else StatusBarUtils.setWindowStatusBarColor(this,R.color.themeColor);
+        super.showFragment(selectIndex);
+    }
+    
 }

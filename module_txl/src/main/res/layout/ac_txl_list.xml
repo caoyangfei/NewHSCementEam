@@ -5,12 +5,12 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-
     tools:context=".ui.TxlListActivity">
+
     <fragment
-        android:layout_width="match_parent"
         android:id="@+id/txlListFragment"
-        android:tag="txlListFragment"
         android:name="com.supcon.mes.module_txl.ui.fragment.TxlListFragment"
-        android:layout_height="match_parent"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:tag="txlListFragment" />
 </LinearLayout>

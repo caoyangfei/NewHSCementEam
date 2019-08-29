@@ -20,11 +20,11 @@ import com.supcon.mes.sb2.config.SB2Constant;
  */
 
 public class WelcomeActivity extends Activity {
-
-
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
+        
         boolean isHS = true;
         if (EamApplication.isHongshi()) {
             isHS = true;
@@ -38,7 +38,7 @@ public class WelcomeActivity extends Activity {
         boolean finalIsHS = isHS;
         new Handler().postDelayed(() -> {
             if (MBapApp.isIsLogin()) {
-
+                
                 Bundle bundle = new Bundle();
                 if(Build.MODEL.contains("T50")
                         || Build.MODEL.contains("T55")
@@ -47,7 +47,7 @@ public class WelcomeActivity extends Activity {
                         || Build.MODEL.contains("SD55")){
                     bundle.putInt(SB2Constant.IntentKey.SB2_CONFIG_CODE, SB2Config.BARCORD | SB2Config.TEMPERATURE | SB2Config.UHF);
                 }
-
+                
                 if (EamApplication.isHongshi()) {
                     IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION, bundle);
                 } else {
@@ -64,10 +64,10 @@ public class WelcomeActivity extends Activity {
                 bundle.putBoolean(Constant.IntentKey.FIRST_LOGIN, true);
                 IntentRouter.go(WelcomeActivity.this, Constant.Router.LOGIN, bundle);
             }
-
+            
             finish();
         }, 100);
     }
-
-
+    
+    
 }
