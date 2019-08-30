@@ -74,7 +74,9 @@ public interface ApiService {
     //查看设备
     @POST("/BEAM2/runningGather/runningGathers/runningGatherList-query.action")
     @Multipart
-    Flowable<StopPoliceListEntity> runningGatherList(@PartMap Map<String, RequestBody> map, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<StopPoliceListEntity> runningGatherList(
+            @PartMap Map<String, RequestBody> map,
+            @QueryMap Map<String, Object> pageQueryMap);
 
     //技术参数
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461551857214.action")
@@ -82,5 +84,11 @@ public interface ApiService {
     
     @GET("/BEAM2/runningState/runningState/setRunningRecord.action")
     Flowable<StatusResultEntity> setRunningRecord(@QueryMap Map<String, String> pageQueryMap);
+    
+    //查看设备
+    @POST("/BEAM2/runningGather/runningGathers/gatherMobileList-query.action?")
+    @Multipart
+    Flowable<StopPoliceListEntity> gatherMobileList(@PartMap Map<String, RequestBody> map, @QueryMap Map<String, Object> pageQueryMap);
 
+    
 }

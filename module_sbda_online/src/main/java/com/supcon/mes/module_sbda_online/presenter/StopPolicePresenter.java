@@ -2,6 +2,7 @@ package com.supcon.mes.module_sbda_online.presenter;
 
 import android.text.TextUtils;
 
+import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.BaseSubcondEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
@@ -54,18 +55,21 @@ public class StopPolicePresenter extends StopPoliceContract.Presenter {
             JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(nameParam, "EAM_BaseInfo,EAM_ID,BEAM2_RUNNING_GATHERS,EAMID");
             fastQuery.subconds.add(joinSubcondEntity);
         }
-        
         fastQuery.modelAlias = "runningGathers";
+        LogUtil.e("ciruy",fastQuery.toString());
         Map<String, Object> pageQueryParams = new HashMap<>();
         pageQueryParams.put("page.pageNo", page);
         pageQueryParams.put("page.pageSize", 20);
         pageQueryParams.put("page.maxPageSize", 500);
         Map<String, Object> contentMap = new HashMap<>();
         contentMap.put("fastQueryCond", fastQuery);
-        Map<String, Object> mainContentMap = new HashMap<>();
-        mainContentMap.put("main", contentMap);
-        Map<String, RequestBody> formBody = FormDataHelper.createDataFormBody(mainContentMap);
-        mCompositeSubscription.add(SBDAOnlineHttpClient.runningGatherList(formBody, pageQueryParams)
+        Map<String, RequestBody> formBody =
+//                new HashMap<>();
+                FormDataHelper.createDataFormBody(contentMap);
+//        mCompositeSubscription.add(SBDAOnlineHttpClient.runningGatherList(
+//                formBody,
+//                pageQueryParams)
+        mCompositeSubscription.add(SBDAOnlineHttpClient.gatherMobileList(formBody, pageQueryParams)
                 .onErrorReturn(throwable -> {
                     StopPoliceListEntity stopPoliceListEntity = new StopPoliceListEntity();
                     stopPoliceListEntity.errMsg = throwable.toString();

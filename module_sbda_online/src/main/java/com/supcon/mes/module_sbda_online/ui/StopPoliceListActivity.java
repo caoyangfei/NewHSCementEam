@@ -17,8 +17,10 @@ import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
+import com.supcon.common.view.view.loader.base.LoaderController;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
+import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
@@ -32,9 +34,11 @@ import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.MyPickerController;
 import com.supcon.mes.middleware.model.bean.CommonDeviceEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchDeviceListEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchEntity;
+import com.supcon.mes.middleware.model.bean.DataUtil;
 import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
@@ -102,7 +106,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
      * 单一停机报警列表项刷新请求列表
      */
     private Map<String, String> singleUpdateQueryParam = new HashMap<>();
-    private DatePickController datePickController;
+    private MyPickerController datePickController;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     Calendar calendar;
@@ -138,7 +142,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         
         listEamNameFilter.setData(FilterHelper.createEamNameFilter());
         
-        datePickController = new DatePickController(this);
+        datePickController = new MyPickerController(this);
         datePickController.setCycleDisable(true);
         datePickController.setCanceledOnTouchOutside(true);
         datePickController.setSecondVisible(false);
@@ -147,10 +151,10 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         
-        stopPoliceStartTime.setDate(dateFormat1.format(getTimeOfMonthStart()));
-        stopPoliceStopTime.setDate(dateFormat1.format(System.currentTimeMillis()));
-        queryParam.put(Constant.BAPQuery.OPEN_TIME_START, dateFormat.format(getTimeOfMonthStart()));
-        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, dateFormat.format(System.currentTimeMillis()));
+        stopPoliceStartTime.setDate(DateUtil.dateFormat(getTimeOfDayStart(), "yyyy-MM-dd"));
+        stopPoliceStopTime.setDate(DateUtil.dateFormat(getTimeOfDayEnd(), "yyyy-MM-dd"));
+        queryParam.put(Constant.BAPQuery.OPEN_TIME_START, dateFormat.format(getTimeOfDayStart()));
+        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, dateFormat.format(getTimeOfDayEnd()));
         
         singlePickerController.textSize(18);
         singlePickerController.setCanceledOnTouchOutside(true);
@@ -164,7 +168,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     private SinglePickController singlePickerController = new SinglePickController<String>(this);
     private static final Map<String, String> TJ_TYPE = new HashMap<>();
     private static final Map<String, Map<String, String>> TJ_REASON = new HashMap<>();
-    
+    private LoaderController mLoaderController;
     static {
         String[] STOP_POLICE_TYPES = new String[4];
         STOP_POLICE_TYPES[0] = "BEAM2009/";
@@ -206,6 +210,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         if (mCustomDialog == null) {
             mCustomDialog = new CustomDialog(context);
             View view = LayoutInflater.from(context).inflate(R.layout.ly_stop_police_popup, null, false);
+            mLoaderController = new LoaderController(context,view);
             itemStopPoliceStopType = view.findViewById(R.id.itemStopPoliceStopType);
             itemStopPoliceStopReason = view.findViewById(R.id.itemStopPoliceStopReason);
             itemStopPoliceStopExplain = view.findViewById(R.id.itemStopPoliceStopExplain);
@@ -265,10 +270,10 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                     .bindClickListener(R.id.btn_stop_police_save, v -> {
                         LogUtil.e("ciruy", paramMap.toString());
                         if (paramMap.containsKey(STOP_POLICE_STAFF_ID) && paramMap.containsKey(STOP_POLICE_ID) && paramMap.containsKey(STOP_POLICE_STOP_TYPE) && paramMap.containsKey(STOP_POLICE_STOP_EXPLAIN)) {
-                            loaderController.showLoader("数据上传中...");
+                            new LoaderController(context,view);
+                            mLoaderController.showLoader("数据上传中...");
                             presenterRouter.create(StopPoliceAPI.class).updateStopPoliceItem(paramMap);
-                        }
-                        else {
+                        } else {
                             ToastUtils.show(context, "请确保停机类别和停机说明已填！");
                         }
                     }, false)
@@ -375,6 +380,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
             if (!queryParam.containsKey(Constant.BAPQuery.ON_OR_OFF)) {
                 queryParam.put(Constant.BAPQuery.ON_OR_OFF, "BEAM020/02");
             }
+            LogUtil.e("ciruy",queryParam.toString());
             presenterRouter.create(StopPoliceAPI.class).runningGatherList(queryParam, page);
         });
         listEamNameFilter.setFilterSelectChangedListener(filterBean -> {
@@ -383,13 +389,14 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         });
         stopPoliceStartTime.setOnChildViewClickListener((childView, action, obj) -> {
             datePickController.listener((year, month, day, hour, minute, second) -> {
-                stopPoliceStartTime.setDate(year + "-" + month + "-" + day + " " + hour + ":" + minute);
-                if (compareTime(stopPoliceStartTime.getContent(), stopPoliceStopTime.getContent())) {
+//                + " " + hour + ":" + minute);
+                if (compareTime(year + "-" + month + "-" + day, stopPoliceStopTime.getContent())) {
                     if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_START)) {
                         queryParam.remove(Constant.BAPQuery.OPEN_TIME_START);
                     }
-                    queryParam.put(Constant.BAPQuery.OPEN_TIME_START, year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + "00");
+                    queryParam.put(Constant.BAPQuery.OPEN_TIME_START, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
                     queryParam.put(Constant.BAPQuery.EAM_NAME, "");
+                    stopPoliceStartTime.setDate(year + "-" + month + "-" + day);
                     listEamNameFilter.setCurrentItem("设备不限");
                     doRefresh();
                 }
@@ -399,14 +406,15 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         
         stopPoliceStopTime.setOnChildViewClickListener((childView, action, obj) ->
                 datePickController.listener((year, month, day, hour, minute, second) -> {
-                    stopPoliceStopTime.setDate(year + "-" + month + "-" + day + " " + hour + ":" + minute);
-                    if (compareTime(stopPoliceStartTime.getContent(), stopPoliceStopTime.getContent())) {
+//                    + " " + hour + ":" + minute);
+                    if (compareTime(stopPoliceStartTime.getContent(), year + "-" + month + "-" + day)) {
                         if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_STOP)) {
                             queryParam.remove(Constant.BAPQuery.OPEN_TIME_STOP);
                         }
-                        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + "00");
+                        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
                         listEamNameFilter.setCurrentItem("设备不限");
                         queryParam.put(Constant.BAPQuery.EAM_NAME, "");
+                        stopPoliceStopTime.setDate(year + "-" + month + "-" + day);
                         doRefresh();
                     }
                 }).show(System.currentTimeMillis()));
@@ -452,7 +460,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     
     @Override
     public void updateStopPoliceItemSuccess(StatusResultEntity entity) {
-        loaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
+        mLoaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
             @Override
             public void onLoaderFinished() {
                 mCustomDialog.dismiss();
@@ -468,7 +476,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     
     @Override
     public void updateStopPoliceItemFailed(String errorMsg) {
-        loaderController.showMsgAndclose(errorMsg, false, 1500);
+        mLoaderController.showMsgAndclose(errorMsg, false, 1500);
     }
     
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -487,15 +495,11 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         if (TextUtils.isEmpty(start) || TextUtils.isEmpty(stop)) {
             return false;
         }
-        try {
-            long startTime = dateFormat1.parse(start).getTime();
-            long stopTime = dateFormat1.parse(stop).getTime();
-            if (stopTime > startTime) {
+            long startTime = DateUtil.dateFormat(start,"yyyy-MM-dd");
+            long stopTime = DateUtil.dateFormat(stop,"yyyy-MM-dd");;
+            if (stopTime >= startTime) {
                 return true;
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
         ToastUtils.show(this, "开始时间不能大于结束时间!");
         return false;
     }
@@ -513,6 +517,21 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         ca.clear(Calendar.SECOND);
         ca.clear(Calendar.MILLISECOND);
         ca.set(Calendar.DAY_OF_MONTH, 1);
+        return ca.getTimeInMillis();
+    }public static long getTimeOfDayStart() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.HOUR_OF_DAY, 0);
+        ca.clear(Calendar.MINUTE);
+        ca.clear(Calendar.SECOND);
+        ca.clear(Calendar.MILLISECOND);
+        return ca.getTimeInMillis();
+    }
+    public static long getTimeOfDayEnd() {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.HOUR_OF_DAY, 23);
+//        ca.clear(Calendar.MINUTE);
+        ca.set(Calendar.MINUTE, 59);
+        ca.set(Calendar.SECOND,59);
         return ca.getTimeInMillis();
     }
 }
