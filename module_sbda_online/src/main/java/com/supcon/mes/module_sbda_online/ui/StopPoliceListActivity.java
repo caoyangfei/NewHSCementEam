@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
@@ -14,7 +16,6 @@ import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
-import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.LoaderController;
@@ -24,7 +25,6 @@ import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.utils.controllers.DatePickController;
 import com.supcon.mes.mbap.utils.controllers.SinglePickController;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
@@ -34,14 +34,13 @@ import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.controller.MyPickerController;
-import com.supcon.mes.middleware.model.bean.CommonDeviceEntity;
-import com.supcon.mes.middleware.model.bean.CommonSearchDeviceListEntity;
+import com.supcon.mes.middleware.controller.DatePickController;
 import com.supcon.mes.middleware.model.bean.CommonSearchEntity;
-import com.supcon.mes.middleware.model.bean.DataUtil;
+import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.util.AnimatorUtil;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
@@ -60,7 +59,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -69,11 +67,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.http.PATCH;
 
 import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_EAM_IDS;
 import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_ID;
@@ -85,50 +80,48 @@ import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_S
 @Router(Constant.Router.STOP_POLICE)
 @Presenter(value = StopPolicePresenter.class)
 public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoliceEntity> implements StopPoliceContract.View {
-    
+
     @BindByTag("contentView")
     RecyclerView contentView;
-    
+
     @BindByTag("titleBar")
     CustomTitleBar titleBar;
-    
+
     @BindByTag("listEamNameFilter")
     CustomFilterView listEamNameFilter;
-    
-    @BindByTag("stopPoliceStartTime")
-    CustomVerticalDateView stopPoliceStartTime;
-    @BindByTag("stopPoliceStopTime")
-    CustomVerticalDateView stopPoliceStopTime;
-    private SinglePickController mSinglePickController;
-    
+
+
+    private View timeStart, timeEnd;
+    private ImageView startExpend, endExpend;
+    private TextView startDate, endDate;
+
     private Map<String, Object> queryParam = new HashMap<>();
     /**
      * 单一停机报警列表项刷新请求列表
      */
     private Map<String, String> singleUpdateQueryParam = new HashMap<>();
-    private MyPickerController datePickController;
+    private DatePickController datePickController;
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    SimpleDateFormat dateFormat1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     Calendar calendar;
     private StopPoliceAdapter stopPoliceAdapter;
-    
+
     @Override
     protected IListAdapter createAdapter() {
         stopPoliceAdapter = new StopPoliceAdapter(this);
         return stopPoliceAdapter;
     }
-    
+
     @Override
     protected int getLayoutID() {
         return R.layout.ac_stop_police_list;
     }
-    
+
     @Override
     protected void onInit() {
         super.onInit();
         EventBus.getDefault().register(this);
     }
-    
+
     @Override
     protected void initView() {
         super.initView();
@@ -136,30 +129,37 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
-        
+
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(5));
-        
+
         listEamNameFilter.setData(FilterHelper.createEamNameFilter());
-        
-        datePickController = new MyPickerController(this);
+
+        timeStart = findViewById(R.id.stopPoliceStartTime);
+        timeEnd = findViewById(R.id.stopPoliceStopTime);
+        startExpend = timeStart.findViewById(R.id.expend);
+        startDate = timeStart.findViewById(R.id.dateTv);
+        endExpend = timeEnd.findViewById(R.id.expend);
+        endDate = timeEnd.findViewById(R.id.dateTv);
+
+        datePickController = new DatePickController(this);
         datePickController.setCycleDisable(true);
         datePickController.setCanceledOnTouchOutside(true);
         datePickController.setSecondVisible(false);
         datePickController.textSize(18);
-        
+
         calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
-        
-        stopPoliceStartTime.setDate(DateUtil.dateFormat(getTimeOfDayStart(), "yyyy-MM-dd"));
-        stopPoliceStopTime.setDate(DateUtil.dateFormat(getTimeOfDayEnd(), "yyyy-MM-dd"));
+
+        startDate.setText(DateUtil.dateFormat(getTimeOfDayStart(), "yyyy-MM-dd"));
+        endDate.setText(DateUtil.dateFormat(getTimeOfDayEnd(), "yyyy-MM-dd"));
         queryParam.put(Constant.BAPQuery.OPEN_TIME_START, dateFormat.format(getTimeOfDayStart()));
         queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, dateFormat.format(getTimeOfDayEnd()));
-        
+
         singlePickerController.textSize(18);
         singlePickerController.setCanceledOnTouchOutside(true);
     }
-    
+
     private CustomDialog mCustomDialog;
     private CustomTextView itemStopPoliceStopType;
     private CustomTextView itemStopPoliceStopReason;
@@ -169,6 +169,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     private static final Map<String, String> TJ_TYPE = new HashMap<>();
     private static final Map<String, Map<String, String>> TJ_REASON = new HashMap<>();
     private LoaderController mLoaderController;
+
     static {
         String[] STOP_POLICE_TYPES = new String[4];
         STOP_POLICE_TYPES[0] = "BEAM2009/";
@@ -187,30 +188,30 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         m1.put("计划性停机", STOP_POLICE_REASONS[1]);
         m1.put("避峰电停机", STOP_POLICE_REASONS[2]);
         m1.put("限产性停机", STOP_POLICE_REASONS[3]);
-        
+
         Map<String, String> m2 = new HashMap<>();
         m2.put("工艺设备故障", STOP_POLICE_REASONS[4]);
         m2.put("工艺物料堵料停机", STOP_POLICE_REASONS[5]);
         m2.put("电器设备故障停机", STOP_POLICE_REASONS[6]);
         m2.put("设备故障", STOP_POLICE_REASONS[7]);
-        
+
         Map<String, String> m3 = new HashMap<>();
         m3.put("不可控停机", STOP_POLICE_REASONS[8]);
         TJ_REASON.put("计划停机", m1);
         TJ_REASON.put("故障停机", m2);
         TJ_REASON.put("不可控因素停机", m3);
     }
-    
+
     private Map<String, String> paramMap = new HashMap<>();
-    
+
     private void showPopUp(StopPoliceEntity stopPoliceEntity) {
         paramMap.put(STOP_POLICE_STAFF_ID, "" + EamApplication.getAccountInfo().staffId);
         paramMap.put(STOP_POLICE_ID, stopPoliceEntity.recordId.id);
-        
+
         if (mCustomDialog == null) {
             mCustomDialog = new CustomDialog(context);
             View view = LayoutInflater.from(context).inflate(R.layout.ly_stop_police_popup, null, false);
-            mLoaderController = new LoaderController(context,view);
+            mLoaderController = new LoaderController(context, view);
             itemStopPoliceStopType = view.findViewById(R.id.itemStopPoliceStopType);
             itemStopPoliceStopReason = view.findViewById(R.id.itemStopPoliceStopReason);
             itemStopPoliceStopExplain = view.findViewById(R.id.itemStopPoliceStopExplain);
@@ -263,14 +264,12 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                         }
                         Bundle bundle = new Bundle();
                         bundle.putBoolean(Constant.IntentKey.IS_MULTI, true);
-                        bundle.putString(Constant.IntentKey.COMMON_SAERCH_MODE, Constant.CommonSearchMode.EAM);
-                        bundle.putString(Constant.IntentKey.COMMON_SEARCH_TAG, "STOP_POLICE_MULTI_DEVICE");
-                        IntentRouter.go(context, Constant.Router.COMMON_SEARCH, bundle);
+                        IntentRouter.go(context, Constant.Router.EAM, bundle);
                     })
                     .bindClickListener(R.id.btn_stop_police_save, v -> {
                         LogUtil.e("ciruy", paramMap.toString());
                         if (paramMap.containsKey(STOP_POLICE_STAFF_ID) && paramMap.containsKey(STOP_POLICE_ID) && paramMap.containsKey(STOP_POLICE_STOP_TYPE) && paramMap.containsKey(STOP_POLICE_STOP_EXPLAIN)) {
-                            new LoaderController(context,view);
+                            new LoaderController(context, view);
                             mLoaderController.showLoader("数据上传中...");
                             presenterRouter.create(StopPoliceAPI.class).updateStopPoliceItem(paramMap);
                         } else {
@@ -278,6 +277,8 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                         }
                     }, false)
                     .bindClickListener(R.id.btn_stop_police_cancel, v -> paramMap.clear(), true);
+            mCustomDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
             RxTextView.textChanges(itemStopPoliceStopExplain.editText())
                     .skipInitialValue()
                     .observeOn(Schedulers.io())
@@ -289,7 +290,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                         else
                             paramMap.put(STOP_POLICE_STOP_EXPLAIN, charSequence.toString());
                     });
-            
+
         }
         if (stopPoliceEntity.recordId != null && stopPoliceEntity.recordId.closedType != null) {
             paramMap.put(STOP_POLICE_STOP_TYPE, stopPoliceEntity.recordId.closedType.id);
@@ -321,37 +322,36 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                 stringBuilderName.deleteCharAt(stringBuilderName.length() - 1);
             if (stringBuilderId.length() > 0)
                 stringBuilderId.deleteCharAt(stringBuilderId.length() - 1);
-            
+
             paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
             itemStopPoliceEamIds.setContent(stringBuilderName.toString());
         } else {
             itemStopPoliceEamIds.setContent(null);
         }
-        
+
         mCustomDialog.show();
     }
-    
+
     @Subscribe
     public void receiveMultiDevice(CommonSearchEvent commonSearchEvent) {
-        if (commonSearchEvent.flag.equals("STOP_POLICE_MULTI_DEVICE")) {
+        if (commonSearchEvent.IS_MULTI) {
+            List<CommonSearchEntity> commonSearchEntities = commonSearchEvent.mCommonSearchEntityList;
             StringBuilder stringBuilderId = new StringBuilder();
             StringBuilder stringBuilderName = new StringBuilder();
-            List<CommonSearchEntity> eamInfos = commonSearchEvent.mCommonSearchEntityList;
-            for (CommonSearchEntity eamInfo : eamInfos) {
-                stringBuilderName.append(eamInfo.getSearchName() + ",");
-                stringBuilderId.append(eamInfo.getSearchId() + ",");
+            for (int i = 0; i < commonSearchEntities.size(); i++) {
+                EamType eamType = (EamType) commonSearchEntities.get(i);
+                if (i != 0) {
+                    stringBuilderName.append(",");
+                    stringBuilderId.append(",");
+                }
+                stringBuilderName.append(eamType.getSearchName());
+                stringBuilderId.append(eamType.getSearchId());
             }
-            if (stringBuilderName.length() > 0)
-                stringBuilderName.deleteCharAt(stringBuilderName.length() - 1);
-            if (stringBuilderId.length() > 0)
-                stringBuilderId.deleteCharAt(stringBuilderId.length() - 1);
-            
             paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
             itemStopPoliceEamIds.setContent(stringBuilderName.toString());
         }
-        
     }
-    
+
     @Override
     protected void initListener() {
         super.initListener();
@@ -363,67 +363,75 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
             }
             showPopUp(stopPoliceEntity);
         });
-        
+
         titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
             @Override
             public void onLeftBtnClick() {
                 back();
             }
-            
+
             @Override
             public void onRightBtnClick() {
-            
+
             }
         });
-        
+
         refreshListController.setOnRefreshPageListener((page) -> {
             if (!queryParam.containsKey(Constant.BAPQuery.ON_OR_OFF)) {
                 queryParam.put(Constant.BAPQuery.ON_OR_OFF, "BEAM020/02");
             }
-            LogUtil.e("ciruy",queryParam.toString());
+            LogUtil.e("ciruy", queryParam.toString());
             presenterRouter.create(StopPoliceAPI.class).runningGatherList(queryParam, page);
         });
         listEamNameFilter.setFilterSelectChangedListener(filterBean -> {
             queryParam.put(Constant.BAPQuery.EAM_NAME, !((ScreenEntity) filterBean).name.equals("设备不限") ? ((ScreenEntity) filterBean).name : "");
             doRefresh();
         });
-        stopPoliceStartTime.setOnChildViewClickListener((childView, action, obj) -> {
-            datePickController.listener((year, month, day, hour, minute, second) -> {
-//                + " " + hour + ":" + minute);
-                if (compareTime(year + "-" + month + "-" + day, stopPoliceStopTime.getContent())) {
-                    if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_START)) {
-                        queryParam.remove(Constant.BAPQuery.OPEN_TIME_START);
-                    }
-                    queryParam.put(Constant.BAPQuery.OPEN_TIME_START, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
-                    queryParam.put(Constant.BAPQuery.EAM_NAME, "");
-                    stopPoliceStartTime.setDate(year + "-" + month + "-" + day);
-                    listEamNameFilter.setCurrentItem("设备不限");
-                    doRefresh();
-                }
-                
-            }).show(System.currentTimeMillis());
-        });
-        
-        stopPoliceStopTime.setOnChildViewClickListener((childView, action, obj) ->
+        timeStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AnimatorUtil.rotationExpandIcon(startExpend, 0, 180);
                 datePickController.listener((year, month, day, hour, minute, second) -> {
-//                    + " " + hour + ":" + minute);
-                    if (compareTime(stopPoliceStartTime.getContent(), year + "-" + month + "-" + day)) {
+                    if (compareTime(year + "-" + month + "-" + day, endDate.getText().toString())) {
+                        startDate.setText(year + "-" + month + "-" + day);
+                        if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_START)) {
+                            queryParam.remove(Constant.BAPQuery.OPEN_TIME_START);
+                        }
+                        queryParam.put(Constant.BAPQuery.OPEN_TIME_START, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
+                        queryParam.put(Constant.BAPQuery.EAM_NAME, "");
+                        listEamNameFilter.setCurrentItem("设备不限");
+                        doRefresh();
+                    }
+
+                }).show(DateUtil.dateFormat(startDate.getText().toString()), startExpend);
+            }
+        });
+        timeEnd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AnimatorUtil.rotationExpandIcon(endExpend, 0, 180);
+                datePickController.listener((year, month, day, hour, minute, second) -> {
+                    if (compareTime(startDate.getText().toString(), year + "-" + month + "-" + day)) {
+                        endDate.setText(year + "-" + month + "-" + day);
                         if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_STOP)) {
                             queryParam.remove(Constant.BAPQuery.OPEN_TIME_STOP);
                         }
                         queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
                         listEamNameFilter.setCurrentItem("设备不限");
                         queryParam.put(Constant.BAPQuery.EAM_NAME, "");
-                        stopPoliceStopTime.setDate(year + "-" + month + "-" + day);
                         doRefresh();
                     }
-                }).show(System.currentTimeMillis()));
+                }).show(DateUtil.dateFormat(endDate.getText().toString()), endExpend);
+            }
+        });
+
+
     }
-    
+
     private void doRefresh() {
         refreshListController.refreshBegin();
     }
-    
+
     @SuppressLint("CheckResult")
     @Override
     public void runningGatherListSuccess(StopPoliceListEntity entity) {
@@ -451,13 +459,13 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
 //                })
 //                .subscribe(stopPoliceListEntity -> refreshListController.refreshComplete(entity.result));
     }
-    
+
     @Override
     public void runningGatherListFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         refreshListController.refreshComplete(null);
     }
-    
+
     @Override
     public void updateStopPoliceItemSuccess(StatusResultEntity entity) {
         mLoaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
@@ -468,48 +476,48 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
             }
         });
     }
-    
+
     private void updateSingleItem() {
         presenterRouter.create(StopPoliceAPI.class)
                 .updateStopPoliceItem(singleUpdateQueryParam);
     }
-    
+
     @Override
     public void updateStopPoliceItemFailed(String errorMsg) {
         mLoaderController.showMsgAndclose(errorMsg, false, 1500);
     }
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLogin(LoginEvent loginEvent) {
-        
+
         refreshListController.refreshBegin();
     }
-    
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
-        
+
         refreshListController.refreshBegin();
     }
-    
+
     private boolean compareTime(String start, String stop) {
         if (TextUtils.isEmpty(start) || TextUtils.isEmpty(stop)) {
             return false;
         }
-            long startTime = DateUtil.dateFormat(start,"yyyy-MM-dd");
-            long stopTime = DateUtil.dateFormat(stop,"yyyy-MM-dd");;
-            if (stopTime >= startTime) {
-                return true;
-            }
+        long startTime = DateUtil.dateFormat(start, "yyyy-MM-dd");
+        long stopTime = DateUtil.dateFormat(stop, "yyyy-MM-dd");
+        if (stopTime >= startTime) {
+            return true;
+        }
         ToastUtils.show(this, "开始时间不能大于结束时间!");
         return false;
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
-    
+
     public static long getTimeOfMonthStart() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.HOUR_OF_DAY, 0);
@@ -518,7 +526,9 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         ca.clear(Calendar.MILLISECOND);
         ca.set(Calendar.DAY_OF_MONTH, 1);
         return ca.getTimeInMillis();
-    }public static long getTimeOfDayStart() {
+    }
+
+    public static long getTimeOfDayStart() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.HOUR_OF_DAY, 0);
         ca.clear(Calendar.MINUTE);
@@ -526,12 +536,13 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         ca.clear(Calendar.MILLISECOND);
         return ca.getTimeInMillis();
     }
+
     public static long getTimeOfDayEnd() {
         Calendar ca = Calendar.getInstance();
         ca.set(Calendar.HOUR_OF_DAY, 23);
 //        ca.clear(Calendar.MINUTE);
         ca.set(Calendar.MINUTE, 59);
-        ca.set(Calendar.SECOND,59);
+        ca.set(Calendar.SECOND, 59);
         return ca.getTimeInMillis();
     }
 }

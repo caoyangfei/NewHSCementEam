@@ -160,6 +160,11 @@ public class NFCHelper {
             Ndef ndef = Ndef.get(tag);
             String textRecord = readNfcTag(intent);
             nfcMsg = fireNdefEvent(ndef, textRecord);
+            try {
+                ndef.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } else if (action.equals(NfcAdapter.ACTION_TECH_DISCOVERED)) {
             for (String tagTech : tag.getTechList()) {
                 LogUtil.d(tagTech);

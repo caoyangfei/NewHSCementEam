@@ -3,6 +3,7 @@ package com.supcon.mes.module_yhgl.ui;
 import android.annotation.SuppressLint;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -15,6 +16,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.util.DisplayUtil;
+import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
@@ -163,11 +165,14 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
             @Override
             public void onClick(View v) {
                 AnimatorUtil.rotationExpandIcon(startExpend, 0, 180);
+
                 datePickController.listener((year, month, day, hour, minute, second) -> {
-                    startDate.setText(year + "-" + month + "-" + day);
-                    queryParam.put(Constant.BAPQuery.YH_DATE_START, year + "-" + month + "-" + day + " 00:00:00");
-                    workCountQueryParam.put("startTime", year + "-" + month + "-" + day);
-                    refreshListController.refreshBegin();
+                    if (compareTime(year + "-" + month + "-" + day, endDate.getText().toString())) {
+                        startDate.setText(year + "-" + month + "-" + day);
+                        queryParam.put(Constant.BAPQuery.YH_DATE_START, year + "-" + month + "-" + day + " 00:00:00");
+                        workCountQueryParam.put("startTime", year + "-" + month + "-" + day);
+                        refreshListController.refreshBegin();
+                    }
                 }).show(DateUtil.dateFormat(startDate.getText().toString()), startExpend);
             }
         });
@@ -177,10 +182,12 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
             public void onClick(View v) {
                 AnimatorUtil.rotationExpandIcon(endExpend, 0, 180);
                 datePickController.listener((year, month, day, hour, minute, second) -> {
-                    startDate.setText(year + "-" + month + "-" + day);
-                    queryParam.put(Constant.BAPQuery.YH_DATE_END, year + "-" + month + "-" + day + " 00:00:00");
-                    workCountQueryParam.put("endTime", year + "-" + month + "-" + day);
-                    refreshListController.refreshBegin();
+                    if (compareTime(startDate.getText().toString(), year + "-" + month + "-" + day)) {
+                        endDate.setText(year + "-" + month + "-" + day);
+                        queryParam.put(Constant.BAPQuery.YH_DATE_END, year + "-" + month + "-" + day + " 00:00:00");
+                        workCountQueryParam.put("endTime", year + "-" + month + "-" + day);
+                        refreshListController.refreshBegin();
+                    }
                 }).show(DateUtil.dateFormat(endDate.getText().toString()), endExpend);
             }
         });
@@ -245,5 +252,16 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
         EventBus.getDefault().unregister(this);
     }
 
-
+    private boolean compareTime(String start, String stop) {
+        if (TextUtils.isEmpty(start) || TextUtils.isEmpty(stop)) {
+            return false;
+        }
+        long startTime = DateUtil.dateFormat(start, "yyyy-MM-dd");
+        long stopTime = DateUtil.dateFormat(stop, "yyyy-MM-dd");
+        if (stopTime >= startTime) {
+            return true;
+        }
+        ToastUtils.show(this, "开始时间不能大于结束时间!");
+        return false;
+    }
 }

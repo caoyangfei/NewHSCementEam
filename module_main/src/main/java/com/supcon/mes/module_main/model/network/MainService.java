@@ -6,6 +6,7 @@ import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.module_main.model.bean.EamEntity;
+import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.bean.WorkNumEntity;
@@ -60,4 +61,8 @@ public interface MainService {
     @GET("/BEAM2/patrolWorkerScore/workerScoreHead/getSloganInfo.action")
     Flowable<CommonEntity<String>> getSloganInfo();
 
+
+    //已处理的
+    @GET("/ec/myWorkflow/workflowHandleList.action")
+    Flowable<CommonBAPListEntity<ProcessedEntity>> workflowHandleList(@Query("myworkflowMsg.pageNo") int pageNo,@Query("myworkflowMsg.pageSize") int pageSize);
 }

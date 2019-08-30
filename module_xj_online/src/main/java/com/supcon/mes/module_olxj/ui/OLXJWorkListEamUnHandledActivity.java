@@ -77,6 +77,7 @@ import com.supcon.mes.module_olxj.presenter.OLXJTempTaskListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapter;
+import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapterNew;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
 
@@ -87,6 +88,7 @@ import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -137,7 +139,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     private ModifyController<OLXJAreaEntity> mModifyController;
 
-    OLXJWorkListEamAdapter mOLXJWorkListAdapter;
+    OLXJWorkListEamAdapterNew mOLXJWorkListAdapter;
     private SinglePickController<String> mSinglePickController;
 
 
@@ -168,10 +170,11 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     private OLXJAreaEntity oldXJAreaEntity;
     private EamType eamType;
     private EamXJEntity eamXJEntity;
+    private boolean isOneSubmit;
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
-        mOLXJWorkListAdapter = new OLXJWorkListEamAdapter(context);
+        mOLXJWorkListAdapter = new OLXJWorkListEamAdapterNew(context);
         return mOLXJWorkListAdapter;
     }
 
@@ -354,6 +357,9 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 case "ufItemPartEndBtn":
                     showPartFinishDialog(xjWorkItemEntity);
                     break;
+                case "ufItemEndBtn":
+                    submitOneAreaData(xjWorkItemEntity);
+                    break;
                 default:
             }
 
@@ -412,10 +418,12 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                             .bindClickListener(R.id.grayBtn, null, true)
                             .bindClickListener(R.id.redBtn, v -> {
                                 try {
-                                    for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
-                                        if (set.contains(xjWorkItemEntity.id)) {
-                                            if (!doFinish(xjWorkItemEntity)) {
-                                                return;
+                                    if (set.size() > 0) {
+                                        for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
+                                            if (set.contains(xjWorkItemEntity.id)) {
+                                                if (!doFinish(xjWorkItemEntity)) {
+                                                    return;
+                                                }
                                             }
                                         }
                                     }
@@ -428,6 +436,39 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                 }
                             }, true)
                             .show();
+                });
+    }
+
+    @SuppressLint("CheckResult")
+    private void submitOneAreaData(OLXJWorkItemEntity xjWorkItemEntity) {
+        isOneSubmit = true;
+        OLXJAreaEntity olxjAreaEntity = new OLXJAreaEntity();
+        olxjAreaEntity.id = mXJAreaEntity.id;
+        olxjAreaEntity.name = mXJAreaEntity.name;
+        olxjAreaEntity._code = mXJAreaEntity._code;
+        olxjAreaEntity.eamInspectionGuideImageAttachementInfo = mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
+        olxjAreaEntity.isSign = mXJAreaEntity.isSign;
+        olxjAreaEntity.finishType = mXJAreaEntity.finishType;
+        olxjAreaEntity.signedTime = mXJAreaEntity.signedTime;
+        olxjAreaEntity.signType = mXJAreaEntity.signType;
+        olxjAreaEntity.signReason = mXJAreaEntity.signReason;
+        olxjAreaEntity.signCode = mXJAreaEntity.signCode;
+        olxjAreaEntity.staffId = mXJAreaEntity.staffId;
+        olxjAreaEntity.workItemEntities.addAll(mXJAreaEntity.workItemEntities);
+        Flowable.fromIterable(olxjAreaEntity.workItemEntities)
+                .filter(olxjWorkItemEntity -> {
+                    if (olxjWorkItemEntity.id == xjWorkItemEntity.id) {
+                        return true;
+                    }
+                    return false;
+                })
+                .subscribe(olxjWorkItemEntity -> {
+                    int position = olxjAreaEntity.workItemEntities.indexOf(olxjWorkItemEntity);
+                    olxjAreaEntity.workItemEntities.set(position, xjWorkItemEntity);
+                }, throwable -> {
+                }, () -> {
+                    onLoading("正在打包并上传巡检数据，请稍后...");
+                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
                 });
     }
 
@@ -888,6 +929,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
+        if (event.action.equals(Constant.RefreshAction.XJ_WORK_REINPUT)) return;
         titleController.initView();
         doRefresh(false);
     }
@@ -1001,14 +1043,14 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @SuppressLint("CheckResult")
     public void initWorkItemList(List<OLXJWorkItemEntity> entity) {
         List<OLXJWorkItemEntity> xjWorkItemEntities = new ArrayList<>();
-        OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
-        headerEntity.headerPicPath = String.valueOf(eamType.id);
-        headerEntity.viewType = ListType.HEADER.value();
-        xjWorkItemEntities.add(headerEntity);
+//        OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
+//        headerEntity.headerPicPath = String.valueOf(eamType.id);
+//        headerEntity.viewType = ListType.HEADER.value();
+//        xjWorkItemEntities.add(headerEntity);
         Flowable.fromIterable(entity)
                 .filter(workItemEntity -> !workItemEntity.isFinished)
                 .subscribe(workItemEntity -> {
-                    if (workItemEntity.eamID != null) {
+                    if (workItemEntity.eamID != null && workItemEntity.getPrioritySort() == 0) {
                         if (TextUtils.isEmpty(workItemEntity.eamID.name)) {
                             OLXJWorkItemEntity titleEntity = new OLXJWorkItemEntity();
                             titleEntity.title = workItemEntity.eamID.name;
@@ -1061,12 +1103,18 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
             @SuppressLint("CheckResult")
             @Override
             public void onLoaderFinished() {
-                back();
-                Flowable.timer(300, TimeUnit.MILLISECONDS)
-                        .subscribe(v -> {
-                            EventBus.getDefault().post(mXJAreaEntity);
-                            EventBus.getDefault().post(new AreaRefreshEvent());
-                        });
+                if (isOneSubmit) {
+                    titleController.initView();
+                    refreshListController.refreshBegin();
+                    isOneSubmit = false;
+                } else {
+                    back();
+                    Flowable.timer(300, TimeUnit.MILLISECONDS)
+                            .subscribe(v -> {
+                                EventBus.getDefault().post(mXJAreaEntity);
+                                EventBus.getDefault().post(new AreaRefreshEvent());
+                            });
+                }
             }
         });
     }
@@ -1095,6 +1143,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                         mXJAreaEntity.signedTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                         doRefresh(false);
                         oldXJAreaEntity = mXJAreaEntity;
+                        Collections.sort(mXJAreaEntity.workItemEntities);
                     }
                 } else {
                     refreshListController.refreshComplete(null);

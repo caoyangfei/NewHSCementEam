@@ -62,9 +62,9 @@ import java.util.regex.Pattern;
 
 
 /**
- * Created by wangshizhan on 2018/3/27.
- * Email:wangshizhan@supcon.com
- * 巡检到设备
+ * 巡检到设备 先留着 防止又要改回去
+ *
+ * @deprecated
  */
 public class OLXJWorkListEamAdapter extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
 

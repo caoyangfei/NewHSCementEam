@@ -24,7 +24,7 @@ import com.supcon.mes.module_olxj.R;
 public class TipPopwindow extends PopupWindow implements PopupWindow.OnDismissListener {
     private View conentView;
     private Activity context;
-    private final TextView tipContent;
+    private TextView tipContent;
 
     public TipPopwindow(Activity context) {
         LayoutInflater inflater = (LayoutInflater) context

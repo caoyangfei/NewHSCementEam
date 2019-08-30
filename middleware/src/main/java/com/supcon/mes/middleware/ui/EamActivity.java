@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
@@ -43,7 +44,10 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -62,8 +66,16 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
     @BindByTag("titleBar")
     CustomHorizontalSearchTitleBar titleBar;
 
+    @BindByTag("rightBtn_1")
+    TextView rightBtn_1;
+
     @BindByTag("leftBtn")
     ImageButton leftBtn;
+    /**
+     * 多选模式，现在还在开发中
+     * Todo:暂时不支持多选模式
+     */
+    private boolean isMulti;
 
     /**
      * 侧栏首字母导航控件
@@ -80,9 +92,11 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
     private boolean isMainEam;
     private String searchTag;
 
+    private List<CommonSearchEntity> searchEntities = new ArrayList<>();
+
     @Override
     protected IListAdapter<CommonSearchEntity> createAdapter() {
-        mBaseSearchAdapter = new BaseSearchAdapter(this, false);
+        mBaseSearchAdapter = new BaseSearchAdapter(this, isMulti);
         return mBaseSearchAdapter;
     }
 
@@ -97,6 +111,7 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
         areaName = getIntent().getStringExtra(Constant.IntentKey.AREA_NAME);
         isMainEam = getIntent().getBooleanExtra(Constant.IntentKey.IS_MAIN_EAM, false);
         searchTag = getIntent().getStringExtra(Constant.IntentKey.COMMON_SEARCH_TAG);
+        isMulti = getIntent().getBooleanExtra(Constant.IntentKey.IS_MULTI, false);
 
         nfcHelper = NFCHelper.getInstance();
         if (nfcHelper != null) {
@@ -141,6 +156,13 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
         recyclerView.setScrollBarStyle(View.SCROLLBARS_INSIDE_INSET);
         recyclerView.setScrollBarSize(2);
         titleSearchView.setInput(eamCode);
+        rightBtn_1.setVisibility(isMulti ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        mBaseSearchAdapter.setMulti(isMulti);
     }
 
     @SuppressLint("CheckResult")
@@ -149,12 +171,38 @@ public class EamActivity extends BaseRefreshRecyclerActivity<CommonSearchEntity>
         super.initListener();
 
         mBaseSearchAdapter.setOnItemChildViewClickListener((childView, position, action, obj) -> {
-            CommonSearchEntity commonSearchEntity = (CommonSearchEntity) obj;
+
+            //如果当前模式为多选模式,则不响应单选模式触发返回事件
+            final CommonSearchEntity commonSearchEntity = (CommonSearchEntity) obj;
+            if (isMulti) {
+                if (!searchEntities.contains(commonSearchEntity)) {
+                    searchEntities.add(commonSearchEntity);
+                } else {
+                    searchEntities.remove(commonSearchEntity);
+                }
+                return;
+            }
+
             CommonSearchEvent commonSearchEvent = new CommonSearchEvent();
             commonSearchEvent.commonSearchEntity = commonSearchEntity;
             commonSearchEvent.flag = searchTag;
             finish();
             EventBus.getDefault().post(commonSearchEvent);
+        });
+
+        rightBtn_1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (searchEntities.size() == 0) {
+                    ToastUtils.show(EamActivity.this, "请选择设备!");
+                    return;
+                }
+                CommonSearchEvent commonSearchEvent = new CommonSearchEvent();
+                commonSearchEvent.mCommonSearchEntityList = searchEntities;
+                commonSearchEvent.IS_MULTI = true;
+                EventBus.getDefault().post(commonSearchEvent);
+                back();
+            }
         });
 
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {

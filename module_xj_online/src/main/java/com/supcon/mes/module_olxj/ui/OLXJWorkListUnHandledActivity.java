@@ -71,6 +71,7 @@ import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapter;
+import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapterNew;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
 
@@ -86,6 +87,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -133,7 +135,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
     private ModifyController<OLXJAreaEntity> mModifyController;
 
-    OLXJWorkListAdapter mOLXJWorkListAdapter;
+    OLXJWorkListAdapterNew mOLXJWorkListAdapter;
     private SinglePickController<String> mSinglePickController;
     private OLXJAreaEntity mXJAreaEntity;
 
@@ -161,10 +163,11 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
     private AttachmentDownloadController mDownloadController;
     public Map<String, Boolean> isColse = new LinkedHashMap<>();
     private OLXJTitleController titleController;
+    private boolean isOneSubmit;
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
-        mOLXJWorkListAdapter = new OLXJWorkListAdapter(context);
+        mOLXJWorkListAdapter = new OLXJWorkListAdapterNew(context);
         return mOLXJWorkListAdapter;
     }
 
@@ -314,20 +317,14 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
             if (obj instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) obj;
-
                 xjWorkItemEntity = (OLXJWorkItemEntity) map.get("obj");
-
             } else {
                 xjWorkItemEntity = (OLXJWorkItemEntity) obj;
-
             }
-
             String tag = (String) childView.getTag();
-
             switch (tag) {
                 case "vibrationBtn":
                     showViberDialog(position, xjWorkItemEntity);
-
                     break;
                 case "ufItemSelectResult":
                     if (action == -1) {
@@ -341,7 +338,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                             showResultPicker(((CustomSpinner) childView).getSpinnerValue(), xjWorkItemEntity, position);
                         }
                     }
-
                     break;
                 case "ufItemConclusion":
                     if (action == -1) {
@@ -350,9 +346,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                     } else {
                         showConclusionPicker(xjWorkItemEntity, position);
                     }
-
                     break;
-
                 case "ufItemSkipBtn":
                     if (!xjWorkItemEntity.ispass) {
                         SnackbarHelper.showError(rootView, "该巡检项不允许跳过");
@@ -360,27 +354,21 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                         showSkipReasonPicker(xjWorkItemEntity);
                     }
                     break;
-
-
                 case "thermometerBtn":
                     xjWorkItemEntity.result = thermometervalue;
                     mOLXJWorkListAdapter.notifyItemChanged(position);
                     break;
-
                 case "fHistoryBtn":
-
                     showHistories(xjWorkItemEntity);
-
                     break;
-
                 case "ufItemPartEndBtn":
-
                     showPartFinishDialog(xjWorkItemEntity);
                     break;
-
+                case "ufItemEndBtn":
+                    submitOneAreaData(xjWorkItemEntity);
+                    break;
                 default:
             }
-
         });
 
     }
@@ -441,10 +429,12 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                 .bindClickListener(R.id.grayBtn, null, true)
                                 .bindClickListener(R.id.redBtn, v -> {
                                     try {
-                                        for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
-                                            if (set.contains(xjWorkItemEntity.id)) {
-                                                if (!doFinish(xjWorkItemEntity)) {
-                                                    return;
+                                        if (set.size() > 0) {
+                                            for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
+                                                if (set.contains(xjWorkItemEntity.id)) {
+                                                    if (!doFinish(xjWorkItemEntity)) {
+                                                        return;
+                                                    }
                                                 }
                                             }
                                         }
@@ -485,6 +475,39 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 //                            ToastUtils.show(context, "还存在未完成的巡检项，请先完成!");
 //                    }
 //                });
+    }
+
+    @SuppressLint("CheckResult")
+    private void submitOneAreaData(OLXJWorkItemEntity xjWorkItemEntity) {
+        isOneSubmit = true;
+        OLXJAreaEntity olxjAreaEntity = new OLXJAreaEntity();
+        olxjAreaEntity.id = mXJAreaEntity.id;
+        olxjAreaEntity.name = mXJAreaEntity.name;
+        olxjAreaEntity._code = mXJAreaEntity._code;
+        olxjAreaEntity.eamInspectionGuideImageAttachementInfo = mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
+        olxjAreaEntity.isSign = mXJAreaEntity.isSign;
+        olxjAreaEntity.finishType = mXJAreaEntity.finishType;
+        olxjAreaEntity.signedTime = mXJAreaEntity.signedTime;
+        olxjAreaEntity.signType = mXJAreaEntity.signType;
+        olxjAreaEntity.signReason = mXJAreaEntity.signReason;
+        olxjAreaEntity.signCode = mXJAreaEntity.signCode;
+        olxjAreaEntity.staffId = mXJAreaEntity.staffId;
+        olxjAreaEntity.workItemEntities.addAll(mXJAreaEntity.workItemEntities);
+        Flowable.fromIterable(olxjAreaEntity.workItemEntities)
+                .filter(olxjWorkItemEntity -> {
+                    if (olxjWorkItemEntity.id == xjWorkItemEntity.id) {
+                        return true;
+                    }
+                    return false;
+                })
+                .subscribe(olxjWorkItemEntity -> {
+                    int position = olxjAreaEntity.workItemEntities.indexOf(olxjWorkItemEntity);
+                    olxjAreaEntity.workItemEntities.set(position, xjWorkItemEntity);
+                }, throwable -> {
+                }, () -> {
+                    onLoading("正在打包并上传巡检数据，请稍后...");
+                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
+                });
     }
 
     private void showSubmitDialog(String msg) {
@@ -551,11 +574,9 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
     @SuppressLint("CheckResult")
     private void doRefresh(boolean isDcs) {
-
         if (mDownloadController == null) {
             mDownloadController = new AttachmentDownloadController(Constant.IMAGE_SAVE_PATH);
         }
-
         if (mXJAreaEntity.eamInspectionGuideImageDocument != null) {
             mXJAreaEntity.eamInspectionGuideImageDocument.name = mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
             mDownloadController.downloadEamPic(mXJAreaEntity.eamInspectionGuideImageDocument, "mobileEAM_1.0.0_work", new OnSuccessListener<File>() {
@@ -623,7 +644,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                 .bindClickListener(R.id.redBtn, v -> {
                                     try {
 //                                        onLoading("完成中...");
-
                                         for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
                                             if (set.contains(xjWorkItemEntity.id)) {
                                                 if (!doFinish(xjWorkItemEntity)) {
@@ -633,7 +653,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                         }
 //                                        onLoadSuccess("完成");
                                         doRefresh(false);
-
                                     } catch (Exception e) {
                                         onLoadFailed("完成操作失败！" + e.getMessage());
                                         e.printStackTrace();
@@ -989,6 +1008,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
+        if (event.action.equals(Constant.RefreshAction.XJ_WORK_REINPUT)) return;
         titleController.initView();
         refreshListController.refreshBegin();
     }
@@ -1128,14 +1148,14 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
     public void initWorkItemList(List<OLXJWorkItemEntity> entity) {
 
         List<OLXJWorkItemEntity> xjWorkItemEntities = new ArrayList<>();
-        OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
-        headerEntity.headerPicPath = TextUtils.isEmpty(mXJAreaEntity.eamInspectionGuideImageAttachementInfo) ? "" : Constant.IMAGE_SAVE_PATH + mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
-        headerEntity.viewType = ListType.HEADER.value();
-        xjWorkItemEntities.add(headerEntity);
+//        OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
+//        headerEntity.headerPicPath = TextUtils.isEmpty(mXJAreaEntity.eamInspectionGuideImageAttachementInfo) ? "" : Constant.IMAGE_SAVE_PATH + mXJAreaEntity.eamInspectionGuideImageAttachementInfo;
+//        headerEntity.viewType = ListType.HEADER.value();
+//        xjWorkItemEntities.add(headerEntity);
         Flowable.fromIterable(entity)
                 .filter(workItemEntity -> !workItemEntity.isFinished)
                 .subscribe(workItemEntity -> {
-                    if (workItemEntity.eamID != null) {
+                    if (workItemEntity.eamID != null && workItemEntity.getPrioritySort() == 0) {
                         if (TextUtils.isEmpty(workItemEntity.eamID.name)) {
                             OLXJWorkItemEntity titleEntity = new OLXJWorkItemEntity();
                             titleEntity.title = workItemEntity.eamID.name;
@@ -1188,12 +1208,18 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
             @SuppressLint("CheckResult")
             @Override
             public void onLoaderFinished() {
-                back();
-                Flowable.timer(300, TimeUnit.MILLISECONDS)
-                        .subscribe(v -> {
-                            EventBus.getDefault().post(mXJAreaEntity);
-                            EventBus.getDefault().post(new AreaRefreshEvent());
-                        });
+                if (isOneSubmit) {
+                    titleController.initView();
+                    refreshListController.refreshBegin();
+                    isOneSubmit = false;
+                } else {
+                    back();
+                    Flowable.timer(300, TimeUnit.MILLISECONDS)
+                            .subscribe(v -> {
+                                EventBus.getDefault().post(mXJAreaEntity);
+                                EventBus.getDefault().post(new AreaRefreshEvent());
+                            });
+                }
             }
         });
     }

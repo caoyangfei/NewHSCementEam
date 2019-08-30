@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,12 +19,9 @@ import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
 import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.util.DisplayUtil;
-import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
-import com.supcon.mes.mbap.beans.GalleryBean;
 import com.supcon.mes.mbap.constant.ListType;
 import com.supcon.mes.mbap.utils.DateUtil;
-import com.supcon.mes.mbap.view.CustomAdView;
 import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomGalleryView;
 import com.supcon.mes.mbap.view.CustomSpinner;
@@ -32,51 +30,43 @@ import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.model.bean.WXGDEam;
+import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.constant.OLXJConstant;
 import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
-import com.supcon.mes.module_olxj.ui.OLXJWorkListUnHandledActivity;
+import com.supcon.mes.module_olxj.ui.OLXJWorkListEamUnHandledActivity;
 import com.supcon.mes.sb2.util.SB2ThermometerHelper;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.io.File;
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 /**
- * 巡检项 先留着 防止又要改回去
- *
- * @deprecated
+ * 巡检到设备（新的）
  */
-public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
+public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
 
-    private SB2ThermometerHelper sp2ThermometerHelper;
     private HashSet hashSet = new HashSet();//判断dcs是否请求过，防止刷新不断请求
 
-    public OLXJWorkListAdapter(Context context) {
+    public OLXJWorkListEamAdapterNew(Context context) {
         super(context);
-        initThermometer();  //初始化测温
     }
 
-    public OLXJWorkListAdapter(Context context, List<OLXJWorkItemEntity> list) {
+    public OLXJWorkListEamAdapterNew(Context context, List<OLXJWorkItemEntity> list) {
         super(context, list);
     }
 
@@ -100,37 +90,21 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         return workItemEntity.isFinished ? -1 : workItemEntity.viewType;
     }
 
-    /**
-     * @description 测温
-     * @author zhangwenshuai1
-     * @date 2018/4/28
-     */
-    private void initThermometer() {
-        sp2ThermometerHelper = SB2ThermometerHelper.getInstance();
-    }
-
-
     class ViewHolderUnFinished extends BaseRecyclerViewHolder<OLXJWorkItemEntity> implements OnChildViewClickListener {
 
         String oldImgUrl = "";  //原图片url，为测温时刷新视图使用，不然页面显示跳动问题
-
-        @BindByTag("workItemIndex")
-        TextView workItemIndex;
 
         @BindByTag("ufEamName")
         TextView ufEamName;  //设备名称
 
         @BindByTag("ufItemContent")
-        CustomTextView ufItemContent;  //内容
+        TextView ufItemContent;  //内容
 
         @BindByTag("ufItemSelectResult")
         CustomSpinner ufItemSelectResult;  //选择结果
 
         @BindByTag("ufItemInputResult")
         CustomEditText ufItemInputResult;  //输入结果
-
-        @BindByTag("ufItemConclusion")
-        CustomVerticalSpinner ufItemConclusion;  //结论
 
         @BindByTag("ufItemRemark")
         CustomEditText ufItemRemark;  //备注
@@ -141,44 +115,15 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         @BindByTag("ufItemPhotoBtn")
         Button ufItemPhotoBtn; //拍照
 
-        @BindByTag("ufItemSaveBtn")
-        Button ufItemSaveBtn; //保存
-
         @BindByTag("ufItemEndBtn")
         Button ufItemEndBtn; //完成
 
         @BindByTag("ufItemPartEndBtn")
         Button ufItemPartEndBtn; //部位完成
 
-        @BindByTag("ufItemEditBtn")
-        Button ufItemEditBtn; //录数据按钮
-
-        @BindByTag("ufItemSkipBtn")
-        Button ufItemSkipBtn; //跳过
-
-        @BindByTag("fHistoryBtn")
-        Button fHistoryBtn; //历史
-
-        @BindByTag("thermometerBtn")
-        Button thermometerBtn;  //测温,为了解决触动闪烁问题，使用TextView控件
-
-        @BindByTag("vibrationBtn")
-        Button vibrationBtn;
-
-        @BindByTag("ufItemRemarkBtn")
-        Button ufItemRemarkBtn;
 
         @BindByTag("ufItemPart")
         CustomTextView ufItemPart;  //部位
-
-        @BindByTag("llNormalRange")
-        LinearLayout llNormalRange;
-
-        @BindByTag("ufItemNormalRange")
-        CustomTextView ufItemNormalRange;
-
-        @BindByTag("ufResultLayout")
-        LinearLayout ufResultLayout;
 
         @BindByTag("ufBtnLayout")
         LinearLayout ufBtnLayout;
@@ -189,14 +134,8 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         @BindByTag("ufContentLine")
         View ufContentLine;
 
-        @BindByTag("ufResultLine")
-        View ufResultLine;
-
-        @BindByTag("ufResultVerticalLine")
-        View ufResultVerticalLine;
-
-        @BindByTag("ufItemSelectResultSwitchLayout")
-        LinearLayout ufItemSelectResultSwitchLayout;
+        @BindByTag("ufItemPriority")
+        View ufItemPriority;
 
         @BindByTag("ufItemSelectResultSwitch")
         CustomSwitchButton ufItemSelectResultSwitch;
@@ -204,12 +143,12 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         OLXJCameraController mOLXJCameraController;
 
         public ViewHolderUnFinished(Context context) {
-            super(context);
+            super(context, parent);
         }
 
         @Override
         protected int layoutId() {
-            return R.layout.item_olxj_work_item_unfinished;
+            return R.layout.item_olxj_work_item_unfinished_new;
         }
 
         @Override
@@ -220,7 +159,7 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         @Override
         protected void initView() {
             super.initView();
-            mOLXJCameraController = ((OLXJWorkListUnHandledActivity) context).getController(OLXJCameraController.class);
+            mOLXJCameraController = ((OLXJWorkListEamUnHandledActivity) context).getController(OLXJCameraController.class);
             mOLXJCameraController.init(Constant.IMAGE_SAVE_XJPATH, Constant.PicType.XJ_PIC);
         }
 
@@ -230,38 +169,26 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
             super.initListener();
 
             ufItemSelectResult.setOnChildViewClickListener(this);
-            ufItemConclusion.setOnChildViewClickListener(this);
-
-            ufItemSaveBtn.setOnClickListener(v -> {
-
-                OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-                xjWorkItemEntity.realRemark = ufItemRemark.getInput().trim();
-                SnackbarHelper.showMessage(itemView, "保存成功");
-
-            });
 
             ufItemEndBtn.setOnClickListener(v -> {
                 OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
+                xjWorkItemEntity.result = TextUtils.isEmpty(xjWorkItemEntity.result) ? xjWorkItemEntity.defaultVal : xjWorkItemEntity.result;
                 if (TextUtils.isEmpty(xjWorkItemEntity.result)) {
                     SnackbarHelper.showError(itemView, "请填写结果");
                     return;
                 }
-
                 if (xjWorkItemEntity.isphone && xjWorkItemEntity.isPhonere == false) {
                     SnackbarHelper.showError(itemView, "该巡检项要求拍照");
                     return;
                 }
-
                 oldImgUrl = "";
-
                 try {
                     xjWorkItemEntity.realRemark = ufItemRemark.getInput().trim();
                     xjWorkItemEntity.endTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                     xjWorkItemEntity.isFinished = true;
                     xjWorkItemEntity.linkState = OLXJConstant.MobileWiLinkState.FINISHED_STATE;
                     xjWorkItemEntity.staffId = EamApplication.getAccountInfo().staffId;
-
-                    EventBus.getDefault().post(new RefreshEvent(Constant.RefreshAction.XJ_WORK_END, getAdapterPosition()));
+                    onItemChildViewClick(ufItemEndBtn, 0, xjWorkItemEntity);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -272,13 +199,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 onItemChildViewClick(ufItemPartEndBtn, 0, xjWorkItemEntity);
             });
 
-            ufItemSkipBtn.setOnClickListener(v -> {
-                OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-                oldImgUrl = "";
-                onItemChildViewClick(ufItemSkipBtn, 0, xjWorkItemEntity);
-            });
-
-
             RxTextView.textChanges(ufItemInputResult.editText())
                     .skipInitialValue()
                     .subscribe(charSequence -> {
@@ -286,25 +206,13 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                         if (TextUtils.isEmpty(charSequence)) {
                             if (xjWorkItemEntity != null)
                                 xjWorkItemEntity.result = charSequence.toString();
+                            changeState(false);
                         } else {
                             if ("数字".equals(xjWorkItemEntity.inputStandardID.valueTypeMoblie.value) && OLXJConstant.MobileEditType.INPUTE.equals(xjWorkItemEntity.inputStandardID.editTypeMoblie.id)) {  //值类型判断：字符/数字
-
                                 if (xjWorkItemEntity.autoJudge) {
-
                                     //结论自动判定
-                                    if (autoJudgeConclusion(xjWorkItemEntity, charSequence.toString())) {
-                                        if ("realValue/02".equals(xjWorkItemEntity.conclusionID)) {
-//                                            ufItemConclusion.setSpinnerColor(context.getResources().getColor(R.color.customRed));
-                                            ufItemConclusion.setContentTextColor(context.getResources().getColor(R.color.customRed));
-                                        } else {
-//                                            ufItemConclusion.setSpinnerColor(Color.parseColor("#000000"));
-                                            ufItemConclusion.setContentTextColor(context.getResources().getColor(R.color.black));
-                                        }
-                                        ufItemConclusion.setSpinner(xjWorkItemEntity.conclusionName);
-                                    }
-
+                                    autoJudgeConclusion(xjWorkItemEntity, charSequence.toString());
                                 } else {
-
                                     if (OLXJConstant.MobileEditType.INPUTE.equals(xjWorkItemEntity.inputStandardID.editTypeMoblie.id)) { //录入模式
                                         if (!charSequence.toString().matches("^-?[0.0-9]+$") || charSequence.toString().indexOf(".") == 0) {
                                             if ("-".equals(charSequence.toString())) {
@@ -312,7 +220,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                                             }
                                             ToastUtils.show(context, "请输入数字类型");
                                         } else {
-
                                             if (charSequence.toString().indexOf(".") > 0) {
                                                 if (xjWorkItemEntity.inputStandardID.decimalPlace != null) {
                                                     if (charSequence.toString().substring(charSequence.toString().indexOf(".") + 1).length() > Integer.parseInt(xjWorkItemEntity.inputStandardID.decimalPlace)) {
@@ -320,23 +227,17 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                                                     }
                                                 }
                                             }
-
                                             BigDecimal bigDecimal = new BigDecimal(charSequence.toString());
                                             if (xjWorkItemEntity.inputStandardID.decimalPlace != null) {
                                                 xjWorkItemEntity.result = bigDecimal.setScale(Integer.parseInt(xjWorkItemEntity.inputStandardID.decimalPlace), BigDecimal.ROUND_HALF_UP).toString();
                                             }
-
                                         }
                                     }
-
                                 }
-
                             } else {
                                 xjWorkItemEntity.result = charSequence.toString();
                             }
-
                         }
-
                     });
 
             ufItemInputResult.editText().setOnFocusChangeListener((v, hasFocus) -> {
@@ -352,7 +253,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
             });
 
             RxTextView.textChanges(ufItemRemark.editText())
-//                    .debounce(1, TimeUnit.SECONDS)
                     .skipInitialValue()
                     .subscribe(charSequence -> {
                         OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
@@ -365,32 +265,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
                     });
 
-            fHistoryBtn.setOnClickListener(v -> {
-                onItemChildViewClick(fHistoryBtn, 0, getItem(getAdapterPosition()));
-
-            });
-
-            //触发测温
-            thermometerBtn.setOnTouchListener((v, motionEvent) -> {
-                if (sp2ThermometerHelper == null) {
-                    SnackbarHelper.showError(itemView, "设备启动测温异常，请检查设备配置测温模块");
-                    return true;
-                }
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    if (!sp2ThermometerHelper.startOrEnd(true)) {
-                        SnackbarHelper.showError(itemView, "设备启动测温异常，请检查设备配置测温模块");
-                    } else {
-                        //TODO  success
-                    }
-                } else if (motionEvent.getAction() == MotionEvent.ACTION_UP || motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
-                    sp2ThermometerHelper.startOrEnd(false);
-                }
-
-                OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-                onItemChildViewClick(thermometerBtn, 0, xjWorkItemEntity);
-                return true;
-            });
-
             ufItemPhotoBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -398,78 +272,39 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 }
             });
 
-
             RxTextView.textChanges(ufItemSelectResult.getCustomSpinner())
                     .subscribe(charSequence -> {
                         OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-
                         if (xjWorkItemEntity != null && xjWorkItemEntity.autoJudge && xjWorkItemEntity.normalRange != null &&
                                 TextUtils.isEmpty(xjWorkItemEntity.result) && !TextUtils.isEmpty(xjWorkItemEntity.defaultVal)) {
-
                             String[] normalRangeArr = xjWorkItemEntity.normalRange.split(",");
                             if (Arrays.asList(normalRangeArr).contains(xjWorkItemEntity.defaultVal)) {
                                 xjWorkItemEntity.conclusionID = "realValue/01";
                                 xjWorkItemEntity.conclusionName = "正常";
+                                changeState(false);
                             } else {
                                 xjWorkItemEntity.conclusionID = "realValue/02";
                                 xjWorkItemEntity.conclusionName = "异常";
+                                changeState(true);
                             }
                             xjWorkItemEntity.result = xjWorkItemEntity.defaultVal;
-
                         }
-//                        notifyItemChanged(getAdapterPosition());
                     });
 
-            vibrationBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-//                    onItemChildViewClick(vibrationBtn, 0, getItem(getAdapterPosition()));
-                }
-            });
-
-            ufItemRemarkBtn.setOnClickListener(v -> {
-
-                if (ufItemRemark.getVisibility() != View.VISIBLE) {
-                    ufItemRemark.setVisibility(View.VISIBLE);
-                } else {
-                    ufItemRemark.setVisibility(View.GONE);
-                }
-
-            });
-
-            ufItemEditBtn.setOnClickListener(v -> {
-
-                if (ufBtnLayout.getVisibility() != View.VISIBLE) {
-                    ufBtnLayout.setVisibility(View.VISIBLE);
-                    ufResultLayout.setVisibility(View.VISIBLE);
-                    ufContentLine.setVisibility(View.VISIBLE);
-                    ufResultLine.setVisibility(View.VISIBLE);
-                } else {
-                    ufBtnLayout.setVisibility(View.GONE);
-                    ufResultLayout.setVisibility(View.GONE);
-                    ufContentLine.setVisibility(View.GONE);
-                    ufResultLine.setVisibility(View.GONE);
-                }
-
-            });
             ufItemSelectResultSwitch.setOnSwitchDataListener(new CustomSwitchButton.OnSwitchDataListener() {
                 @Override
                 public void onSwitchDataChanged(boolean isSwichOn, String data) {
                     OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
                     xjWorkItemEntity.result = data;
-//                    if(isSwichOn){
-//                        xjWorkItemEntity.result = "是";
-//                    }else{
-//                        xjWorkItemEntity.result = "否";
-//                    }
-
                     if (xjWorkItemEntity.autoJudge && xjWorkItemEntity.normalRange != null) {
 
                         String[] normalRangeArr = xjWorkItemEntity.normalRange.split(",");
                         if (Arrays.asList(normalRangeArr).contains(xjWorkItemEntity.result)) {
                             xjWorkItemEntity.conclusionID = "realValue/01";
                             xjWorkItemEntity.conclusionName = "正常";
+                            changeState(false);
                         } else {
+                            changeState(true);
                             xjWorkItemEntity.conclusionID = "realValue/02";
                             xjWorkItemEntity.conclusionName = "异常";
                         }
@@ -482,36 +317,41 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
         @Override
         protected void update(OLXJWorkItemEntity data) {
-            boolean showPart = isNeedPart(getAdapterPosition(), data);
-            if (showPart) {
-                ufPartLayout.setVisibility(View.VISIBLE);
-                if (data.part == null) {
-                    if (data.eamID != null) {
-                        data.part = data.eamID.name + "的部位";
-                    } else {
-                        data.part = "无部位";
-                    }
+//            boolean showPart = isNeedPart(getAdapterPosition(), data);
+//            if (showPart) {
+//                ufPartLayout.setVisibility(View.VISIBLE);
+//                if (data.part == null) {
+//                    if (data.eamID != null) {
+//                        data.part = data.eamID.name + "的部位";
+//                    } else {
+//                        data.part = "无部位";
+//                    }
+//                }
+//                ufItemPart.setValue(data.part);
+//            } else {
+//                ufItemPart.setValue("");
+//                ufPartLayout.setVisibility(View.GONE);
+//            }
+            if (getAdapterPosition() < getListSize() - 1) {
+                if (data.getPrioritySort() == 1 && getItem(getAdapterPosition() + 1).viewType == ListType.TITLE.value()) {
+                    ufItemPriority.setVisibility(View.VISIBLE);
+                } else {
+                    ufItemPriority.setVisibility(View.GONE);
                 }
-                ufItemPart.setValue(data.part);
-            } else {
-                ufItemPart.setValue("");
-                ufPartLayout.setVisibility(View.GONE);
             }
-            mOLXJCameraController.addListener(ufItemPics, getAdapterPosition(), OLXJWorkListAdapter.this);
-            ufItemContent.setValue(data.content);
-            if (TextUtils.isEmpty(data.normalRange)) {
-                llNormalRange.setVisibility(View.GONE);
-                ufResultVerticalLine.setVisibility(View.GONE);
+
+            mOLXJCameraController.addListener(ufItemPics, getAdapterPosition(), OLXJWorkListEamAdapterNew.this);
+            ufItemContent.setText(data.content);
+            if (data.conclusionID != null && data.conclusionID.equals("realValue/02")) {
+                changeState(true);
             } else {
-                llNormalRange.setVisibility(View.VISIBLE);
-                ufResultVerticalLine.setVisibility(View.VISIBLE);
+                changeState(false);
             }
-            ufItemNormalRange.setContent(data.normalRange);
 
             if (OLXJConstant.MobileEditType.INPUTE.equals(data.inputStandardID.editTypeMoblie.id)) {   //录入框
                 ufItemSelectResult.setVisibility(View.GONE);
                 ufItemInputResult.setVisibility(View.VISIBLE);
-                ufItemSelectResultSwitchLayout.setVisibility(View.GONE);
+                ufItemSelectResultSwitch.setVisibility(View.GONE);
 
                 if (data.isThermometric) {  //要求测温
                     ufItemInputResult.setEditable(false);
@@ -525,11 +365,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 }
 
                 if (data.inputStandardID.unitID != null && !TextUtils.isEmpty(data.inputStandardID.unitID.name)) {
-                    ufItemInputResult.setKey("结果 (" + data.inputStandardID.unitID.name + ")");
-                    ufItemInputResult.setKeyWidth(DisplayUtil.dip2px(80, context));
+                    ufItemInputResult.setKey(data.inputStandardID.unitID.name);
                 } else {
                     ufItemInputResult.setKey("结果");
-                    ufItemInputResult.setKeyWidth(DisplayUtil.dip2px(60, context));
                 }
                 ufItemInputResult.setNecessary(true);
 
@@ -544,21 +382,10 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 } else {
                     ufItemInputResult.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
                 }
-
             } else if (OLXJConstant.MobileEditType.WHETHER.equals(data.inputStandardID.editTypeMoblie.id)) {  //是否
                 ufItemInputResult.setVisibility(View.GONE);
                 ufItemSelectResult.setVisibility(View.GONE);
-                ufItemSelectResultSwitchLayout.setVisibility(View.VISIBLE);
-
-//                if (data.inputStandardID.unitID != null && !TextUtils.isEmpty(data.inputStandardID.unitID.name)) {
-//                    ufItemSelectResult.setText("结果 (" + data.inputStandardID.unitID.name + ")");
-//                    ufItemSelectResult.setKeyWidth(DisplayUtil.dip2px(80, context));
-//                }
-//                else{
-//                    ufItemSelectResult.setText("结果");
-//                    ufItemSelectResult.setKeyWidth(DisplayUtil.dip2px(60, context));
-//                }
-//                ufItemSelectResult.setNecessary(true);
+                ufItemSelectResultSwitch.setVisibility(View.VISIBLE);
                 if (!TextUtils.isEmpty(data.inputStandardID.valueName))
                     ufItemSelectResultSwitch.setValues(data.inputStandardID.valueName.split(","));
                 if (!TextUtils.isEmpty(data.defaultVal) && TextUtils.isEmpty(data.result)) {
@@ -571,14 +398,12 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
             } else if (OLXJConstant.MobileEditType.RADIO.equals(data.inputStandardID.editTypeMoblie.id) || OLXJConstant.MobileEditType.CHECKBOX.equals(data.inputStandardID.editTypeMoblie.id)) {  //多选
                 ufItemInputResult.setVisibility(View.GONE);
                 ufItemSelectResult.setVisibility(View.VISIBLE);
-                ufItemSelectResultSwitchLayout.setVisibility(View.GONE);
+                ufItemSelectResultSwitch.setVisibility(View.GONE);
 
                 if (data.inputStandardID.unitID != null && !TextUtils.isEmpty(data.inputStandardID.unitID.name)) {
-                    ufItemSelectResult.setKey("结果 (" + data.inputStandardID.unitID.name + ")");
-                    ufItemSelectResult.setKeyWidth(DisplayUtil.dip2px(80, context));
+                    ufItemSelectResult.setKey(data.inputStandardID.unitID.name);
                 } else {
                     ufItemSelectResult.setText("结果");
-                    ufItemSelectResult.setKeyWidth(DisplayUtil.dip2px(60, context));
                 }
                 ufItemSelectResult.setNecessary(true);
 
@@ -590,45 +415,20 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 }
 
             }
-
-            if (data.autoJudge) {
-                ufItemConclusion.setEditable(false);
-                ufItemConclusion.setNecessary(false);
-            } else {
-                ufItemConclusion.setEditable(true);
-                ufItemConclusion.setNecessary(true);
-            }
-            ufItemConclusion.setSpinner(data.conclusionName);
-
-            if ("realValue/02".equals(data.conclusionID)) {
-                ufItemConclusion.setContentTextColor(context.getResources().getColor(R.color.customRed));
-            } else {
-                ufItemConclusion.setContentTextColor(context.getResources().getColor(R.color.textColorlightblack));
-            }
-
             if (data.isphone) {
                 ufItemPics.setNecessary(true);
             } else {
                 ufItemPics.setNecessary(false);
             }
 
-            if (!TextUtils.isEmpty(data.realRemark)) {
-                ufItemRemark.setInput(data.realRemark);
-                ufItemRemark.setVisibility(View.VISIBLE);
-            } else {
-                ufItemRemark.setInput("");
-                ufItemRemark.setVisibility(View.GONE);
-            }
-
+            ufItemRemark.setInput(Util.strFormat2(data.realRemark));
 
             //保存图片
             if (!TextUtils.isEmpty(data.xjImgUrl)) {
-
                 ufItemPics.setPadding(0, 5, 10, 5);
                 if (oldImgUrl.equals(data.xjImgUrl)) {
                     return;
                 }
-
                 FaultPicHelper.initPics(Arrays.asList(data.xjImgUrl.split(",")), ufItemPics);
                 oldImgUrl = data.xjImgUrl;
                 ufItemPics.setTextHeight(DisplayUtil.dip2px(0, context));
@@ -641,63 +441,46 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 ufItemPics.clear();
                 oldImgUrl = "";
             }
+        }
 
-            if (data.ispass) {
-                ufItemSkipBtn.setVisibility(View.VISIBLE);
+        private void changeState(boolean isVisible) {
+            if (isVisible) {
+                ufBtnLayout.setVisibility(View.VISIBLE);
+                ufContentLine.setVisibility(View.VISIBLE);
             } else {
-                ufItemSkipBtn.setVisibility(View.GONE);
+                ufBtnLayout.setVisibility(View.GONE);
+                ufContentLine.setVisibility(View.GONE);
             }
-//            if (data.isThermometric) {
-//                thermometerBtn.setVisibility(View.VISIBLE);
-//            } else {
-//                thermometerBtn.setVisibility(View.GONE);
-//            }
-
-//            if (data.isSeismic) {
-//                vibrationBtn.setVisibility(View.VISIBLE);
-//            } else {
-//                vibrationBtn.setVisibility(View.GONE);
-//            }
         }
 
         private boolean isNeedPart(int postion, OLXJWorkItemEntity curEntity) {
-
             if (postion == 0) {
                 return true;
             }
-
             OLXJWorkItemEntity preEntity = getItem(postion - 1);
-
             String prePart = null;
             String curPart = null;
             String preEam = null;
             String curEam = null;
-
             if (preEntity.eamID != null) {
                 preEam = preEntity.eamID.name;
             }
-
             if (curEntity.eamID != null) {
                 curEam = curEntity.eamID.name;
             }
-
             if (preEntity.part == null) {
                 prePart = "" + preEam + "的部位@SUPCON";
             } else {
                 prePart = preEntity.part;
             }
-
             if (curEntity.part == null) {
                 curPart = "" + curEam + "的部位@SUPCON";
             } else {
                 curPart = curEntity.part;
             }
-
             if (preEam != null && preEam.equals(curEam) && prePart.equals(curPart)) {
                 return false;
             }
-
-
             return true;
         }
 
@@ -735,7 +518,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                     xjWorkItemEntity.result = bigDecimal.setScale(Integer.parseInt(xjWorkItemEntity.inputStandardID.decimalPlace), BigDecimal.ROUND_HALF_UP).toString();
                 }
 
-
                 //不同正常值范围解析判定
                 if (xjWorkItemEntity.normalRange != null) {
                     if (xjWorkItemEntity.normalRange.contains("~")) {  //区间形式eg: (-12.45~-1.00)
@@ -754,7 +536,6 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 }
 
             }
-
             return false;
         }
 
@@ -773,9 +554,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
                 xjWorkItemEntity.conclusionID = "realValue/01";
                 xjWorkItemEntity.conclusionName = "正常";
-
+                changeState(false);
             } else {  //异常
-
+                changeState(true);
                 xjWorkItemEntity.conclusionID = "realValue/02";
                 xjWorkItemEntity.conclusionName = "异常";
 
@@ -813,7 +594,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 if (inputResult > small && inputResult < big) {  //区间内、异常
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
+                    changeState(true);
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
@@ -821,7 +604,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 if (inputResult >= small && inputResult < big) {  //区间内、异常
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
+                    changeState(true);
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
@@ -829,7 +614,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 if (inputResult > small && inputResult <= big) {  //区间内、异常
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
+                    changeState(true);
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
@@ -837,7 +624,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
                 if (inputResult >= small && inputResult <= big) {  //区间内、异常
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
+                    changeState(true);
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
@@ -862,231 +651,51 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
             if (xjWorkItemEntity.normalRange.contains("≥")) {
                 if (inputResult < num) {  //异常
+                    changeState(true);
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
             } else if (xjWorkItemEntity.normalRange.contains("＞")) {
                 if (inputResult <= num) {  //异常
+                    changeState(true);
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
             } else if (xjWorkItemEntity.normalRange.contains("≤")) {
                 if (inputResult > num) {  //异常
+                    changeState(true);
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
             } else {
                 if (inputResult >= num) {  //异常
+                    changeState(true);
                     xjWorkItemEntity.conclusionID = "realValue/02";
                     xjWorkItemEntity.conclusionName = "异常";
                 } else {  //正常
+                    changeState(false);
                     xjWorkItemEntity.conclusionID = "realValue/01";
                     xjWorkItemEntity.conclusionName = "正常";
                 }
             }
-
             return true;
-        }
-
-
-    }
-
-    class ViewHolderFinished extends BaseRecyclerViewHolder<OLXJWorkItemEntity> implements OnChildViewClickListener {
-
-        @BindByTag("workItemIndex")
-        TextView workItemIndex;
-
-        @BindByTag("xjEamName")
-        TextView xjEamName;  //设备名称
-
-        @BindByTag("xjItemContent")
-        CustomTextView xjItemContent;  //内容
-
-        @BindByTag("fItemSelectResult")
-        CustomSpinner fItemSelectResult;  //选择结果
-
-        @BindByTag("fItemInputResult")
-        CustomTextView fItemInputResult;  //输入结果
-
-        @BindByTag("fItemConclusion")
-        CustomVerticalSpinner fItemConclusion;  //结论
-
-        @BindByTag("fItemRemark")
-        CustomEditText fItemRemark;  //备注
-
-        @BindByTag("fItemPics")
-        CustomGalleryView fItemPics; //拍照
-
-        @BindByTag("fReRecordBtn")
-        Button fReRecordBtn; //重录
-
-        @BindByTag("fExemption")
-        TextView fExemption; //免检
-
-        @BindByTag("fSkip")
-        TextView fSkip; //跳检
-
-        @BindByTag("fItemPart")
-        CustomTextView fItemPart;  //部位
-
-        @BindByTag("llNormalRange")
-        LinearLayout llNormalRange;
-        @BindByTag("fItemNormalRange")
-        CustomTextView fItemNormalRange;
-
-        @BindByTag("customGalleryInclude")
-        View customGalleryInclude;
-
-        @BindByTag("buttonBar")
-        LinearLayout buttonBar;
-
-        @BindByTag("viewDivide")
-        View viewDivide;
-        OLXJCameraController mOLXJCameraController;
-
-        public ViewHolderFinished(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void initBind() {
-            super.initBind();
-        }
-
-        @Override
-        protected void initView() {
-            super.initView();
-            mOLXJCameraController = new OLXJCameraController(itemView);
-//            mOLXJCameraController = ((OLXJWorkListHandledActivity)context).getController(OLXJCameraController.class);
-            mOLXJCameraController.init(Constant.IMAGE_SAVE_XJPATH, Constant.PicType.XJ_PIC);
-        }
-
-        @Override
-        protected void initListener() {
-            super.initListener();
-
-            fReRecordBtn.setOnClickListener(v -> {
-                OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-                onItemChildViewClick(fReRecordBtn, 0, xjWorkItemEntity);
-            });
-
-            xjEamName.setOnClickListener(v -> {
-                OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-                if (xjWorkItemEntity.eamID == null) {
-                    ToastUtils.show(context, "无设备详情可查看！");
-                    return;
-                }
-                Bundle bundle = new Bundle();
-                bundle.putLong(Constant.IntentKey.SBDA_ENTITY_ID, xjWorkItemEntity.eamID.id);
-                IntentRouter.go(context, Constant.Router.SBDA_VIEW, bundle);
-            });
-
-
-        }
-
-
-        @Override
-        protected int layoutId() {
-            return R.layout.item_xj_work_item_finished;
-        }
-
-        @Override
-        protected void update(OLXJWorkItemEntity data) {
-            mOLXJCameraController.addListener(fItemPics, getAdapterPosition(), OLXJWorkListAdapter.this);
-            xjItemContent.setValue(data.content);
-            fItemRemark.setEditable(false);
-            fItemRemark.setInput(data.realRemark);
-            fItemPart.setValue(data.part);
-
-            if (TextUtils.isEmpty(data.normalRange)) {
-                llNormalRange.setVisibility(View.GONE);
-            } else {
-                llNormalRange.setVisibility(View.VISIBLE);
-            }
-            fItemNormalRange.setContent(data.normalRange);
-
-            if ("wiLinkState/02".equals(data.linkState)) {  //免检
-                fExemption.setVisibility(View.VISIBLE);
-                fSkip.setVisibility(View.GONE);
-            } else {
-                fExemption.setVisibility(View.GONE);
-            }
-
-            if ("wiLinkState/03".equals(data.linkState)) { //跳检
-                fSkip.setVisibility(View.VISIBLE);
-                fExemption.setVisibility(View.GONE);
-            } else {
-                fSkip.setVisibility(View.GONE);
-            }
-
-            if (OLXJConstant.MobileEditType.INPUTE.equals(data.inputStandardID.editTypeMoblie.id)) {   //录入
-                fItemSelectResult.setVisibility(View.GONE);
-                fItemInputResult.setVisibility(View.VISIBLE);
-
-                fItemInputResult.setContent(data.result);
-
-            } else if (OLXJConstant.MobileEditType.WHETHER.equals(data.inputStandardID.editTypeMoblie.id) || OLXJConstant.MobileEditType.RADIO.equals(data.inputStandardID.editTypeMoblie.id)) {  //是否  单选
-                fItemInputResult.setVisibility(View.GONE);
-                fItemSelectResult.setVisibility(View.VISIBLE);
-
-                fItemSelectResult.setSpinner(data.result);
-
-            } else if (OLXJConstant.MobileEditType.CHECKBOX.equals(data.inputStandardID.editTypeMoblie.id)) {  //多选
-                fItemInputResult.setVisibility(View.GONE);
-                fItemSelectResult.setVisibility(View.VISIBLE);
-
-                fItemSelectResult.setSpinner(data.result);
-            }
-
-            if ("realValue/02".equals(data.conclusionID)) {
-//                fItemConclusion.setSpinnerColor(context.getResources().getColor(R.color.customRed));
-                fItemConclusion.setContentTextColor(context.getResources().getColor(R.color.customRed));
-            } else {
-//                fItemConclusion.setSpinnerColor(context.getResources().getColor(R.color.textColorlightblack));
-                fItemConclusion.setContentTextColor(context.getResources().getColor(R.color.textColorlightblack));
-            }
-            fItemConclusion.setSpinner(data.conclusionName);
-
-            if (!TextUtils.isEmpty(data.xjImgUrl)) {
-                customGalleryInclude.setVisibility(View.VISIBLE);
-                fItemPics.setPadding(0, 5, 10, 5);
-                String[] imgUrl = data.xjImgUrl.split(",");
-                FaultPicHelper.initPics(Arrays.asList(imgUrl), fItemPics);
-            } else {
-                customGalleryInclude.setVisibility(View.GONE);
-                fItemPics.setPadding(0, 0, 10, 0);
-                fItemPics.clear();
-            }
-
-            if (data.control && !OLXJConstant.MobileWiLinkState.EXEMPTION_STATE.equals(data.linkState)) {
-                buttonBar.setVisibility(View.VISIBLE);
-                viewDivide.setVisibility(View.VISIBLE);
-            } else {
-                buttonBar.setVisibility(View.GONE);
-                viewDivide.setVisibility(View.GONE);
-            }
-
-        }
-
-        @Override
-        public void onChildViewClick(View childView, int action, Object obj) {
-            OLXJWorkItemEntity xjWorkItemEntity = getItem(getAdapterPosition());
-            onItemChildViewClick(childView, action, xjWorkItemEntity);
         }
     }
 
     class PicViewHolder extends BaseRecyclerViewHolder<OLXJWorkItemEntity> {
-        private CustomAdView pic;
-        private List<GalleryBean> ads;
+        private ImageView pic;
 
         public PicViewHolder(Context context) {
             super(context, parent);
@@ -1094,7 +703,7 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
 
         @Override
         protected int layoutId() {
-            return R.layout.item_recycler_pic;
+            return R.layout.item_eam_pic;
         }
 
         @Override
@@ -1104,69 +713,9 @@ public class OLXJWorkListAdapter extends BaseListDataRecyclerViewAdapter<OLXJWor
         }
 
         @Override
-        protected void initListener() {
-            super.initListener();
-            pic.setOnChildViewClickListener(new OnChildViewClickListener() {
-                @Override
-                public void onChildViewClick(View childView, int action, Object obj) {
-                    String headerPicPath = getItem(getAdapterPosition()).headerPicPath;
-                    if (!headerPicPath.contains("jpg") && !headerPicPath.contains("png")
-                            && !headerPicPath.contains("jfif") && headerPicPath.contains("PNG")) {
-                        ToastUtils.show(context, "无图片显示！");
-                        return;
-                    }
-
-                    Bundle bundle = new Bundle();
-
-                    bundle.putSerializable("images", (Serializable) Arrays.asList(getItem(getAdapterPosition()).headerPicPath.split(",")));
-                    bundle.putInt("position", ads.indexOf(obj));  //点击位置索引
-
-                    int[] location = new int[2];
-                    childView.getLocationOnScreen(location);  //点击图片的位置
-                    bundle.putInt("locationX", location[0]);
-                    bundle.putInt("locationY", location[1]);
-
-                    bundle.putInt("width", DisplayUtil.dip2px(100, context));//必须
-                    bundle.putInt("height", DisplayUtil.dip2px(100, context));//必须
-
-                    bundle.putBoolean("isEditable", false);  //删除图标
-                    ((OLXJWorkListUnHandledActivity) context).getWindow().setWindowAnimations(R.style.fadeStyle);
-                    IntentRouter.go(context, Constant.Router.IMAGE_VIEW, bundle);
-                }
-            });
-        }
-
-        @Override
-
         protected void update(OLXJWorkItemEntity data) {
-            if (pic.getItemCount() != 0) {
-                pic.clear();
-            }
-            ads = new ArrayList<>();
-            GalleryBean galleryBean;
-            if (data.headerPicPath.contains("jpg") || data.headerPicPath.contains("png")
-                    || data.headerPicPath.contains("jfif") || data.headerPicPath.contains("PNG")) {
-                String[] picUrls = data.headerPicPath.split(",");
-                File file;
-                for (String url : picUrls) {
-                    file = new File(url);
-                    if (file.exists() && file.isFile()) {
-                        galleryBean = new GalleryBean();
-                        galleryBean.localPath = url;
-                        ads.add(galleryBean);
-                    } else {//巡检图片被清除了，必须放一个临时的图片
-                        galleryBean = new GalleryBean();
-                        galleryBean.resId = R.drawable.ic_zwtp;
-                        ads.add(galleryBean);
-                    }
-
-                }
-            } else {
-                galleryBean = new GalleryBean();
-                galleryBean.resId = R.drawable.ic_zwtp;
-                ads.add(galleryBean);
-            }
-            pic.setGalleryBeans(ads);
+            Long picPath = Long.valueOf(data.headerPicPath);
+            new EamPicController().initEamPic(pic, picPath);
         }
     }
 

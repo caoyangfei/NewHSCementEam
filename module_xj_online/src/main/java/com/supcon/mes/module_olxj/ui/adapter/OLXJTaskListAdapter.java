@@ -51,6 +51,11 @@ public class OLXJTaskListAdapter extends BaseListDataRecyclerViewAdapter<OLXJTas
     public void resertExpandPosition() {
         this.expandPosition = -1;
     }
+
+    public void expand() {
+        this.expandPosition = 0;
+        notifyItemChanged(expandPosition);
+    }
 //    public void setLisenter(RecyclerView contentView) {
 //        contentView.setOnTouchListener(new RecyclerViewOnTouchListener());
 //

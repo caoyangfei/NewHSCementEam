@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -71,9 +72,13 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
+    @BindByTag("rightBtn")
+    ImageButton rightBtn;
     @BindByTag("titleText")
     TextView titleText;
 
+    @BindByTag("dispatchBtn")
+    Button dispatchBtn;
     @BindByTag("waitState")
     RadioGroup waitState;
 
@@ -109,6 +114,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
         contentView.setLayoutManager(new LinearLayoutManager(context));
         titleText.setText("工作提醒");
+        rightBtn.setVisibility(View.VISIBLE);
     }
 
     @SuppressLint("CheckResult")
@@ -121,6 +127,14 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                     @Override
                     public void accept(Object o) throws Exception {
                         back();
+                    }
+                });
+        RxView.clicks(rightBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        IntentRouter.go(WaitDealtActivity.this, Constant.Router.PROCESSED);
                     }
                 });
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
@@ -155,6 +169,12 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                     }
                 }
                 refreshListController.refreshBegin();
+            }
+        });
+        dispatchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dispatchBtn.setSelected(!dispatchBtn.isSelected());
             }
         });
     }

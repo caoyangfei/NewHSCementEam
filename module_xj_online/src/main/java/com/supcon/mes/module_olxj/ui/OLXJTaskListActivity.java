@@ -68,6 +68,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -665,11 +666,12 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
 
         if (entities.size() != 0 && isCurrentTask((OLXJTaskEntity) entities.get(0))) {
             entities.set(0, mOLXJTaskEntity);
-            refreshListController.refreshComplete(entities);
-        } else {
-            refreshListController.refreshComplete(entities); //成功获取数据
         }
-
+        refreshListController.refreshComplete(entities);
+        if (entities.size() > 0) {
+            doLoadArea(mOLXJTaskListAdapter.getItem(0));
+            mOLXJTaskListAdapter.expand();
+        }
 //        if (entities.size() == 0) {
 //
 //            ToastUtils.show(context, "没有巡检任务!");
@@ -803,6 +805,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
 
     private void doGoArea(OLXJAreaEntity xjAreaEntity) {
         Bundle bundle = new Bundle();
+        Collections.sort(xjAreaEntity.workItemEntities);
         bundle.putSerializable(Constant.IntentKey.XJ_AREA_ENTITY, xjAreaEntity);
 
         if ("1".equals(xjAreaEntity.finishType)) {

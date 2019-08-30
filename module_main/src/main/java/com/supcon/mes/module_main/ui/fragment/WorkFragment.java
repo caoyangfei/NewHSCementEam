@@ -172,7 +172,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         super.onResume();
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-
+        getWorkData();
         workName.setText(EamApplication.getAccountInfo().staffName);
         workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
@@ -234,7 +234,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         lubricateMenu = MenuHelper.getLubricateMenu();
         repairMenu = MenuHelper.getRepairMenu();
         formMenu = MenuHelper.getFormMenu();
-        getWorkData();
+
     }
 
 
@@ -259,10 +259,10 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-                if (isRefreshing) {
-                    ToastUtils.show(getActivity(), "正在加载待办,请稍后点击!");
-                    return;
-                }
+//                if (isRefreshing) {
+//                    ToastUtils.show(getActivity(), "正在加载待办,请稍后点击!");
+//                    return;
+//                }
                 if (oldPosition != -1)
                     workRecycler.getChildAt(oldPosition).setSelected(false);
                 if (oldPosition == position) {
@@ -509,16 +509,16 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         }
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onLogin(LoginEvent loginEvent) {
-        getWorkData();
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void refreshPush(RefreshEvent event) {
-        getWorkData();
-    }
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void onLogin(LoginEvent loginEvent) {
+//        getWorkData();
+//    }
+//
+//
+//    @Subscribe(threadMode = ThreadMode.MAIN)
+//    public void refreshPush(RefreshEvent event) {
+//        getWorkData();
+//    }
 
     //有推送待办过来刷新界面
     @Subscribe(threadMode = ThreadMode.MAIN)

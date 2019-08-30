@@ -419,8 +419,4 @@ public class OLXJWorkListHandledActivity extends BaseRefreshRecyclerActivity<OLX
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, ""));
 
     }
-
-
-
-
 }

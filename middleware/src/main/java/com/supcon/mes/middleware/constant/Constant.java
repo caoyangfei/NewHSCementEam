@@ -57,6 +57,7 @@ public interface Constant {
         String IMAGE_VIEW = "IMAGE_VIEW";
         String ABOUT = "ABOUT";
 
+        String PROCESSED = "PROCESSED";//已处理
         String WAIT_DEALT = "WAIT_DEALT";//待办
         String ANOMALY = "ANOMALY";//设备异常
         String RANKING = "RANKING";//人员评分

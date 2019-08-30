@@ -32,35 +32,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dp_5"
         android:background="@color/white"
+        android:gravity="center"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/dp_15"
-        android:paddingTop="@dimen/dp_5"
-        android:paddingRight="@dimen/dp_15"
-        android:paddingBottom="@dimen/dp_5">
+        android:padding="@dimen/dp_10">
 
-        <com.supcon.mes.mbap.view.CustomVerticalDateView
+        <include
             android:id="@+id/stopPoliceStartTime"
-            android:layout_width="0dp"
+            layout="@layout/item_time" />
+
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingRight="@dimen/dp_5"
-            android:tag="stopPoliceStartTime"
-            app:editable="true"
-            app:key="开始时间:" />
+            android:text="至" />
 
-        <include layout="@layout/ly_vertical_line" />
-
-        <com.supcon.mes.mbap.view.CustomVerticalDateView
+        <include
             android:id="@+id/stopPoliceStopTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="@dimen/dp_5"
-            android:tag="stopPoliceStopTime"
-            app:editable="true"
-            app:key="结束时间:" />
+            layout="@layout/item_time" />
+
     </LinearLayout>
 
     <include layout="@layout/ly_recyclerview_with_scrollbar" />

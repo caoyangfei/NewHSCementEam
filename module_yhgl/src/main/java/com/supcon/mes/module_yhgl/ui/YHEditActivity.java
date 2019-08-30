@@ -285,7 +285,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             yhEditArea.setEditable(false);
         }
         yhEditFindStaff.setValue(mYHEntity.findStaffID != null ? mYHEntity.findStaffID.name : "");
-        yhEditFindTime.setDate(DateUtil.dateTimeFormat(mYHEntity.findTime));
+        yhEditFindTime.setDate(mYHEntity.findTime != 0 ? DateUtil.dateTimeFormat(mYHEntity.findTime) : "");
         yhEditPriority.setSpinner(mYHEntity.priority != null ? mYHEntity.priority.value : "");
         yhEditArea.setSpinner(mYHEntity.areaInstall != null ? mYHEntity.areaInstall.name : "");
 

@@ -672,15 +672,17 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
         }
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void getOJXJTempTaskListSuccess(List entities) {
         mOLXJTaskListAdapter.resertExpandPosition();
-
         if (entities.size() != 0 && isCurrentTask((OLXJTaskEntity) entities.get(0))) {
             entities.set(0, mOLXJTaskEntity);
-            refreshListController.refreshComplete(entities);
-        } else {
-            refreshListController.refreshComplete(entities); //成功获取数据
+        }
+        refreshListController.refreshComplete(entities);
+        if (entities.size() > 0) {
+            doLoadArea(mOLXJTaskListAdapter.getItem(0));
+            mOLXJTaskListAdapter.expand();
         }
         if (entities.size() == 0) {
             ToastUtils.show(context, "没有巡检任务!");
@@ -701,31 +703,6 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
 //        }
 
     }
-
-
-//    @SuppressLint("CheckResult")
-//    private void getAreaCache() {
-//        Flowable.just(1)
-//                .subscribeOn(Schedulers.io())
-//                .map(new Function<Integer, List<OLXJAreaEntity>>() {
-//                    @Override
-//                    public List<OLXJAreaEntity> apply(Integer aLong) throws Exception {
-//                        String cache = SharedPreferencesUtils.getParam(context, Constant.SPKey.LSXJ_TASK_CONTENT, "");
-//                        if (!TextUtils.isEmpty(cache)) {
-//                            mAreaEntities = GsonUtil.jsonToList(cache, OLXJAreaEntity.class);
-//                        }
-//                        return mAreaEntities;
-//                    }
-//                })
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Consumer<List<OLXJAreaEntity>>() {
-//                    @Override
-//                    public void accept(List<OLXJAreaEntity> mAreaEntities) throws Exception {
-//                        mOLXJTaskListAdapter.setAreaEntities(mAreaEntities);
-//                        getController(MapController.class).setOLXJAreaEntities(mAreaEntities);
-//                    }
-//                });
-//    }
 
     @Override
     public void getOJXJTempTaskListFailed(String errorMsg) {
@@ -771,6 +748,7 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
             goArea(xjAreaEntity);
         } else {
             if (cartReasonList.size() <= 0) {
+                ToastUtils.show(this,"没有获取到签名原因，请尝试退出重入");
                 return;
             }
             new SinglePickController<String>(this).list(cartReasonList).listener((index, item) -> {
@@ -826,7 +804,6 @@ public class OLXJTempTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTa
 
     private void doGoArea(OLXJAreaEntity xjAreaEntity) {
         Bundle bundle = new Bundle();
-        Collections.sort(xjAreaEntity.workItemEntities);
         Collections.sort(xjAreaEntity.workItemEntities);
         bundle.putSerializable(Constant.IntentKey.XJ_AREA_ENTITY, xjAreaEntity);
 

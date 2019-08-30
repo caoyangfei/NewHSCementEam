@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.Expose;
 import com.supcon.common.com_http.BaseEntity;
+import com.supcon.mes.middleware.model.bean.ValueEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEam;
 
 /**
@@ -121,7 +122,11 @@ public class OLXJWorkItemEntity extends BaseEntity implements Comparable<OLXJWor
     public String xjImgUrl; //图片路径，逗号相隔
     public String realValue;
     public String itemnumber;//逻辑位号
+
     public int sort;//排序
+    private int prioritySort;
+
+    public ValueEntity priority;//优先级
 
     public long tableInfoId;
     @Expose
@@ -144,6 +149,23 @@ public class OLXJWorkItemEntity extends BaseEntity implements Comparable<OLXJWor
 //        }
 //
 //        return (int) (this.eamID.id - o.eamID.id);
-        return this.sort - o.sort;
+        if (this.getPrioritySort() == o.getPrioritySort()) {
+            return this.sort - o.sort;
+        } else {
+            return o.getPrioritySort() - this.getPrioritySort();
+        }
+    }
+
+    public int getPrioritySort() {
+        if (priority == null) {
+            prioritySort = 0;
+        } else {
+            if (priority.id.equals("mobileEAM_056/01")) {
+                prioritySort = 1;
+            } else if (priority.id.equals("mobileEAM_056/02")) {
+                prioritySort = 0;
+            }
+        }
+        return prioritySort;
     }
 }

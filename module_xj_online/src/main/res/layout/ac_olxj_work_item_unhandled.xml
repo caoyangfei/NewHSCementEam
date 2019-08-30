@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:background="@color/bgGray2">
 
+    <include layout="@layout/ly_olxj_work_title" />
+
     <include
         layout="@layout/ly_recyclerview_with_scrollbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/dp_70"
         android:layout_marginBottom="@dimen/dp_50" />
-
-    <include layout="@layout/ly_olxj_work_title" />
 
     <LinearLayout
         android:id="@+id/xjBtnLayout"
@@ -19,6 +20,7 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/sh_white_stroke"
         android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingLeft="@dimen/dp_10"
         android:paddingRight="@dimen/dp_10"
         android:tag="xjBtnLayout">

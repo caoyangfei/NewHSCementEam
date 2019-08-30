@@ -47,7 +47,7 @@ public class OLXJTitleController extends BaseViewController {
 
     private BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> mAdapter;
 
-    private float currentAlpha = 0;
+    private float currentAlpha = -1;
 
     boolean isTitleVisible = false;
 
@@ -63,7 +63,7 @@ public class OLXJTitleController extends BaseViewController {
         super.initView();
         xjBtnLayout.setVisibility(View.VISIBLE);
         titleText.setVisibility(View.GONE);
-        listDeviceFilter.setVisibility(View.GONE);
+//        listDeviceFilter.setVisibility(View.GONE);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class OLXJTitleController extends BaseViewController {
                 }
 
                 int scroll = getScroll();
-                changeTitle(scroll);
+//                changeTitle(scroll);
                 if (scroll <= headerHeight) {
 
                 } else if (mState == RecyclerView.SCROLL_STATE_SETTLING) {
