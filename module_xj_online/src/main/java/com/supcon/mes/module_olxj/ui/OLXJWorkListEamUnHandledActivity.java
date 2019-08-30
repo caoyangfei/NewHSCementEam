@@ -301,7 +301,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 map.put("tempEamID", eamType.id);
                 map.put("tempStaffId", EamApplication.getAccountInfo().staffId);
                 presenterRouter.create(OLXJEamTaskAPI.class).createTempPotrolTaskByEam(map);
-
             }
         });
 
@@ -1105,7 +1104,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
             public void onLoaderFinished() {
                 if (isOneSubmit) {
                     titleController.initView();
-                    refreshListController.refreshBegin();
+                    doRefresh(false);
                     isOneSubmit = false;
                 } else {
                     back();
