@@ -416,7 +416,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                         if (!queryParam.containsKey(Constant.BAPQuery.OPEN_TIME_STOP)) {
                             queryParam.remove(Constant.BAPQuery.OPEN_TIME_STOP);
                         }
-                        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, year + "-" + month + "-" + day + " " + "00" + ":" + "00" + ":" + "00");
+                        queryParam.put(Constant.BAPQuery.OPEN_TIME_STOP, year + "-" + month + "-" + day + " " + "23" + ":" + "59" + ":" + "59");
                         listEamNameFilter.setCurrentItem("设备不限");
                         queryParam.put(Constant.BAPQuery.EAM_NAME, "");
                         doRefresh();
