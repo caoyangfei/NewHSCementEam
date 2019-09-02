@@ -19,6 +19,7 @@ public class YHEntity extends BaseEntity {
     public SystemCodeEntity faultInfoType;
     public SystemCodeEntity faultState;
     public SystemCodeEntity downStream;
+    public SystemCodeEntity sourceType;
     public long findTime;
     public long id;
     public PendingEntity pending;

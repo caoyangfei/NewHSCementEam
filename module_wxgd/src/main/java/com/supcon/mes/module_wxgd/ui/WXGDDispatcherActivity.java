@@ -52,6 +52,7 @@ import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.controller.LubricateOilsController;
@@ -614,7 +615,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         onLoading("工单提交中...");
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
-
+        map.put("workRecord.dispatcher.id", mWXGDEntity.chargeStaff != null ? Util.strFormat2(mWXGDEntity.chargeStaff.id) : "");
         //封装工作流
         map = generateWorkFlow(workFlowVar, map);
 

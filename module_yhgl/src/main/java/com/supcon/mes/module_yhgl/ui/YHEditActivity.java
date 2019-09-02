@@ -885,8 +885,8 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         map.put("id", mYHEntity.id != -1 ? mYHEntity.id : "");
         map.put("faultInfo.id", mYHEntity.id != -1 ? mYHEntity.id : "");
 
-        map.put("faultInfo.sourceType.id", "BEAM2006/02");
-        map.put("faultInfo.sourceType.value", "其他");
+        map.put("faultInfo.sourceType.id", mYHEntity.sourceType != null ? mYHEntity.sourceType.id : "BEAM2006/02");
+        map.put("faultInfo.sourceType.value", mYHEntity.sourceType != null ? mYHEntity.sourceType.value : "其他");
 
 
         if (mYHEntity.pending != null && mYHEntity.pending.id != null) {

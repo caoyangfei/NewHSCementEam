@@ -18,6 +18,10 @@ import com.supcon.mes.module_sbda_online.model.bean.StopPoliceEntity;
 
 import java.text.SimpleDateFormat;
 
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_EXPLAIN;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_REASON;
+import static com.supcon.mes.middleware.constant.Constant.BAPQuery.STOP_POLICE_STOP_TYPE;
+
 public class StopPoliceAdapter extends BaseListDataRecyclerViewAdapter<StopPoliceEntity> {
 
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -40,14 +44,12 @@ public class StopPoliceAdapter extends BaseListDataRecyclerViewAdapter<StopPolic
         CustomTextView itemStopPoliceCloseTime;
         @BindByTag("itemStopPoliceTotalTime")
         CustomTextView itemStopPoliceTotalTime;
-//        @BindByTag("itemStopPoliceStopType")
-//        CustomTextView itemStopPoliceStopType;
-//        @BindByTag("itemStopPoliceStopReason")
-//        CustomTextView itemStopPoliceStopReason;
-//        @BindByTag("itemStopPoliceStopExplain")
-//        CustomEditText itemStopPoliceStopExplain;
-//        @BindByTag("itemStopPoliceEamIds")
-//        CustomTextView itemStopPoliceEamIds;
+        @BindByTag("itemStopPoliceStopType")
+        CustomTextView itemStopPoliceStopType;
+        @BindByTag("itemStopPoliceStopReason")
+        CustomTextView itemStopPoliceStopReason;
+        @BindByTag("itemStopPoliceStopExplain")
+        CustomEditText itemStopPoliceStopExplain;
     
     
         public ViewHolder(Context context) {
@@ -61,13 +63,28 @@ public class StopPoliceAdapter extends BaseListDataRecyclerViewAdapter<StopPolic
 
         @SuppressLint("StringFormatInvalid")
         @Override
-        protected void update(StopPoliceEntity data) {
-            itemStopPoliceName.setContent(Util.strFormat(data.getEamType().name));
-            itemStopPoliceStartTime.setContent(data.openTime != null ? dateFormat.format(data.openTime) : "--");
-            itemStopPoliceCloseTime.setContent(data.closedTime != null ? dateFormat.format(data.closedTime) : "--");
-            itemStopPoliceTotalTime.setContent(Util.big2(data.totalHour));
+        protected void update(StopPoliceEntity stopPoliceEntity) {
+            itemStopPoliceName.setContent(Util.strFormat(stopPoliceEntity.getEamType().name));
+            itemStopPoliceStartTime.setContent(stopPoliceEntity.openTime != null ? dateFormat.format(stopPoliceEntity.openTime) : "--");
+            itemStopPoliceCloseTime.setContent(stopPoliceEntity.closedTime != null ? dateFormat.format(stopPoliceEntity.closedTime) : "--");
+            itemStopPoliceTotalTime.setContent(Util.big2(stopPoliceEntity.totalHour));
             
-            itemView.setOnClickListener(v -> onItemChildViewClickListener.onItemChildViewClick(itemView, getAdapterPosition(), 0, data));
+            itemView.setOnClickListener(v -> onItemChildViewClickListener.onItemChildViewClick(itemView, getAdapterPosition(), 0, stopPoliceEntity));
+            if (stopPoliceEntity.recordId != null && stopPoliceEntity.recordId.closedType != null) {
+                itemStopPoliceStopType.setContent(stopPoliceEntity.recordId.closedType.value);
+            } else {
+                itemStopPoliceStopType.setContent(null);
+            }
+            if (stopPoliceEntity.recordId != null && stopPoliceEntity.recordId.closedReason != null) {
+                itemStopPoliceStopReason.setContent(stopPoliceEntity.recordId.closedReason.value);
+            } else {
+                itemStopPoliceStopReason.setContent(null);
+            }
+            if (stopPoliceEntity.recordId != null) {
+                itemStopPoliceStopExplain.setContent(stopPoliceEntity.recordId.reason);
+            } else {
+                itemStopPoliceStopExplain.setContent(null);
+            }
         }
     
     }

@@ -115,6 +115,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         contentView.setLayoutManager(new LinearLayoutManager(context));
         titleText.setText("工作提醒");
         rightBtn.setVisibility(View.VISIBLE);
+        rightBtn.setImageResource(R.drawable.icon_processed);
     }
 
     @SuppressLint("CheckResult")
