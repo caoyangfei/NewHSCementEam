@@ -19,6 +19,7 @@ import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.common.view.listener.OnRefreshPageListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.DatePickController;
@@ -62,12 +63,7 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
     ImageButton leftBtn;
     @BindByTag("titleText")
     TextView titleText;
-    @BindByTag("dateLayout")
-    LinearLayout dateLayout;
-    @BindByTag("dateTv")
-    TextView dateTv;
-    @BindByTag("expend")
-    ImageView expend;
+
 
     private ProcessedAdapter processedAdapter;
     private DatePickController datePickController;
@@ -91,6 +87,7 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
+        contentView.addItemDecoration(new SpaceItemDecoration(15));
         contentView.setLayoutManager(new LinearLayoutManager(context));
         titleText.setText("我处理过的");
 
@@ -100,10 +97,6 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
         datePickController.setCanceledOnTouchOutside(true);
         datePickController.setSecondVisible(false);
         datePickController.textSize(18);
-
-        dateTv.setText(DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd"));
-        queryParam.put(Constant.BAPQuery.SCORE_DATA_START, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd 00:00:00"));
-        queryParam.put(Constant.BAPQuery.SCORE_DATA_STOP, DateUtil.dateFormat(System.currentTimeMillis(), "yyyy-MM-dd 23:59:59"));
     }
 
     @SuppressLint("CheckResult")
@@ -125,19 +118,7 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
                 presenterRouter.create(ProcessedAPI.class).workflowHandleList(pageIndex);
             }
         });
-        dateLayout.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                AnimatorUtil.rotationExpandIcon(expend, 0, 180);
-                datePickController.listener((year, month, day, hour, minute, second) -> {
-                    dateTv.setText(year + "-" + month + "-" + day);
-                    queryParam.put(Constant.BAPQuery.SCORE_DATA_START, year + "-" + month + "-" + day + " 00:00:00");
-                    queryParam.put(Constant.BAPQuery.SCORE_DATA_STOP, year + "-" + month + "-" + day + " 23:59:59");
-                    refreshListController.refreshBegin();
-                }).show(DateUtil.dateFormat(dateTv.getText().toString()), expend);
-            }
-        });
+
         processedAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {

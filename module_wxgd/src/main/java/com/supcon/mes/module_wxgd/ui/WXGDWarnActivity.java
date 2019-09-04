@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -129,6 +130,8 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
     CustomVerticalDateView realEndTime;
     @BindByTag("repairAdvise")
     CustomVerticalEditText repairAdvise;
+    @BindByTag("dispatcherLayout")
+    LinearLayout dispatcherLayout;
 
     @BindByTag("commentInput")
     CustomEditText commentInput;
@@ -250,6 +253,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
      */
     private void initTableHeadView() {
         realEndTime.setVisibility(View.GONE);
+        dispatcherLayout.setVisibility(View.GONE);
     }
 
     @Override

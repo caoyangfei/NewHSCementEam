@@ -171,6 +171,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     private EamType eamType;
     private EamXJEntity eamXJEntity;
     private boolean isOneSubmit;
+    private OLXJAreaEntity olxjAreaEntity;//拼的一条巡检项
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
@@ -206,6 +207,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @Override
     protected void initView() {
         super.initView();
+        titleText.setText(eamType.name);
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(DisplayUtil.dip2px(1, context)));
 //        finishedBottomBtn.setVisibility(View.INVISIBLE);
@@ -441,7 +443,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @SuppressLint("CheckResult")
     private void submitOneAreaData(OLXJWorkItemEntity xjWorkItemEntity) {
         isOneSubmit = true;
-        OLXJAreaEntity olxjAreaEntity = new OLXJAreaEntity();
+        olxjAreaEntity = new OLXJAreaEntity();
         olxjAreaEntity.id = mXJAreaEntity.id;
         olxjAreaEntity.name = mXJAreaEntity.name;
         olxjAreaEntity._code = mXJAreaEntity._code;
@@ -467,7 +469,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                 }, throwable -> {
                 }, () -> {
                     onLoading("正在打包并上传巡检数据，请稍后...");
-                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
+                    presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
                 });
     }
 
@@ -504,7 +506,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                             }
                                         }
                                         onLoading("正在打包并上传巡检数据，请稍后...");
-                                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+                                        presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
                                     } catch (Exception e) {
                                         onLoadFailed("完成操作失败！" + e.getMessage());
                                         e.printStackTrace();
@@ -928,9 +930,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
-        if (event.action.equals(Constant.RefreshAction.XJ_WORK_REINPUT)) return;
-        titleController.initView();
-        doRefresh(false);
+        if (TextUtils.isEmpty(event.action)) {
+            titleController.initView();
+            doRefresh(false);
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -1108,12 +1111,12 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                     isOneSubmit = false;
                 } else {
                     back();
-                    Flowable.timer(300, TimeUnit.MILLISECONDS)
-                            .subscribe(v -> {
-                                EventBus.getDefault().post(mXJAreaEntity);
-                                EventBus.getDefault().post(new AreaRefreshEvent());
-                            });
                 }
+                Flowable.timer(300, TimeUnit.MILLISECONDS)
+                        .subscribe(v -> {
+                            EventBus.getDefault().post(mXJAreaEntity);
+                            EventBus.getDefault().post(new AreaRefreshEvent());
+                        });
             }
         });
     }
@@ -1170,7 +1173,11 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @Override
     public void updateTaskByIdSuccess(ResultEntity entity) {
-        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+        if (isOneSubmit) {
+            presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
+        } else {
+            presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+        }
     }
 
     @Override

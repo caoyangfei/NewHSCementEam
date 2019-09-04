@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +28,8 @@ import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
  * 待办adapter
  */
 public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEntity> {
+    private boolean isEdit;
+
     public WaitDealtAdapter(Context context) {
         super(context);
     }
@@ -35,8 +39,12 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         return new ContentViewHolder(context);
     }
 
+    public void setEditable(boolean isEdit) {
+        this.isEdit = isEdit;
+        notifyDataSetChanged();
+    }
 
-    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener {
+    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> {
 
         @BindByTag("waitDealtEamName")
         TextView waitDealtEamName;
@@ -47,7 +55,8 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
 
         @BindByTag("waitDealtEntrust")
         ImageView waitDealtEntrust;
-
+        @BindByTag("chkBox")
+        CheckBox chkBox;
 
         public ContentViewHolder(Context context) {
             super(context);
@@ -57,11 +66,33 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         @Override
         protected void initListener() {
             super.initListener();
-            waitDealtEntrust.setOnClickListener(this::onClick);
+            waitDealtEntrust.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    WaitDealtEntity item = getItem(getAdapterPosition());
+                    if (isEdit) {
+                        if (!TextUtils.isEmpty(item.state) && item.state.equals("派工")) {
+                            chkBox.performClick();
+                        } else {
+                            ToastUtils.show(context, "请先取消派单进去再进入详情操作！");
+                        }
+                        return;
+                    }
+                    onItemChildViewClick(view, 0, getItem(getAdapterPosition()));
+                }
+            });
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     WaitDealtEntity item = getItem(getAdapterPosition());
+                    if (isEdit) {
+                        if (!TextUtils.isEmpty(item.state) && item.state.equals("派工")) {
+                            chkBox.performClick();
+                        } else {
+                            ToastUtils.show(context, "请先取消派单进去再进入详情操作！");
+                        }
+                        return;
+                    }
                     if (TextUtils.isEmpty(item.processkey)) {
                         if (item.dataid == null || TextUtils.isEmpty(item.soucretype)) {
                             ToastUtils.show(context, "未查询到当前单据状态!");
@@ -120,6 +151,13 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                     }
                 }
             });
+            chkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    WaitDealtEntity item = getItem(getAdapterPosition());
+                    item.isCheck = b;
+                }
+            });
         }
 
         @Override
@@ -129,6 +167,11 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
 
         @Override
         protected void update(WaitDealtEntity data) {
+            if (isEdit && !TextUtils.isEmpty(data.state) && data.state.equals("派工")) {
+                chkBox.setVisibility(View.VISIBLE);
+            } else {
+                chkBox.setVisibility(View.GONE);
+            }
             waitDealtEamName.setText(Util.strFormat(TextUtils.isEmpty(data.eamname) ? data.eamcode : data.eamname));
             if (data.nextduration != null) {
                 waitDealtTime.setText(Util.strFormat2(data.nextduration));
@@ -166,11 +209,6 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             } else {
                 waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.drawable.btn_entrusted));
             }
-        }
-
-        @Override
-        public void onClick(View view) {
-            onItemChildViewClick(view, 0, getItem(getAdapterPosition()));
         }
     }
 }

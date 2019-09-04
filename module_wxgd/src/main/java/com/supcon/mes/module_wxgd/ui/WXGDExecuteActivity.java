@@ -337,7 +337,10 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : sdf.format(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : sdf.format(mWXGDEntity.planEndDate));
-        realEndTime.setDate(DateUtil.dateFormat(mWXGDEntity.realEndDate == null ? System.currentTimeMillis() : mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
+        if (mWXGDEntity.realEndDate == null) {
+            mWXGDEntity.realEndDate = System.currentTimeMillis();
+        }
+        realEndTime.setDate(DateUtil.dateFormat(mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
 
         workContext.setContent(mWXGDEntity.workOrderContext);
     }
@@ -469,7 +472,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
                     }
                     mWXGDEntity.realEndDate = select;
                     realEndTime.setDate(dateStr);
-                }).show((mWXGDEntity.realEndDate == null) ? new Date().getTime() : mWXGDEntity.realEndDate);
+                }).show(mWXGDEntity.realEndDate);
             }
 
         });
@@ -810,7 +813,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 
     @Override
     public void onBackPressed() {
-        if (mWXGDEntity != null && doCheckChange()) {
+        if (doCheckChange()) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("单据数据已经被修改，是否要保存?")
                     .bindView(R.id.redBtn, "保存")
@@ -835,7 +838,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 
     public boolean doCheckChange() {
 
-        if (!oldWxgdEntity.toString().equals(mWXGDEntity.toString())) {
+        if (mWXGDEntity != null && !oldWxgdEntity.toString().equals(mWXGDEntity.toString())) {
             return true;
         }
 

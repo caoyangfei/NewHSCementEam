@@ -42,6 +42,7 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.controller.LinkController;
 import com.supcon.mes.middleware.controller.RoleController;
+import com.supcon.mes.middleware.controller.YHCloseController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
 import com.supcon.mes.middleware.model.bean.RepairGroupEntity;
@@ -50,6 +51,8 @@ import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.model.listener.OnFailListener;
+import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
@@ -187,6 +190,8 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     private List<Long> dgDeletedIds_lubricateOils = new ArrayList<>();
     private List<Long> dgDeletedIds_maintenance = new ArrayList<>();
     private String tableNo;
+    private YHCloseController yhCloseController;
+    private boolean isCancel;
 
     @Override
     protected int getLayoutID() {
@@ -232,6 +237,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         mSinglePickController.setDividerVisible(false);
         mSinglePickController.setCanceledOnTouchOutside(true);
         mSinglePickController.textSize(18);
+        yhCloseController = new YHCloseController();
 
         //获取维修组
         initRepairGroup();
@@ -485,14 +491,17 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
 
         });
         transition.setOnChildViewClickListener(new OnChildViewClickListener() {
+
             @Override
             public void onChildViewClick(View childView, int action, Object obj) {
                 WorkFlowVar workFlowVar = (WorkFlowVar) obj;
+                isCancel = false;
                 switch (action) {
                     case 0:
                         doSave("");
                         break;
                     case 1:
+                        isCancel = true;
                         doSubmit(workFlowVar);
                         break;
                     case 2:
@@ -551,7 +560,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
     @Override
     public void onBackPressed() {
 
-        if (mWXGDEntity != null && doCheckChange()) {
+        if (doCheckChange()) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("单据数据已经被修改，是否要保存?")
                     .bindView(R.id.grayBtn, "离开")
@@ -615,7 +624,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         onLoading("工单提交中...");
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
-        map.put("workRecord.dispatcher.id", mWXGDEntity.chargeStaff != null ? Util.strFormat2(mWXGDEntity.chargeStaff.id) : "");
+
         //封装工作流
         map = generateWorkFlow(workFlowVar, map);
 
@@ -887,13 +896,21 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
 
     @Override
     public void submitSuccess(BapResultEntity bapResultEntity) {
-        onLoadSuccessAndExit("处理成功", new OnLoaderFinishListener() {
-            @Override
-            public void onLoaderFinished() {
+        if (isCancel) {
+            yhCloseController.closeWorkAndSaveReason(mWXGDEntity.faultInfo.id, "作废", result -> onLoadSuccessAndExit("处理成功", () -> {
                 EventBus.getDefault().post(new RefreshEvent());
                 finish();
-            }
-        });
+            }), errorMsg -> onLoadFailed(ErrorMsgHelper.msgParse(errorMsg)));
+        } else {
+            onLoadSuccessAndExit("处理成功", new OnLoaderFinishListener() {
+                @Override
+                public void onLoaderFinished() {
+                    EventBus.getDefault().post(new RefreshEvent());
+                    finish();
+                }
+            });
+        }
+
     }
 
     @Override
@@ -920,7 +937,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
      * @author zhangwenshuai1 2018/9/11
      */
     private boolean doCheckChange() {
-        if (!mWXGDEntity.toString().equals(oldWxgdEntity.toString())) {
+        if (mWXGDEntity != null && !mWXGDEntity.toString().equals(oldWxgdEntity.toString())) {
             return true;
         }
         if (!TextUtils.isEmpty(sparePartListStr) && !sparePartListStr.equals(mSparePartController.getSparePartEntities().toString())) {

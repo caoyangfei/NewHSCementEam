@@ -1,8 +1,11 @@
 package com.supcon.mes.module_main.ui;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -24,13 +27,22 @@ import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
+import com.supcon.mes.mbap.utils.controllers.SinglePickController;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomTextView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
+import com.supcon.mes.middleware.controller.ModulePowerController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonSearchStaff;
+import com.supcon.mes.middleware.model.bean.RepairGroupEntity;
+import com.supcon.mes.middleware.model.bean.RepairGroupEntityDao;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
+import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
@@ -40,20 +52,30 @@ import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.api.WaitDealtAPI;
+import com.supcon.mes.module_main.model.api.WaitDealtSubmitAPI;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.contract.WaitDealtContract;
+import com.supcon.mes.module_main.model.contract.WaitDealtSubmitContract;
 import com.supcon.mes.module_main.presenter.WaitDealtPresenter;
+import com.supcon.mes.module_main.presenter.WaitDealtSubmitPresenter;
 import com.supcon.mes.module_main.ui.adaper.WaitDealtAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -63,9 +85,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
  * @date 2019/7/25
  * ------------- Description -------------
  */
-@Presenter(value = WaitDealtPresenter.class)
+@Presenter(value = {WaitDealtPresenter.class, WaitDealtSubmitPresenter.class})
 @Router(value = Constant.Router.WAIT_DEALT)
-public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEntity> implements WaitDealtContract.View {
+public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEntity> implements WaitDealtContract.View, WaitDealtSubmitContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -82,11 +104,21 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     @BindByTag("waitState")
     RadioGroup waitState;
 
+    @BindByTag("dispatch")
+    Button dispatch;
+
     private WaitDealtAdapter waitDealtAdapter;
-    private CustomDialog customDialog;
-    private CommonSearchStaff proxyStaff;
+    private CustomDialog proxyDialog, dispatchDialog;
+    private CommonSearchStaff searchStaff;
     private String reason;
     private Map<String, Object> queryParam = new HashMap<>();
+    private Long deploymentId;
+    private String powerCode;
+
+    private List<RepairGroupEntity> mRepairGroups;
+    private List<String> repairGroupList = new ArrayList<>();
+    private SinglePickController mSinglePickController;
+    private CustomTextView dispatchGroup;
 
     @Override
     protected IListAdapter<WaitDealtEntity> createAdapter() {
@@ -116,6 +148,37 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         titleText.setText("工作提醒");
         rightBtn.setVisibility(View.VISIBLE);
         rightBtn.setImageResource(R.drawable.icon_processed);
+
+        mSinglePickController = new SinglePickController(this);
+        mSinglePickController.setDividerVisible(false);
+        mSinglePickController.setCanceledOnTouchOutside(true);
+        mSinglePickController.textSize(18);
+    }
+
+    @Override
+    protected void initData() {
+        super.initData();
+        ModulePermissonCheckController mModulePermissonCheckController = new ModulePermissonCheckController();
+        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work",
+                result -> {
+                    deploymentId = result;
+                    ModulePowerController modulePowerController = new ModulePowerController();
+                    modulePowerController.checkModulePermission(deploymentId, result1 -> powerCode = result1.powerCode);
+                }, null);
+        initRepairGroup();
+    }
+
+    /**
+     * @param
+     * @return
+     * @description 初始化维修组
+     * @author zhangwenshuai1 2018/8/22
+     */
+    private void initRepairGroup() {
+        mRepairGroups = EamApplication.dao().getRepairGroupEntityDao().queryBuilder().where(RepairGroupEntityDao.Properties.Ip.eq(EamApplication.getIp())).list();
+        for (RepairGroupEntity entity : mRepairGroups) {
+            repairGroupList.add(entity.name);
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -175,9 +238,109 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         dispatchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (TextUtils.isEmpty(powerCode)) {
+                    ToastUtils.show(context, "当前用户没有派单权限");
+                    return;
+                }
                 dispatchBtn.setSelected(!dispatchBtn.isSelected());
+                waitDealtAdapter.setEditable(dispatchBtn.isSelected());
+                if (dispatchBtn.isSelected()) {
+                    dispatch.setVisibility(View.VISIBLE);
+                } else {
+                    dispatch.setVisibility(View.GONE);
+                }
             }
         });
+        dispatch.setOnClickListener(view -> {
+            List<WaitDealtEntity> list = waitDealtAdapter.getList();
+            StringBuffer pendingids = new StringBuffer();
+            StringBuffer ids = new StringBuffer();
+            Flowable.fromIterable(list)
+                    .filter(waitDealtEntity -> waitDealtEntity.isCheck)
+                    .subscribe(waitDealtEntity -> {
+                        pendingids.append(waitDealtEntity.pendingid).append(",");
+                        ids.append(waitDealtEntity.dataid).append(",");
+                    }, throwable -> {
+                    }, () -> {
+                        if (!TextUtils.isEmpty(pendingids.toString()) && !TextUtils.isEmpty(ids.toString())) {
+                            pendingids.deleteCharAt(pendingids.length() - 1);
+                            ids.deleteCharAt(ids.length() - 1);
+                            Map<String, Object> queryMap = new HashMap<>();
+                            queryMap.put("ids", ids);
+                            queryMap.put("deploymentId", deploymentId);
+                            queryMap.put("pendingIds", pendingids.toString());
+                            queryMap.put("outcomeStr", "task,Link2079,派单,批量派工");
+                            queryMap.put("batchType", "plpg");
+                            dispatchDialog(queryMap);
+                        } else {
+                            ToastUtils.show(context, "请选择待派单据！");
+                        }
+                    });
+
+        });
+    }
+
+    /**
+     * 派单
+     */
+    private void dispatchDialog(Map<String, Object> queryMap) {
+        dispatchDialog = new CustomDialog(this).layout(R.layout.dispatch_dialog,
+                DisplayUtil.getScreenWidth(context) * 2 / 3, WRAP_CONTENT)
+                .bindView(R.id.blueBtn, "确定")
+                .bindView(R.id.grayBtn, "取消")
+                .bindChildListener(R.id.dispatchGroup, new OnChildViewClickListener() {
+                    @Override
+                    public void onChildViewClick(View childView, int action, Object obj) {
+                        if (action == -1) {
+                            queryMap.remove("repairGroupBatchId");
+                        } else {
+                            if (repairGroupList.size() <= 0) {
+                                ToastUtils.show(context, "维修组列表为空！");
+                                return;
+                            }
+                            mSinglePickController.list(repairGroupList)
+                                    .listener((index, item) -> {
+                                        dispatchGroup.setContent(item.toString());
+                                        RepairGroupEntity repairGroup = mRepairGroups.get(index);
+                                        queryMap.put("repairGroupBatchId", repairGroup.id);
+                                    }).show(dispatchGroup.getValue());
+                        }
+                    }
+                })
+                .bindChildListener(R.id.dispatchPerson, new OnChildViewClickListener() {
+                    @Override
+                    public void onChildViewClick(View childView, int action, Object obj) {
+                        if (action == -1) {
+                            searchStaff = null;
+                        }
+                        IntentRouter.go(context, Constant.Router.STAFF);
+                    }
+                })
+                .bindClickListener(R.id.blueBtn, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v12) {
+                        if (searchStaff != null) {
+                            queryMap.put("workStaffBatchId", searchStaff.id);
+                        }
+                        if (!queryMap.containsKey("repairGroupBatchId") && !queryMap.containsKey("workStaffBatchId")) {
+                            ToastUtils.show(WaitDealtActivity.this, "维修组和负责人不能同时为空!");
+                            return;
+                        }
+                        onLoading("正在派单...");
+                        presenterRouter.create(WaitDealtSubmitAPI.class).bulkSubmitCustom(queryMap);
+                        dispatchDialog.dismiss();
+                        dispatchBtn.performClick();
+                    }
+                }, false)
+                .bindClickListener(R.id.grayBtn, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dispatchBtn.performClick();
+                    }
+                }, true);
+        dispatchGroup = dispatchDialog.getDialog().findViewById(R.id.dispatchGroup);
+        dispatchDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dispatchDialog.show();
     }
 
     /**
@@ -186,7 +349,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
      * @param waitDealtEntity
      */
     private void proxyDialog(WaitDealtEntity waitDealtEntity) {
-        customDialog = new CustomDialog(this).layout(R.layout.proxy_dialog,
+        proxyDialog = new CustomDialog(this).layout(R.layout.proxy_dialog,
                 DisplayUtil.getScreenWidth(context) * 2 / 3, WRAP_CONTENT)
                 .bindView(R.id.blueBtn, "确定")
                 .bindView(R.id.grayBtn, "取消")
@@ -194,7 +357,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                     @Override
                     public void onChildViewClick(View childView, int action, Object obj) {
                         if (action == -1) {
-                            proxyStaff = null;
+                            searchStaff = null;
                         }
                         IntentRouter.go(context, Constant.Router.STAFF);
                     }
@@ -208,7 +371,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                 .bindClickListener(R.id.blueBtn, new View.OnClickListener() {
                     @Override
                     public void onClick(View v12) {
-                        if (proxyStaff == null) {
+                        if (searchStaff == null) {
                             ToastUtils.show(WaitDealtActivity.this, "请选择委托人");
                             return;
                         }
@@ -217,14 +380,14 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                             return;
                         }
                         onLoading("正在委托...");
-                        presenterRouter.create(WaitDealtAPI.class).proxyPending(waitDealtEntity.pendingid, proxyStaff.userId, reason);
-                        customDialog.dismiss();
+                        presenterRouter.create(WaitDealtAPI.class).proxyPending(waitDealtEntity.pendingid, searchStaff.userId, reason);
+                        proxyDialog.dismiss();
                     }
                 }, false)
                 .bindClickListener(R.id.grayBtn, null, true);
-        ((CustomEditText) customDialog.getDialog().findViewById(R.id.proxyReason)).editText().setScrollBarSize(0);
-        customDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        customDialog.show();
+        ((CustomEditText) proxyDialog.getDialog().findViewById(R.id.proxyReason)).editText().setScrollBarSize(0);
+        proxyDialog.getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        proxyDialog.show();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -237,9 +400,14 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     public void search(CommonSearchEvent commonSearchEvent) {
         if (commonSearchEvent.commonSearchEntity != null) {
             if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
-                proxyStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
-                CustomTextView person = customDialog.getDialog().findViewById(R.id.proxyPerson);
-                person.setContent(Util.strFormat(proxyStaff.name));
+                searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
+                if (proxyDialog != null && proxyDialog.getDialog().isShowing()) {
+                    CustomTextView person = proxyDialog.getDialog().findViewById(R.id.proxyPerson);
+                    person.setContent(Util.strFormat(searchStaff.name));
+                } else if (dispatchDialog != null && dispatchDialog.getDialog().isShowing()) {
+                    CustomTextView person = dispatchDialog.getDialog().findViewById(R.id.dispatchPerson);
+                    person.setContent(Util.strFormat(searchStaff.name));
+                }
             }
         }
     }
@@ -276,8 +444,21 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     }
 
     @Override
+    public void bulkSubmitCustomSuccess(ResultEntity entity) {
+        onLoadSuccess("派单成功");
+        refreshListController.refreshBegin();
+    }
+
+    @Override
+    public void bulkSubmitCustomFailed(String errorMsg) {
+        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
+
+
 }

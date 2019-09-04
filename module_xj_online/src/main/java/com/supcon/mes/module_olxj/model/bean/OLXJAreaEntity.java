@@ -1,5 +1,6 @@
 package com.supcon.mes.module_olxj.model.bean;
 
+import com.google.gson.annotations.Expose;
 import com.supcon.common.com_http.BaseEntity;
 import com.supcon.mes.mbap.MBapApp;
 import com.supcon.mes.middleware.EamApplication;
@@ -74,6 +75,7 @@ public class OLXJAreaEntity extends BaseEntity {
     public LinkedList<OLXJWorkItemEntity> workItemEntities = new LinkedList<>();
 
 
-//    public String faultMsg;//新故障信息拼接  本地拼接的
+    //    public String faultMsg;//新故障信息拼接  本地拼接的
+    @Expose
     public String oldfaultMsg;//旧故障信息拼接
 }

@@ -52,7 +52,7 @@
     {
       "name": "润滑预警",
       "viewType": 0,
-      "tag": "",
+      "tag": "LUBWARNINGQTY",
       "num": 0,
       "type": 7,
       "isPower": true

@@ -204,7 +204,7 @@
     <View
         android:id="@+id/ufItemPriority"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         android:background="@color/line_gray"
         android:tag="ufItemPriority"
         android:visibility="gone" />

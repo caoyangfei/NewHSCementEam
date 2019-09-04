@@ -2,9 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
-    android:orientation="vertical">
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/chkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="@dimen/dp_10"
+        android:button="@drawable/sl_checkbox_selector"
+        android:visibility="gone"
+        android:tag="chkBox" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -59,8 +69,8 @@
                 android:id="@+id/waitDealtEamState"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/dp_10"
                 android:layout_toLeftOf="@+id/waitDealtEntrust"
                 android:tag="waitDealtEamState"
                 tools:text="待验收" />
@@ -69,8 +79,8 @@
                 android:id="@+id/waitDealtEntrust"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/dp_10"
                 android:layout_alignParentRight="true"
+                android:padding="@dimen/dp_10"
                 android:src="@drawable/btn_entrust"
                 android:tag="waitDealtEntrust" />
         </RelativeLayout>
@@ -83,6 +93,5 @@
             android:layout_marginTop="@dimen/dp_5"
             android:background="#d9d9d9" />
     </RelativeLayout>
-
 
 </LinearLayout>

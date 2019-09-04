@@ -33,7 +33,7 @@ import io.reactivex.Flowable;
 public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAreaEntity> {
 
     // 用于格式化日期,作为日志文件名的一部分
-    private SimpleDateFormat formatter = new SimpleDateFormat("MM-dd HH-mm");
+    private SimpleDateFormat formatter = new SimpleDateFormat("MM-dd HH:mm");
     private TipPopwindow tipPopwindow;
 
     public OLXJAreaListAdapter(Context context) {
@@ -128,9 +128,9 @@ public class OLXJAreaListAdapter extends BaseListDataRecyclerViewAdapter<OLXJAre
             }
             itemAreaName.setText((getAdapterPosition() + 1) + ". " + data.name);
 
+            itemAreaFault.setVisibility(View.INVISIBLE);
             if (TextUtils.isEmpty(data.signedTime)) {
                 if (TextUtils.isEmpty(data.oldfaultMsg)) {
-                    itemAreaFault.setVisibility(View.INVISIBLE);
                     itemAreaDot.setImageDrawable(context.getResources().getDrawable(R.drawable.dot_wait));
                 } else {
                     itemAreaFault.setVisibility(View.VISIBLE);

@@ -62,8 +62,8 @@ public class OLXJTitleController extends BaseViewController {
     public void initView() {
         super.initView();
         xjBtnLayout.setVisibility(View.VISIBLE);
-        titleText.setVisibility(View.GONE);
-//        listDeviceFilter.setVisibility(View.GONE);
+//        titleText.setVisibility(View.GONE);
+        listDeviceFilter.setVisibility(View.GONE);
     }
 
     @Override

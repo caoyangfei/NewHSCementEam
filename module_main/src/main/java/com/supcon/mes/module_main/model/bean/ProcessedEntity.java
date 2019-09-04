@@ -1,11 +1,16 @@
 package com.supcon.mes.module_main.model.bean;
 
 import com.supcon.common.com_http.BaseEntity;
+import com.supcon.mes.middleware.model.bean.EamType;
 
 public class ProcessedEntity extends BaseEntity {
 
-    public String TABLE_NO;
-    public String NAME;
-    public String STATUS;
-    public Long CREATE_TIME;
+    public Long createTime;
+    public String dname;
+    public String prostatus;
+    public String name;
+    public String staffname;
+    public String tableno;
+    public EamType eamid;
+    public String content;
 }

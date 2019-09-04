@@ -6,6 +6,7 @@
 
     <color name="themeColor">#dd4c52</color>
     <color name="equipmentThemeColor">#dd4c52</color>
+    <color name="customRed">#dd4c52</color>
     <color name="deviceTitleColor">#3c5569</color>
     <color name="deleteBgColor">#E05543</color>
     <color name="textColor5251">#323232</color>

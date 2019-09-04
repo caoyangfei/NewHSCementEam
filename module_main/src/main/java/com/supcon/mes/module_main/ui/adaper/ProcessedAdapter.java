@@ -14,6 +14,8 @@ import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.util.HtmlParser;
+import com.supcon.mes.middleware.util.HtmlTagHandler;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
@@ -42,15 +44,16 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
 
         @BindByTag("processTableNo")
         TextView processTableNo;
-        @BindByTag("processName")
-        CustomTextView processName;
         @BindByTag("processState")
         TextView processState;
+        @BindByTag("processEam")
+        CustomTextView processEam;
         @BindByTag("processTime")
         CustomTextView processTime;
         @BindByTag("processStaff")
         CustomTextView processStaff;
-
+        @BindByTag("processContent")
+        CustomTextView processContent;
 
         public ContentViewHolder(Context context) {
             super(context);
@@ -70,17 +73,27 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
 
         @Override
         protected void update(ProcessedEntity data) {
-            processTableNo.setText(Util.strFormat2(data.TABLE_NO));
-            processName.setContent(Util.strFormat2(data.NAME));
-            processState.setText(Util.strFormat2(data.STATUS));
-            processTime.setContent(data.CREATE_TIME != null ? DateUtil.dateFormat(data.CREATE_TIME) : "");
-
-            if (!TextUtils.isEmpty(data.STATUS)) {
-                if (data.STATUS.equals("编辑") || data.STATUS.equals("派工")) {
+            processTableNo.setText(Util.strFormat2(data.tableno));
+            processState.setText(Util.strFormat2(data.prostatus));
+            if (!TextUtils.isEmpty(data.eamid.name) || !TextUtils.isEmpty(data.eamid.code)) {
+                String eam = String.format(context.getString(R.string.device_style10), data.eamid.name
+                        , data.eamid.code);
+                processEam.setContent(HtmlParser.buildSpannedText(eam, new HtmlTagHandler()).toString());
+            }
+            processTime.setContent(data.createTime != null ? DateUtil.dateFormat(data.createTime, "yyyy-MM-dd HH:mm:ss") : "");
+            processStaff.setContent(Util.strFormat(data.staffname));
+            if (!TextUtils.isEmpty(data.content)) {
+                processContent.setContent(data.content);
+                processContent.setVisibility(View.VISIBLE);
+            } else {
+                processContent.setVisibility(View.GONE);
+            }
+            if (!TextUtils.isEmpty(data.prostatus)) {
+                if (data.prostatus.equals("编辑") || data.prostatus.equals("派工")) {
                     processState.setTextColor(context.getResources().getColor(R.color.gray));
-                } else if (data.STATUS.equals("执行") || data.STATUS.contains("接单")) {
+                } else if (data.prostatus.equals("执行") || data.prostatus.contains("接单")) {
                     processState.setTextColor(context.getResources().getColor(R.color.yellow));
-                } else if (data.STATUS.equals("验收")) {
+                } else if (data.prostatus.equals("验收")) {
                     processState.setTextColor(context.getResources().getColor(R.color.blue));
                 } else {
                     processState.setTextColor(context.getResources().getColor(R.color.gray));

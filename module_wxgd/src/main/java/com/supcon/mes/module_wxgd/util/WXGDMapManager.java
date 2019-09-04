@@ -81,6 +81,8 @@ public class WXGDMapManager {
         map.put("workRecord.periodUnit.id", mWXGDEntity.periodUnit != null ? Util.strFormat2(mWXGDEntity.periodUnit.id) : "");
         map.put("workRecord.periodUnit.value", mWXGDEntity.periodUnit != null ? Util.strFormat2(mWXGDEntity.periodUnit.value) : "");
         map.put("__file_upload", true);
+
+        map.put("workRecord.dispatcher.id", mWXGDEntity.dispatcher.id == null ? EamApplication.getAccountInfo().staffId : mWXGDEntity.dispatcher.id);
         return map;
     }
 

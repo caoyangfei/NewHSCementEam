@@ -2,6 +2,7 @@ package com.supcon.mes.module_sbda_online.model.network;
 
 import com.app.annotation.apt.ApiFactory;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.module_sbda_online.model.bean.LubriListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.MaintenanceListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.ParamListEntity;
@@ -11,7 +12,6 @@ import com.supcon.mes.module_sbda_online.model.bean.SBDAOnlineListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.ScreenListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SparePartListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SparePartsLedgerListEntity;
-import com.supcon.mes.module_sbda_online.model.bean.StatusResultEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceListEntity;
 import com.supcon.mes.module_sbda_online.model.bean.SubsidiaryListEntity;
 
@@ -19,7 +19,6 @@ import java.util.Map;
 
 import io.reactivex.Flowable;
 import okhttp3.RequestBody;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -81,14 +80,13 @@ public interface ApiService {
     //技术参数
     @GET("/BEAM/baseInfo/baseInfo/data-dg1461551857214.action")
     Flowable<ParamListEntity> getEamParam(@QueryMap Map<String, Object> pageQueryMap);
-    
+
     @GET("/BEAM2/runningState/runningState/setRunningRecord.action")
-    Flowable<StatusResultEntity> setRunningRecord(@QueryMap Map<String, String> pageQueryMap);
-    
+    Flowable<ResultEntity> setRunningRecord(@QueryMap Map<String, String> pageQueryMap);
+
     //查看设备
     @POST("/BEAM2/runningGather/runningGathers/gatherMobileList-query.action?")
-    @Multipart
-    Flowable<StopPoliceListEntity> gatherMobileList(@PartMap Map<String, RequestBody> map, @QueryMap Map<String, Object> pageQueryMap);
+    Flowable<StopPoliceListEntity> gatherMobileList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 
-    
+
 }

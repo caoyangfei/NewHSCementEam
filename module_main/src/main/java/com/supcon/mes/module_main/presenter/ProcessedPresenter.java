@@ -3,7 +3,11 @@ package com.supcon.mes.module_main.presenter;
 import android.text.TextUtils;
 
 import com.supcon.mes.middleware.EamApplication;
+import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
+import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
+import com.supcon.mes.middleware.model.bean.JoinSubcondEntity;
+import com.supcon.mes.middleware.util.BAPQueryParamsHelper;
 import com.supcon.mes.module_main.model.bean.EamEntity;
 import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 import com.supcon.mes.module_main.model.contract.EamContract;
@@ -20,7 +24,12 @@ public class ProcessedPresenter extends ProcessedContract.Presenter {
 
     @Override
     public void workflowHandleList(int page) {
-        mCompositeSubscription.add(MainClient.workflowHandleList(page, 20)
+        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(new HashMap<>());
+        Map<String, Object> paramsName = new HashMap<>();
+        paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
+        JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PROCESSFLOWINFO,STAFF");
+        fastQueryCond.subconds.add(joinSubcondEntity);
+        mCompositeSubscription.add(MainClient.workflowHandleList(fastQueryCond, page, 20)
                 .onErrorReturn(new Function<Throwable, CommonBAPListEntity<ProcessedEntity>>() {
                     @Override
                     public CommonBAPListEntity<ProcessedEntity> apply(Throwable throwable) throws Exception {

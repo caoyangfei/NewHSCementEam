@@ -60,9 +60,9 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/dp_40"
             android:tag="itemStopPoliceEamIds"
-            app:content_hint="请选择辅机设备"
+            app:content_hint="请选择附属设备"
             app:editable="true"
-            app:key="辅机设备"
+            app:key="附属设备"
             app:key_size="14" />
     </LinearLayout>
 

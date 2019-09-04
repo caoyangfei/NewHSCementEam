@@ -31,6 +31,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppNoTitleBarTheme"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+
         <activity
             android:name=".ui.TemporaryLubricationWarnActivity"
             android:launchMode="singleTask"

@@ -5,6 +5,7 @@ import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.module_main.model.bean.EamEntity;
 import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
@@ -63,6 +64,10 @@ public interface MainService {
 
 
     //已处理的
-    @GET("/ec/myWorkflow/workflowHandleList.action")
-    Flowable<CommonBAPListEntity<ProcessedEntity>> workflowHandleList(@Query("myworkflowMsg.pageNo") int pageNo,@Query("myworkflowMsg.pageSize") int pageSize);
+    @GET("/BEAM2/personWork/processFlowInfo/processFlowInfoList-query.action?1=1&permissionCode=BEAM2_1.0.0_personWork_processFlowInfoList")
+    Flowable<CommonBAPListEntity<ProcessedEntity>> workflowHandleList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @Query("page.pageNo") int pageNo, @Query("page.pageSize") int pageSize);
+
+    //批量派单
+    @GET("/BEAM2/workList/workRecord/bulkSubmitCustom.action")
+    Flowable<ResultEntity> bulkSubmitCustom(@QueryMap Map<String, Object> queryMap);
 }

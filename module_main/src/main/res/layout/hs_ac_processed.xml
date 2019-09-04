@@ -3,20 +3,77 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgGray"
-
     android:orientation="vertical">
 
     <include layout="@layout/ly_titlebar" />
 
-    <LinearLayout
+    <RadioGroup
+        android:id="@+id/waitState"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:background="@color/white"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone"
         android:padding="@dimen/dp_5"
-        android:gravity="center_horizontal">
+        android:tag="waitState">
 
-        <include layout="@layout/item_time" />
-    </LinearLayout>
+        <RadioButton
+            android:id="@+id/processedTodo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:button="@drawable/wait_dealt_state_gray"
+            android:drawablePadding="@dimen/dp_5"
+            android:paddingStart="@dimen/dp_10"
+            android:tag="processedTodo"
+            android:text="待处理"
+            android:textColor="@color/textColorGray"
+            android:textSize="@dimen/fontSize_14sp" />
+
+        <RadioButton
+            android:id="@+id/processedDoing"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:button="@drawable/wait_dealt_state_yellow"
+            android:drawablePadding="@dimen/dp_5"
+            android:paddingStart="@dimen/dp_10"
+            android:tag="processedDoing"
+            android:text="处理中"
+            android:textColor="@color/textColorGray"
+            android:textSize="@dimen/fontSize_14sp" />
+
+        <RadioButton
+            android:id="@+id/processedAcceptance"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:button="@drawable/wait_dealt_state_blue"
+            android:drawablePadding="@dimen/dp_5"
+            android:paddingStart="@dimen/dp_10"
+            android:tag="processedAcceptance"
+            android:text="验收"
+            android:textColor="@color/textColorGray"
+            android:textSize="@dimen/fontSize_14sp" />
+
+        <RadioButton
+            android:id="@+id/processedCompleted"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/dp_10"
+            android:button="@drawable/wait_dealt_state_orange"
+            android:drawablePadding="@dimen/dp_5"
+            android:paddingStart="@dimen/dp_10"
+            android:tag="processedCompleted"
+            android:text="已完成"
+            android:textColor="@color/textColorGray"
+            android:textSize="@dimen/fontSize_14sp" />
+    </RadioGroup>
 
     <include layout="@layout/ly_recyclerview" />
 </LinearLayout>

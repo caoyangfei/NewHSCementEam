@@ -24,7 +24,7 @@
 
     <Button
         android:id="@+id/ensure"
-        style="@style/BlueButton"
+        style="@style/RedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

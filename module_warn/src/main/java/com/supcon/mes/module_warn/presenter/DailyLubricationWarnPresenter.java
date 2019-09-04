@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Action;
@@ -34,22 +35,22 @@ import io.reactivex.functions.Function;
 public class DailyLubricationWarnPresenter extends DailyLubricationWarnContract.Presenter {
 
     @Override
-    public void getLubrications(Map<String, Object> params,Map<String, Object> pageQueryParams) {
+    public void getLubrications(Map<String, Object> params, Map<String, Object> pageQueryParams) {
         FastQueryCondEntity fastQuery = BAPQueryParamsHelper.createSingleFastQueryCond(new HashMap<>());
+
+        Map<String, Object> paramsEam = new HashMap<>();
         if (params.containsKey(Constant.BAPQuery.EAM_CODE)) {
-            Map<String, Object> paramsEam = new HashMap<>();
-            paramsEam.put(Constant.BAPQuery.EAM_CODE, params.get(Constant.BAPQuery.EAM_CODE));
-            JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsEam, "EAM_BaseInfo,EAM_ID,BEAM_JWXITEMS,EAMID");
-            fastQuery.subconds.add(joinSubcondEntity);
+            paramsEam.put(Constant.BAPQuery.EAM_CODE, Objects.requireNonNull(params.get(Constant.BAPQuery.EAM_CODE)));
         }
+        JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsEam, "EAM_BaseInfo,EAM_ID,BEAM_JWXITEMS,EAMID");
         if (params.containsKey(Constant.BAPQuery.NAME)) {
             Map<String, Object> paramsName = new HashMap<>();
             paramsName.put(Constant.BAPQuery.NAME, params.get(Constant.BAPQuery.NAME));
-            JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM_JWXITEMS,LUBRICATE_STAFF_ID");
-            fastQuery.subconds.add(joinSubcondEntity);
+            JoinSubcondEntity joinSubcondEntityStaff = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,EAM_BaseInfo,INSPECTION_STAFF");
+            joinSubcondEntity.subconds.add(joinSubcondEntityStaff);
         }
+        fastQuery.subconds.add(joinSubcondEntity);
         fastQuery.modelAlias = "jWXItem";
-
         pageQueryParams.put("page.pageSize", 500);
         pageQueryParams.put("page.maxPageSize", 500);
 

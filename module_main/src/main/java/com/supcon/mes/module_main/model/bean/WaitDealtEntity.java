@@ -43,6 +43,8 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String entrflag;
 
+    public boolean isCheck;
+
     public Staff getStaffid() {
         if (staffid == null) {
             staffid = new Staff();

@@ -188,6 +188,7 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
                     xjWorkItemEntity.isFinished = true;
                     xjWorkItemEntity.linkState = OLXJConstant.MobileWiLinkState.FINISHED_STATE;
                     xjWorkItemEntity.staffId = EamApplication.getAccountInfo().staffId;
+//                    EventBus.getDefault().post(new RefreshEvent());
                     onItemChildViewClick(ufItemEndBtn, 0, xjWorkItemEntity);
                 } catch (Exception e) {
                     e.printStackTrace();

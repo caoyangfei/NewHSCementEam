@@ -20,6 +20,7 @@ import com.supcon.mes.middleware.model.bean.RefLubricateListEntity;
 import com.supcon.mes.middleware.model.bean.RefMaintainListEntity;
 import com.supcon.mes.middleware.model.bean.RefProductListEntity;
 import com.supcon.mes.middleware.model.bean.RepairGroupListEntity;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.RoleListEntity;
 import com.supcon.mes.middleware.model.bean.SparePartRefListEntity;
 import com.supcon.mes.middleware.model.bean.StaffDetailInfoListEntity;
@@ -344,8 +345,13 @@ public interface NetworkAPI {
     @GET("/BEAM/baseInfo/baseInfo/getSupOSStandingCrop.action")
     Flowable<CommonListEntity<StandingCropEntity>> updateStandingCrop(@Query("sparePartCodes") String sparePartCodes);
 
-
     //获取工单,隐患数量
     @GET
     Flowable<CommonListEntity<WorkCountEntity>> getWorkCount(@Url String url, @QueryMap Map<String, Object> queryMap);
+
+    /**
+     * 更新隐患单
+     */
+    @GET("/BEAM2/faultInfo/faultInfo/closeWorkAndSaveReason.action")
+    Flowable<ResultEntity> closeWorkAndSaveReason(@Query("id") long id, @Query("closeReason") String reason);
 }

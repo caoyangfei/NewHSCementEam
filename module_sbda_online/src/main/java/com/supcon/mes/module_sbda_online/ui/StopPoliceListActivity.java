@@ -36,6 +36,7 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.DatePickController;
 import com.supcon.mes.middleware.model.bean.CommonSearchEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
+import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
@@ -46,7 +47,6 @@ import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.module_sbda_online.IntentRouter;
 import com.supcon.mes.module_sbda_online.R;
 import com.supcon.mes.module_sbda_online.model.api.StopPoliceAPI;
-import com.supcon.mes.module_sbda_online.model.bean.StatusResultEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceEntity;
 import com.supcon.mes.module_sbda_online.model.bean.StopPoliceListEntity;
 import com.supcon.mes.module_sbda_online.model.contract.StopPoliceContract;
@@ -271,6 +271,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                             new LoaderController(context, view);
                             mLoaderController.showLoader("数据上传中...");
                             presenterRouter.create(StopPoliceAPI.class).updateStopPoliceItem(paramMap);
+                            mCustomDialog.dismiss();
                         } else {
                             ToastUtils.show(context, "请确保停机类别和停机说明已填！");
                         }
@@ -313,21 +314,21 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
             StringBuilder stringBuilderName = new StringBuilder();
             StringBuilder stringBuilderId = new StringBuilder();
             List<StopPoliceEntity.EamInfo> eamInfos = GsonUtil.jsonToList(stopPoliceEntity.auxiliary, StopPoliceEntity.EamInfo.class);
-            for (StopPoliceEntity.EamInfo eamInfo : eamInfos) {
-                stringBuilderName.append(eamInfo.eamName + ",");
-                stringBuilderId.append(eamInfo.eamId + ",");
-            }
-            if (stringBuilderName.length() > 0)
-                stringBuilderName.deleteCharAt(stringBuilderName.length() - 1);
-            if (stringBuilderId.length() > 0)
-                stringBuilderId.deleteCharAt(stringBuilderId.length() - 1);
 
+            for (int i = 0; i < eamInfos.size(); i++) {
+                StopPoliceEntity.EamInfo eamType = eamInfos.get(i);
+                if (i != 0) {
+                    stringBuilderName.append(",");
+                    stringBuilderId.append(",");
+                }
+                stringBuilderName.append(eamType.eamName);
+                stringBuilderId.append(eamType.eamId);
+            }
             paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
             itemStopPoliceEamIds.setContent(stringBuilderName.toString());
         } else {
             itemStopPoliceEamIds.setContent(null);
         }
-
         mCustomDialog.show();
     }
 
@@ -344,7 +345,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                     stringBuilderId.append(",");
                 }
                 stringBuilderName.append(eamType.getSearchName());
-                stringBuilderId.append(eamType.getSearchId());
+                stringBuilderId.append(eamType.id);
             }
             paramMap.put(STOP_POLICE_EAM_IDS, stringBuilderId.toString());
             itemStopPoliceEamIds.setContent(stringBuilderName.toString());
@@ -466,7 +467,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     }
 
     @Override
-    public void updateStopPoliceItemSuccess(StatusResultEntity entity) {
+    public void updateStopPoliceItemSuccess(ResultEntity entity) {
         mLoaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
             @Override
             public void onLoaderFinished() {

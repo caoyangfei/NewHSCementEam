@@ -89,6 +89,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -199,6 +200,9 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     private String maintenanceListStr;
     private YHEntity oldYHEntity;
     private String tableNo;
+    private List<SystemCodeEntity> wxTypeEntities;
+    private List<SystemCodeEntity> yhPriorityEntity;
+    private List<SystemCodeEntity> yhTypeEntities;
 
 
     @Subscribe
@@ -286,7 +290,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         }
         yhEditFindStaff.setValue(mYHEntity.findStaffID != null ? mYHEntity.findStaffID.name : "");
         yhEditFindTime.setDate(mYHEntity.findTime != 0 ? DateUtil.dateTimeFormat(mYHEntity.findTime) : "");
-        yhEditPriority.setSpinner(mYHEntity.priority != null ? mYHEntity.priority.value : "");
+
         yhEditArea.setSpinner(mYHEntity.areaInstall != null ? mYHEntity.areaInstall.name : "");
 
         if (mYHEntity.eamID != null && !TextUtils.isEmpty(mYHEntity.eamID.name)) {
@@ -295,14 +299,6 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 //            yhEditEamModel.setValue(mYHEntity.eamID.model);
         }
 
-        yhEditType.setSpinner(mYHEntity.faultInfoType != null ? mYHEntity.faultInfoType.value : "");
-
-        if (mYHEntity.repairType != null) {
-            yhEditWXType.setSpinner(mYHEntity.repairType.value);
-            if (Constant.YHWXType.JX_SYSCODE.equals(mYHEntity.repairType.id) || Constant.YHWXType.DX_SYSCODE.equals(mYHEntity.repairType.id)) {
-                yhEditWXGroup.setEditable(false);
-            }
-        }
         yhEditWXGroup.setSpinner(mYHEntity.repiarGroup != null ? mYHEntity.repiarGroup.name : "");
         if (!TextUtils.isEmpty(mYHEntity.describe)) {
             yhEditDescription.setInput(mYHEntity.describe);
@@ -323,13 +319,13 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     protected void initData() {
         super.initData();
 
-        List<SystemCodeEntity> wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
+        wxTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_WX_TYPE);
         wxTypes = initEntities(wxTypeEntities);
 
-        List<SystemCodeEntity> yhTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.QX_TYPE);
+        yhTypeEntities = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.QX_TYPE);
         yhTypes = initEntities(yhTypeEntities);
 
-        List<SystemCodeEntity> yhPriorityEntity = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_PRIORITY);
+        yhPriorityEntity = SystemCodeManager.getInstance().getSystemCodeListByCode(Constant.SystemCode.YH_PRIORITY);
         yhPriorities = initEntities(yhPriorityEntity);
 
         List<Area> areaEntities = EamApplication.dao().getAreaDao().queryBuilder().where(AreaDao.Properties.Ip.eq(MBapApp.getIp())).list();
@@ -345,6 +341,24 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     public void updateInitData() {
         if (mYHEntity != null) {
             iniTransition();
+
+            if (mYHEntity.priority == null && yhPriorityEntity.size() > 0) {
+                mYHEntity.priority = yhPriorityEntity.get(0);
+            }
+            yhEditPriority.setSpinner(mYHEntity.priority != null ? mYHEntity.priority.value : "");
+            if (mYHEntity.faultInfoType == null && yhTypeEntities.size() > 0) {
+                mYHEntity.faultInfoType = yhTypeEntities.get(0);
+            }
+            yhEditType.setSpinner(mYHEntity.faultInfoType != null ? mYHEntity.faultInfoType.value : "");
+            if (mYHEntity.repairType == null && wxTypeEntities.size() > 0) {
+                mYHEntity.repairType = wxTypeEntities.get(0);
+            }
+            if (mYHEntity.repairType != null) {
+                yhEditWXType.setSpinner(mYHEntity.repairType.value);
+                if (Constant.YHWXType.JX_SYSCODE.equals(mYHEntity.repairType.id) || Constant.YHWXType.DX_SYSCODE.equals(mYHEntity.repairType.id)) {
+                    yhEditWXGroup.setEditable(false);
+                }
+            }
         }
     }
 

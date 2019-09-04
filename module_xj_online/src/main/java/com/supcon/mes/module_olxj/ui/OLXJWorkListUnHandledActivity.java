@@ -603,14 +603,20 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
                 }, () -> {
                     initWorkItemList(workItems);
-                    if (workItems.size() == 0 && isDcs) {
-                        ToastUtils.show(OLXJWorkListUnHandledActivity.this, "当前设备已关机,无巡检设备!");
-                        back();
-                        Flowable.timer(300, TimeUnit.MILLISECONDS)
-                                .subscribe(v -> {
-                                    EventBus.getDefault().post(mXJAreaEntity);
-                                    EventBus.getDefault().post(new AreaRefreshEvent());
-                                });
+                    Flowable.timer(500, TimeUnit.MILLISECONDS)
+                            .subscribe(v -> {
+                                mModifyController = new ModifyController<>(mXJAreaEntity);
+                            });
+                    if (isDcs) {
+                        if (workItems.size() == 0) {
+                            ToastUtils.show(OLXJWorkListUnHandledActivity.this, "当前设备已关机,无巡检设备!");
+                            back();
+                            Flowable.timer(300, TimeUnit.MILLISECONDS)
+                                    .subscribe(v -> {
+                                        EventBus.getDefault().post(mXJAreaEntity);
+                                        EventBus.getDefault().post(new AreaRefreshEvent());
+                                    });
+                        }
                     }
                 });
 
@@ -1008,9 +1014,10 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onRefresh(RefreshEvent event) {
-        if (event.action.equals(Constant.RefreshAction.XJ_WORK_REINPUT)) return;
-        titleController.initView();
-        refreshListController.refreshBegin();
+        if (TextUtils.isEmpty(event.action)) {
+            titleController.initView();
+            refreshListController.refreshBegin();
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -1050,7 +1057,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                                                     }
                                                 }
                                             }
-
                                         }
                                         return false;
                                     }
@@ -1182,14 +1188,6 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                 }, () -> {
                     mEam = null;
                     refreshListController.refreshComplete(xjWorkItemEntities);
-//                    final Flowable flowable = Flowable.timer(1000, TimeUnit.MILLISECONDS);
-//                    flowable.compose(RxSchedulers.io_main())
-//                            .subscribe(new Consumer<Long>() {
-//                                @Override
-//                                public void accept(Long aLong) throws Exception {
-//                                    mModifyController = new ModifyController<>(mXJAreaEntity);
-//                                }
-//                            });
                     initFilterView();
                 });
 
@@ -1214,12 +1212,12 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                     isOneSubmit = false;
                 } else {
                     back();
-                    Flowable.timer(300, TimeUnit.MILLISECONDS)
-                            .subscribe(v -> {
-                                EventBus.getDefault().post(mXJAreaEntity);
-                                EventBus.getDefault().post(new AreaRefreshEvent());
-                            });
                 }
+                Flowable.timer(300, TimeUnit.MILLISECONDS)
+                        .subscribe(v -> {
+                            EventBus.getDefault().post(mXJAreaEntity);
+                            EventBus.getDefault().post(new AreaRefreshEvent());
+                        });
             }
         });
     }
