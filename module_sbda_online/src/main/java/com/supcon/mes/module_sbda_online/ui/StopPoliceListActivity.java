@@ -167,7 +167,6 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     private SinglePickController singlePickerController = new SinglePickController<String>(this);
     private static final Map<String, String> TJ_TYPE = new HashMap<>();
     private static final Map<String, Map<String, String>> TJ_REASON = new HashMap<>();
-    private LoaderController mLoaderController;
 
     static {
         String[] STOP_POLICE_TYPES = new String[4];
@@ -210,7 +209,6 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         if (mCustomDialog == null) {
             mCustomDialog = new CustomDialog(context);
             View view = LayoutInflater.from(context).inflate(R.layout.ly_stop_police_popup, null, false);
-            mLoaderController = new LoaderController(context, view);
             itemStopPoliceStopType = view.findViewById(R.id.itemStopPoliceStopType);
             itemStopPoliceStopReason = view.findViewById(R.id.itemStopPoliceStopReason);
             itemStopPoliceStopExplain = view.findViewById(R.id.itemStopPoliceStopExplain);
@@ -268,8 +266,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
                     .bindClickListener(R.id.btn_stop_police_save, v -> {
                         LogUtil.e("ciruy", paramMap.toString());
                         if (paramMap.containsKey(STOP_POLICE_STAFF_ID) && paramMap.containsKey(STOP_POLICE_ID) && paramMap.containsKey(STOP_POLICE_STOP_TYPE) && paramMap.containsKey(STOP_POLICE_STOP_EXPLAIN)) {
-                            new LoaderController(context, view);
-                            mLoaderController.showLoader("数据上传中...");
+                            onLoading("数据上传中...");
                             presenterRouter.create(StopPoliceAPI.class).updateStopPoliceItem(paramMap);
                             mCustomDialog.dismiss();
                         } else {
@@ -468,23 +465,14 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
 
     @Override
     public void updateStopPoliceItemSuccess(ResultEntity entity) {
-        mLoaderController.showMsgAndclose("数据修改成功！", true, 1500, new OnLoaderFinishListener() {
-            @Override
-            public void onLoaderFinished() {
-                mCustomDialog.dismiss();
-                EventBus.getDefault().post(new RefreshEvent());
-            }
-        });
-    }
-
-    private void updateSingleItem() {
-        presenterRouter.create(StopPoliceAPI.class)
-                .updateStopPoliceItem(singleUpdateQueryParam);
+        onLoadSuccess("数据修改成功！");
+        mCustomDialog.dismiss();
+        EventBus.getDefault().post(new RefreshEvent());
     }
 
     @Override
     public void updateStopPoliceItemFailed(String errorMsg) {
-        mLoaderController.showMsgAndclose(errorMsg, false, 1500);
+        onLoadFailed(ErrorMsgHelper.msgParse(errorMsg));
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -530,6 +518,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
 
     public static long getTimeOfDayStart() {
         Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.DAY_OF_MONTH, -1);
         ca.set(Calendar.HOUR_OF_DAY, 0);
         ca.clear(Calendar.MINUTE);
         ca.clear(Calendar.SECOND);
@@ -539,8 +528,8 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
 
     public static long getTimeOfDayEnd() {
         Calendar ca = Calendar.getInstance();
+        ca.add(Calendar.DAY_OF_MONTH, -1);
         ca.set(Calendar.HOUR_OF_DAY, 23);
-//        ca.clear(Calendar.MINUTE);
         ca.set(Calendar.MINUTE, 59);
         ca.set(Calendar.SECOND, 59);
         return ca.getTimeInMillis();

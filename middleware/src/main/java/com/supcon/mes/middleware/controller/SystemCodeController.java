@@ -51,7 +51,7 @@ public class SystemCodeController extends BasePresenterController implements Sys
         entityCodes.add(Constant.SystemCode.OIL_TYPE);
         entityCodes.add(Constant.SystemCode.CHECK_RESULT);
         entityCodes.add(Constant.SystemCode.WXGD_SOURCE);
-       //停机类型，停机原因对应的系统编码加载
+        //停机类型，停机原因对应的系统编码加载
         entityCodes.add(Constant.SystemCode.TJ_TYPE);
         entityCodes.add(Constant.SystemCode.TJ_REASON);
     }
@@ -59,8 +59,6 @@ public class SystemCodeController extends BasePresenterController implements Sys
     @Override
     public void onInit() {
         super.onInit();
-        //暂时先每次加载时清除数据库
-        EamApplication.dao().getSystemCodeEntityDao().deleteAll();
         queryAll(entityCodes);
     }
 
@@ -73,10 +71,13 @@ public class SystemCodeController extends BasePresenterController implements Sys
 
 
     @Override
-    public void getSystemCodeListSuccess(SystemCodeListEntity entity) {
+    public void getSystemCodeListSuccess(List entity) {
 //        systemCodeEntities = entity.result;
-        LogUtil.d("insert SystemCode:" + entity.totalCount);
-        SystemCodeManager.getInstance().setSystemCodeList(entity.result);
+        //暂时先每次加载时清除数据库(先删除再添加)
+        EamApplication.dao().getSystemCodeEntityDao().deleteAll();
+
+        LogUtil.d("insert SystemCode:" + entity.size());
+        SystemCodeManager.getInstance().setSystemCodeList(entity);
     }
 
     @Override
@@ -87,23 +88,11 @@ public class SystemCodeController extends BasePresenterController implements Sys
 
     @SuppressLint("CheckResult")
     public void queryAll(List<String> codes) {
-        Flowable.fromIterable(codes)
-                .subscribe(new Consumer<String>() {
-                    @Override
-                    public void accept(String s) throws Exception {
-                        querySystemCode(s);
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-
-                    }
-                });
+        presenterRouter.create(SystemCodeAPI.class).getSystemCodeList(codes);
     }
 
     public void querySystemCode(String entityCode) {
 
-        presenterRouter.create(SystemCodeAPI.class).getSystemCodeList(entityCode);
 
     }
 

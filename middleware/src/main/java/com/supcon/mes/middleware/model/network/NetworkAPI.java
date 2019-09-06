@@ -33,6 +33,8 @@ import com.supcon.mes.middleware.model.bean.WorkCountEntity;
 import com.supcon.mes.middleware.model.bean.WorkFlowListEntity;
 import com.supcon.mes.middleware.model.bean.YHEntity;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 
@@ -354,4 +356,10 @@ public interface NetworkAPI {
      */
     @GET("/BEAM2/faultInfo/faultInfo/closeWorkAndSaveReason.action")
     Flowable<ResultEntity> closeWorkAndSaveReason(@Query("id") long id, @Query("closeReason") String reason);
+
+    /**
+     * 获取菜单权限
+     */
+    @GET("/foundation/userPermission/checkUserPower.action")
+    Flowable<Object> checkUserPower(@Query("companyId") long companyId, @Query("menuOperateCodes") String menuOperateCodes);
 }

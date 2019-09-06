@@ -1,5 +1,6 @@
 package com.supcon.mes.module_olxj.controller;
 
+import android.annotation.SuppressLint;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
@@ -24,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * Created by wangshizhan on 2019/5/28
@@ -73,12 +75,18 @@ public class DeviceDCSParamController extends BaseViewController implements Devi
             presenterRouter.create(DeviceDCSParamQueryAPI.class).getDeviceDCSParams(eamId);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     public void getDeviceDCSParamsSuccess(CommonListEntity entity) {
-
         mDeviceDCSParamAdapter.setList(entity.result);
         mDeviceDCSParamAdapter.notifyDataSetChanged();
-        EventBus.getDefault().post(entity);
+        Flowable.timer(200, TimeUnit.MILLISECONDS)
+                .subscribe(new Consumer<Long>() {
+                    @Override
+                    public void accept(Long aLong) throws Exception {
+                        EventBus.getDefault().post(entity);
+                    }
+                });
 //        if(entity.result!=null) {
 //            ViewGroup.LayoutParams lp = contentView.getLayoutParams();
 //            lp.height = DisplayUtil.dip2px(20 * entity.result.size(), context);

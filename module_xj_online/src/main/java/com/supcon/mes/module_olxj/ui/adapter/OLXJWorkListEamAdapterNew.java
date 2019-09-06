@@ -2,6 +2,7 @@ package com.supcon.mes.module_olxj.ui.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -60,7 +61,10 @@ import java.util.regex.Pattern;
  */
 public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<OLXJWorkItemEntity> {
 
+    private List<OLXJWorkItemEntity> workItemEntities;
     private HashSet hashSet = new HashSet();//判断dcs是否请求过，防止刷新不断请求
+
+    private boolean isExpand = false;
 
     public OLXJWorkListEamAdapterNew(Context context) {
         super(context);
@@ -68,6 +72,13 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
 
     public OLXJWorkListEamAdapterNew(Context context, List<OLXJWorkItemEntity> list) {
         super(context, list);
+    }
+
+    public void setWorkItem(List<OLXJWorkItemEntity> workItemEntities) {
+        this.workItemEntities = workItemEntities;
+        if (isExpand) {
+            addList(workItemEntities);
+        }
     }
 
     @Override
@@ -135,7 +146,9 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
         View ufContentLine;
 
         @BindByTag("ufItemPriority")
-        View ufItemPriority;
+        TextView ufItemPriority;
+        @BindByTag("ufItemPriorityLayout")
+        LinearLayout ufItemPriorityLayout;
 
         @BindByTag("ufItemSelectResultSwitch")
         CustomSwitchButton ufItemSelectResultSwitch;
@@ -313,6 +326,28 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
                 }
             });
 
+            ufItemPriorityLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (isExpand) {
+                        ufItemPriority.setText("点击展开更多");
+                        Drawable drawable = context.getResources().getDrawable(R.drawable.ic_zk);
+                        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                        ufItemPriority.setCompoundDrawables(null, null, drawable, null);
+                        getList().removeAll(workItemEntities);
+                        notifyItemRangeRemoved(getAdapterPosition() + 1, workItemEntities.size());
+                        notifyItemRangeChanged(getAdapterPosition() + 1, workItemEntities.size());
+                    } else {
+                        ufItemPriority.setText("点击关闭展开");
+                        Drawable drawable = context.getResources().getDrawable(R.drawable.ic_sq);
+                        drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                        ufItemPriority.setCompoundDrawables(null, null, drawable, null);
+                        getList().addAll(getAdapterPosition() + 1, workItemEntities);
+                        notifyItemRangeInserted(getAdapterPosition() + 1, workItemEntities.size());
+                    }
+                    isExpand = !isExpand;
+                }
+            });
         }
 
 
@@ -333,11 +368,27 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
 //                ufItemPart.setValue("");
 //                ufPartLayout.setVisibility(View.GONE);
 //            }
-            if (getAdapterPosition() < getListSize() - 1) {
-                if (data.getPrioritySort() == 1 && getItem(getAdapterPosition() + 1).viewType == ListType.TITLE.value()) {
-                    ufItemPriority.setVisibility(View.VISIBLE);
+            ufItemPriorityLayout.setVisibility(View.GONE);
+            if (data.getPrioritySort() == 1) {
+                if (getAdapterPosition() < getListSize() - 1) {
+                    if (getItem(getAdapterPosition() + 1).viewType == ListType.TITLE.value()) {
+                        ufItemPriorityLayout.setVisibility(View.VISIBLE);
+                    }
+                } else if (getAdapterPosition() == getListSize() - 1) {
+                    if (workItemEntities != null && workItemEntities.size() > 0) {
+                        ufItemPriorityLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+                if (isExpand) {
+                    ufItemPriority.setText("点击关闭展开");
+                    Drawable drawable = context.getResources().getDrawable(R.drawable.ic_sq);
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    ufItemPriority.setCompoundDrawables(null, null, drawable, null);
                 } else {
-                    ufItemPriority.setVisibility(View.GONE);
+                    ufItemPriority.setText("点击展开更多");
+                    Drawable drawable = context.getResources().getDrawable(R.drawable.ic_zk);
+                    drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
+                    ufItemPriority.setCompoundDrawables(null, null, drawable, null);
                 }
             }
 

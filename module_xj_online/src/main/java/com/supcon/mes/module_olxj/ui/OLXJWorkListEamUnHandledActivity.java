@@ -37,6 +37,7 @@ import com.supcon.mes.mbap.view.CustomSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.ModifyController;
+import com.supcon.mes.middleware.model.api.DeviceDCSParamQueryAPI;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.DeviceDCSEntity;
@@ -46,7 +47,9 @@ import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntity;
 import com.supcon.mes.middleware.model.bean.XJHistoryEntityDao;
+import com.supcon.mes.middleware.model.contract.DeviceDCSParamQueryContract;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.presenter.DeviceDCSParamQueryPresenter;
 import com.supcon.mes.middleware.ui.view.CustomRadioSheetDialog;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -55,6 +58,7 @@ import com.supcon.mes.middleware.util.SystemCodeManager;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.constant.OLXJConstant;
+import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.controller.OLXJTaskAreaController;
 import com.supcon.mes.module_olxj.controller.OLXJTitleController;
@@ -78,6 +82,7 @@ import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapterNew;
+import com.supcon.mes.module_olxj.util.XJJudgeHelper;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
 import com.supcon.mes.viber_mogu.controller.MGViberController;
 
@@ -112,9 +117,9 @@ import io.reactivex.functions.Predicate;
  */
 @Router(Constant.Router.OLXJ_EAM_UNHANDLED)
 @Controller(value = {OLXJTitleController.class, OLXJCameraController.class})
-@Presenter(value = {OLXJEamTaskPresenter.class, OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, OLXJTaskStatusPresenter.class, OLXJTempTaskListPresenter.class})
+@Presenter(value = {OLXJEamTaskPresenter.class, OLXJWorkSubmitPresenter.class, OLXJExemptionPresenter.class, DeviceDCSParamQueryPresenter.class})
 public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivity<OLXJWorkItemEntity> implements OLXJWorkSubmitContract.View
-        , OLXJExemptionContract.View, OLXJEamTaskContract.View {
+        , OLXJExemptionContract.View, OLXJEamTaskContract.View, DeviceDCSParamQueryContract.View {
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -172,6 +177,8 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     private EamXJEntity eamXJEntity;
     private boolean isOneSubmit;
     private OLXJAreaEntity olxjAreaEntity;//拼的一条巡检项
+
+    private HashSet hashSet = new HashSet();//判断dcs是否请求过，防止刷新不断请求
 
     @Override
     protected IListAdapter<OLXJWorkItemEntity> createAdapter() {
@@ -401,43 +408,26 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @SuppressLint("CheckResult")
     private void submitAreaData() {
-        List<OLXJWorkItemEntity> xjWorkItemEntityList = mOLXJWorkListAdapter.getList(); // 通过列表获取可以保证默认值已经回填到结果上
-        Set<Long> set = new HashSet<>();
-        Flowable.fromIterable(xjWorkItemEntityList)
-                .filter(xjWorkItemEntity -> {
-                    if (xjWorkItemEntity.viewType == 0) {
-                        return true;
+        //一键完成
+        new CustomDialog(context)
+                .twoButtonAlertDialog("是否提交完成巡检项？")
+                .bindView(R.id.grayBtn, "否")
+                .bindView(R.id.redBtn, "是")
+                .bindClickListener(R.id.grayBtn, null, true)
+                .bindClickListener(R.id.redBtn, v -> {
+                    try {
+                        for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
+                            if (!doFinish(xjWorkItemEntity)) return;
+                        }
+                        onLoading("正在打包并上传巡检数据，请稍后...");
+                        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(mXJAreaEntity);
+                    } catch (Exception e) {
+                        onLoadFailed("完成操作失败！" + e.getMessage());
+                        e.printStackTrace();
+                    } finally {
                     }
-                    return false;
-                })
-                .subscribe(xjWorkItemEntity -> set.add(xjWorkItemEntity.id), throwable -> {
-                }, () -> {
-                    new CustomDialog(context)
-                            .twoButtonAlertDialog("是否提交完成巡检项？")
-                            .bindView(R.id.grayBtn, "否")
-                            .bindView(R.id.redBtn, "是")
-                            .bindClickListener(R.id.grayBtn, null, true)
-                            .bindClickListener(R.id.redBtn, v -> {
-                                try {
-                                    if (set.size() > 0) {
-                                        for (OLXJWorkItemEntity xjWorkItemEntity : mXJAreaEntity.workItemEntities) {
-                                            if (set.contains(xjWorkItemEntity.id)) {
-                                                if (!doFinish(xjWorkItemEntity)) {
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    onLoading("正在打包并上传巡检数据，请稍后...");
-                                    presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
-                                } catch (Exception e) {
-                                    onLoadFailed("完成操作失败！" + e.getMessage());
-                                    e.printStackTrace();
-                                } finally {
-                                }
-                            }, true)
-                            .show();
-                });
+                }, true)
+                .show();
     }
 
     @SuppressLint("CheckResult")
@@ -969,6 +959,13 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                                                                 isColse.put(olxjWorkItemEntity.itemnumber.trim(), true);
                                                             }
                                                         }
+                                                        if ("数字".equals(olxjWorkItemEntity.inputStandardID.valueTypeMoblie.value)
+                                                                && OLXJConstant.MobileEditType.INPUTE.equals(olxjWorkItemEntity.inputStandardID.editTypeMoblie.id)) {  //值类型判断：字符/数字
+                                                            if (olxjWorkItemEntity.autoJudge) {
+                                                                //结论自动判定
+                                                                XJJudgeHelper.getInstance(OLXJWorkListEamUnHandledActivity.this).autoJudgeConclusion(olxjWorkItemEntity, olxjWorkItemEntity.result);
+                                                            }
+                                                        }
                                                         return true;
                                                     }
                                                 }
@@ -1045,6 +1042,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     @SuppressLint("CheckResult")
     public void initWorkItemList(List<OLXJWorkItemEntity> entity) {
         List<OLXJWorkItemEntity> xjWorkItemEntities = new ArrayList<>();
+        List<OLXJWorkItemEntity> xjWorkItemTopEntities = new ArrayList<>();
 //        OLXJWorkItemEntity headerEntity = new OLXJWorkItemEntity();
 //        headerEntity.headerPicPath = String.valueOf(eamType.id);
 //        headerEntity.viewType = ListType.HEADER.value();
@@ -1073,20 +1071,26 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                         }
                     }
 
-                    xjWorkItemEntities.add(workItemEntity);
+                    if (workItemEntity.getPrioritySort() == 1) {
+                        xjWorkItemTopEntities.add(workItemEntity);
+                    } else {
+                        xjWorkItemEntities.add(workItemEntity);
+                    }
+                    if (workItemEntity.eamID != null && !hashSet.contains(workItemEntity.eamID.id)) {
+                        hashSet.add(workItemEntity.eamID.id);
+                        presenterRouter.create(DeviceDCSParamQueryAPI.class).getDeviceDCSParams(workItemEntity.eamID.id);
+                    }
                 }, throwable -> {
 
                 }, () -> {
                     mEam = null;
                     refreshListController.refreshComplete(xjWorkItemEntities);
-//                    final Flowable flowable = Flowable.timer(1000, TimeUnit.MILLISECONDS);
-//                    flowable.compose(RxSchedulers.io_main())
-//                            .subscribe(new Consumer<Long>() {
-//                                @Override
-//                                public void accept(Long aLong) throws Exception {
-//                                    mModifyController = new ModifyController<>(mXJAreaEntity);
-//                                }
-//                            });
+                    if (xjWorkItemTopEntities.size() > 0) {
+                        refreshListController.refreshComplete(xjWorkItemTopEntities);
+                    } else {
+                        refreshListController.refreshComplete(xjWorkItemEntities);
+                    }
+                    mOLXJWorkListAdapter.setWorkItem(xjWorkItemEntities);
                     initFilterView();
                 });
 
@@ -1211,4 +1215,13 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     }
 
 
+    @Override
+    public void getDeviceDCSParamsSuccess(CommonListEntity entity) {
+        EventBus.getDefault().post(entity);
+    }
+
+    @Override
+    public void getDeviceDCSParamsFailed(String errorMsg) {
+        LogUtil.e("errorMsg:" + errorMsg);
+    }
 }

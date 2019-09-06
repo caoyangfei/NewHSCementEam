@@ -222,14 +222,12 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = findViewById(checkedId);
-                queryParam.remove(Constant.BAPQuery.OVERALLSTATE);
                 queryParam.remove(Constant.BAPQuery.OVERDATEFLAG);
                 if (radioButton.isChecked()) {
                     if (radioButton.getText().toString().equals("超期")) {
                         queryParam.put(Constant.BAPQuery.OVERDATEFLAG, "1");
                     } else {
                         queryParam.put(Constant.BAPQuery.OVERDATEFLAG, "0");
-                        queryParam.put(Constant.BAPQuery.OVERALLSTATE, radioButton.getText().toString());
                     }
                 }
                 refreshListController.refreshBegin();

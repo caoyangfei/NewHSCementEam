@@ -173,6 +173,7 @@
                 app:edit_hint="请输入备注信息"
                 app:edit_maxLine="4"
                 app:key="@string/remark"
+                android:visibility="gone"
                 app:text_size="15" />
 
         </LinearLayout>

@@ -329,7 +329,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : "");
+        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : EamApplication.getAccountInfo().staffName);
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
@@ -337,9 +337,8 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : sdf.format(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : sdf.format(mWXGDEntity.planEndDate));
-        if (mWXGDEntity.realEndDate == null) {
-            mWXGDEntity.realEndDate = System.currentTimeMillis();
-        }
+
+        mWXGDEntity.realEndDate = System.currentTimeMillis();
         realEndTime.setDate(DateUtil.dateFormat(mWXGDEntity.realEndDate, "yyyy-MM-dd HH:mm:ss"));
 
         workContext.setContent(mWXGDEntity.workOrderContext);

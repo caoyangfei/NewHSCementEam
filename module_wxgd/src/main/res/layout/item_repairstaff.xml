@@ -1,98 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.supcon.common.view.view.CustomSwipeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.supcon.common.view.view.CustomSwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/itemSwipeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:tag="itemSwipeLayout">
 
     <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/main"
-        android:tag="main"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:tag="main">
 
-        <include layout="@layout/ly_times_layout"/>
+        <include layout="@layout/ly_times_layout" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:background="@color/white"
+                android:orientation="horizontal"
                 android:paddingLeft="@dimen/dp_5"
-                android:paddingBottom="@dimen/dp_5"
-                >
+                android:paddingBottom="@dimen/dp_5">
+
                 <com.supcon.mes.mbap.view.CustomVerticalTextView
+                    android:id="@+id/repairStaffName"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingRight="5dp"
-                    app:key="@string/staff"
-                    app:text_size="15"
-                    android:id="@+id/repairStaffName"
                     android:tag="repairStaffName"
                     app:editable="false"
-                    app:necessary="false"/>
-                <include layout="@layout/ly_vertical_line"/>
+                    app:key="@string/staff"
+                    app:necessary="false"
+                    app:text_size="15" />
+
+                <include layout="@layout/ly_vertical_line" />
+
                 <com.supcon.mes.mbap.view.CustomVerticalEditText
+                    android:id="@+id/workHour"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:paddingStart="@dimen/dp_5"
-                    app:text="@string/workHour"
-                    app:text_size="15"
-                    android:id="@+id/workHour"
                     android:tag="workHour"
-                    app:editable="true"
-                    />
+                    app:editable="false"
+                    app:text="@string/workHour"
+                    app:text_size="15" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginTop="@dimen/dp_1"
                 android:background="@color/white"
-                android:paddingLeft="@dimen/dp_5"
-                >
+                android:paddingLeft="@dimen/dp_5">
+
                 <com.supcon.mes.mbap.view.CustomVerticalDateView
-                    style="@style/CustomStyle"
                     android:id="@+id/actualStartTime"
-                    android:tag="actualStartTime"
+                    style="@style/CustomStyle"
                     android:paddingStart="0dp"
                     android:paddingEnd="5dp"
+                    android:tag="actualStartTime"
+                    app:editable="true"
                     app:text="@string/actualStartTime"
-                    app:text_size="15"
-                    app:editable="true"/>
-                <include layout="@layout/ly_vertical_line"/>
+                    app:text_size="15" />
+
+                <include layout="@layout/ly_vertical_line" />
+
                 <com.supcon.mes.mbap.view.CustomVerticalDateView
+                    android:id="@+id/actualEndTime"
                     style="@style/CustomStyle"
                     android:paddingStart="@dimen/dp_5"
                     android:paddingEnd="5dp"
-                    android:id="@+id/actualEndTime"
                     android:tag="actualEndTime"
+                    app:editable="true"
                     app:text="@string/actualEndTime"
-                    app:text_size="15"
-                    app:editable="true"/>
+                    app:text_size="15" />
             </LinearLayout>
+
             <com.supcon.mes.mbap.view.CustomVerticalEditText
-                android:layout_marginTop="@dimen/dp_1"
-                android:background="@color/white"
                 android:id="@+id/remark"
-                android:tag="remark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:edit_hint="请输入备注信息"
-                app:key="@string/remark"
-                app:edit_maxLine="4"
-                app:text_size="15"
-                android:paddingBottom="@dimen/dp_5"
+                android:layout_marginTop="@dimen/dp_1"
+                android:background="@color/white"
+                android:paddingLeft="@dimen/dp_10"
                 android:paddingTop="@dimen/dp_5"
-                android:paddingLeft="@dimen/dp_10"/>
+                android:paddingBottom="@dimen/dp_5"
+                android:tag="remark"
+                app:edit_hint="请输入备注信息"
+                app:edit_maxLine="4"
+                app:key="@string/remark"
+                app:text_size="15" />
 
         </LinearLayout>
 
@@ -106,11 +111,11 @@
 
         <TextView
             android:id="@+id/itemViewDelBtn"
-            android:tag="itemViewDelBtn"
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:background="@color/deleteBgColor"
             android:gravity="center"
+            android:tag="itemViewDelBtn"
             android:text="删除"
             android:textColor="@color/white"
             android:textSize="@dimen/fontSize_14sp" />

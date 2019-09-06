@@ -14,6 +14,7 @@ public class MenuPopwindowBean {
     private String router;
     private String tag;
     private boolean isPower;
+    private String menuOperateCodes;
 
     public String getName() {
         return name;
@@ -61,5 +62,9 @@ public class MenuPopwindowBean {
 
     public void setPower(boolean power) {
         isPower = power;
+    }
+
+    public String getMenuOperateCodes() {
+        return menuOperateCodes;
     }
 }

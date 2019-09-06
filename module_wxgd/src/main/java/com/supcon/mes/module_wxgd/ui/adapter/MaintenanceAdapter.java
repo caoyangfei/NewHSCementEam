@@ -100,8 +100,8 @@ public class MaintenanceAdapter extends BaseListDataRecyclerViewAdapter<Maintain
         @Override
         protected void initView() {
             super.initView();
+            chkBox.setVisibility(View.GONE);
             if (!editable) {
-                chkBox.setVisibility(View.GONE);
                 itemViewDelBtn.setVisibility(View.GONE);
             }
         }

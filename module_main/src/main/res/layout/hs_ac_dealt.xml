@@ -86,37 +86,10 @@
                 android:drawablePadding="@dimen/dp_5"
                 android:paddingStart="@dimen/dp_10"
                 android:tag="dealtTodo"
-                android:text="待处理"
+                android:text="待办"
                 android:textColor="@color/textColorGray"
                 android:textSize="@dimen/fontSize_14sp" />
 
-            <RadioButton
-                android:id="@+id/dealtDoing"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/dp_10"
-                android:button="@drawable/wait_dealt_state_yellow"
-                android:drawablePadding="@dimen/dp_5"
-                android:paddingStart="@dimen/dp_10"
-                android:tag="dealtDoing"
-                android:text="处理中"
-                android:textColor="@color/textColorGray"
-                android:textSize="@dimen/fontSize_14sp" />
-
-            <RadioButton
-                android:id="@+id/dealtAcceptance"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="@dimen/dp_10"
-                android:button="@drawable/wait_dealt_state_blue"
-                android:drawablePadding="@dimen/dp_5"
-                android:paddingStart="@dimen/dp_10"
-                android:tag="dealtAcceptance"
-                android:text="验收"
-                android:textColor="@color/textColorGray"
-                android:textSize="@dimen/fontSize_14sp" />
         </RadioGroup>
 
         <include layout="@layout/ly_recyclerview" />

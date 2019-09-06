@@ -33,6 +33,7 @@ import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.UserPowerCheckController;
 import com.supcon.mes.middleware.model.api.EamAPI;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
@@ -44,6 +45,8 @@ import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.model.listener.OnFailListener;
+import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.ui.view.MarqueeTextView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -80,13 +83,17 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.reactivestreams.Publisher;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
@@ -142,6 +149,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private MarqueeTextView marqueeTextView;
     private boolean isRefreshing;
     private TextView waitMore;
+    private AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+    private UserPowerCheckController userPowerCheckController;
 
     @Override
     protected int getLayoutID() {
@@ -172,7 +181,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         super.onResume();
         presenterRouter.create(EamAnomalyAPI.class).getSloganInfo();
         presenterRouter.create(ScoreStaffAPI.class).getPersonScore(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
-        getWorkData();
+        if (atomicBoolean.compareAndSet(true, true)) {
+            getWorkData();
+        }
         workName.setText(EamApplication.getAccountInfo().staffName);
         workDepot.setText(EamApplication.getAccountInfo().positionName);
     }
@@ -235,6 +246,8 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         repairMenu = MenuHelper.getRepairMenu();
         formMenu = MenuHelper.getFormMenu();
 
+        userPowerCheckController = new UserPowerCheckController();
+        powerCheck(userPowerCheckController, aewMenu, lubricateMenu, repairMenu, formMenu);
     }
 
 
@@ -367,7 +380,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                     eamTv.setContent("");
                 } else {
                     Bundle bundle = new Bundle();
-                    bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
+//                    bundle.putBoolean(Constant.IntentKey.IS_MAIN_EAM, true);
                     bundle.putString(Constant.IntentKey.COMMON_SEARCH_TAG, "Main");
                     IntentRouter.go(getActivity(), Constant.Router.EAM, bundle);
                 }
@@ -509,12 +522,15 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         }
     }
 
-//    @Subscribe(threadMode = ThreadMode.MAIN)
-//    public void onLogin(LoginEvent loginEvent) {
-//        getWorkData();
-//    }
-//
-//
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onLogin(LoginEvent loginEvent) {
+        if (!atomicBoolean.get()) {
+            powerCheck(userPowerCheckController, aewMenu, lubricateMenu, repairMenu, formMenu);
+        } else {
+            getWorkData();
+        }
+    }
+
 //    @Subscribe(threadMode = ThreadMode.MAIN)
 //    public void refreshPush(RefreshEvent event) {
 //        getWorkData();
@@ -675,5 +691,58 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 return filter;
             }
         }).subscribe();
+    }
+
+    @SuppressLint("CheckResult")
+    private void powerCheck(UserPowerCheckController userPowerCheckController, List<MenuPopwindowBean>... menuPopwindowBeans) {
+        List<MenuPopwindowBean> menuAllPopwindows = new ArrayList<>();
+        for (List<MenuPopwindowBean> menuPopwindows : menuPopwindowBeans) {
+            menuAllPopwindows.addAll(menuPopwindows);
+        }
+        StringBuilder menuOperateCodes = new StringBuilder();
+        Flowable.fromIterable(menuAllPopwindows)
+                .filter(menuPopwindowBean -> {
+                    if (!TextUtils.isEmpty(menuPopwindowBean.getMenuOperateCodes())) {
+                        return true;
+                    }
+                    return false;
+                })
+                .subscribe(menuPopwindowBean -> menuOperateCodes.append(menuPopwindowBean.getMenuOperateCodes()).append(","), throwable -> {
+                }, () -> {
+                    if (!TextUtils.isEmpty(menuOperateCodes)) {
+                        menuOperateCodes.deleteCharAt(menuOperateCodes.length() - 1);
+                        userPowerCheckController.checkModulePermission(EamApplication.getAccountInfo().cid, menuOperateCodes.toString()
+                                , result -> {
+                                    atomicBoolean.set(true);
+                                    Flowable.fromIterable(Arrays.asList(menuPopwindowBeans))
+                                            .flatMap(new Function<List<MenuPopwindowBean>, Flowable<MenuPopwindowBean>>() {
+                                                @Override
+                                                public Flowable<MenuPopwindowBean> apply(List<MenuPopwindowBean> menuPopwindowBeans1) throws Exception {
+                                                    return Flowable.fromIterable(menuPopwindowBeans1);
+                                                }
+                                            })
+                                            .filter(new Predicate<MenuPopwindowBean>() {
+                                                @Override
+                                                public boolean test(MenuPopwindowBean menuPopwindowBean) throws Exception {
+                                                    if (result.containsKey(menuPopwindowBean.getMenuOperateCodes())) {
+                                                        return true;
+                                                    }
+                                                    return false;
+                                                }
+                                            })
+                                            .subscribe(new Consumer<MenuPopwindowBean>() {
+                                                @Override
+                                                public void accept(MenuPopwindowBean menuPopwindowBean) throws Exception {
+                                                    menuPopwindowBean.setPower(result.get(menuPopwindowBean.getMenuOperateCodes()));
+                                                }
+                                            }, throwable -> {
+                                            }, () -> getWorkData());
+
+                                });
+                    } else {
+                        getWorkData();
+                    }
+                });
+
     }
 }
