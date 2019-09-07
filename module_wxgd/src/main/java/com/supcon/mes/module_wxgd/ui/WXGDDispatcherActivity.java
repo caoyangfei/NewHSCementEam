@@ -347,7 +347,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
-        chargeStaff.setValue(mWXGDEntity.chargeStaff != null ? mWXGDEntity.chargeStaff.name : "");
+        chargeStaff.setValue(Util.strFormat2(mWXGDEntity.getChargeStaff().name));
         repairGroup.setValue(mWXGDEntity.repairGroup == null ? "" : mWXGDEntity.repairGroup.name);
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.planStartDate, "yyyy-MM-dd HH:mm:ss"));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.planEndDate, "yyyy-MM-dd HH:mm:ss"));
@@ -446,7 +446,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
             @Override
             public void onChildViewClick(View childView, int action, Object obj) {
                 if (action == -1) {
-                    mWXGDEntity.chargeStaff.id = null;
+                    mWXGDEntity.getChargeStaff().id = null;
                 } else {
                     IntentRouter.go(context, Constant.Router.STAFF);
                 }
@@ -624,7 +624,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         onLoading("工单提交中...");
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
-
+        map.put("workRecord.chargeStaff.id", Util.strFormat2(mWXGDEntity.getChargeStaff().id));
         //封装工作流
         map = generateWorkFlow(workFlowVar, map);
 
@@ -831,7 +831,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
             CommonSearchStaff searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
             chargeStaff.setValue(searchStaff.name);
-            mWXGDEntity.chargeStaff.id = searchStaff.id;
+            mWXGDEntity.getChargeStaff().id = searchStaff.id;
         }
     }
 

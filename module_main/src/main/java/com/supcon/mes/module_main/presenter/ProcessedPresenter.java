@@ -23,8 +23,8 @@ import io.reactivex.functions.Function;
 public class ProcessedPresenter extends ProcessedContract.Presenter {
 
     @Override
-    public void workflowHandleList(int page) {
-        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(new HashMap<>());
+    public void workflowHandleList(Map<String, Object> queryParam, int page) {
+        FastQueryCondEntity fastQueryCond = BAPQueryParamsHelper.createSingleFastQueryCond(queryParam);
         Map<String, Object> paramsName = new HashMap<>();
         paramsName.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
         JoinSubcondEntity joinSubcondEntity = BAPQueryParamsHelper.crateJoinSubcondEntity(paramsName, "base_staff,ID,BEAM2_PROCESSFLOWINFO,STAFF");

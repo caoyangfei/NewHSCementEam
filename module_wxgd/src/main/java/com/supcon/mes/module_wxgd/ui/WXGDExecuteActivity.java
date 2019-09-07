@@ -50,6 +50,7 @@ import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.SystemCodeManager;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.controller.LubricateOilsController;
@@ -329,11 +330,11 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : EamApplication.getAccountInfo().staffName);
+        dispatcherStaff.setContent(!TextUtils.isEmpty(mWXGDEntity.getDispatcher().name) ? mWXGDEntity.getDispatcher().name : EamApplication.getAccountInfo().staffName);
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
-        chargeStaff.setValue(mWXGDEntity.chargeStaff != null ? mWXGDEntity.chargeStaff.name : "");
+        chargeStaff.setValue(!TextUtils.isEmpty(mWXGDEntity.getChargeStaff().name) ? mWXGDEntity.getChargeStaff().name : EamApplication.getAccountInfo().staffName);
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : sdf.format(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : sdf.format(mWXGDEntity.planEndDate));
@@ -648,6 +649,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 //        List<WorkFlowEntity> workFlowEntities = new ArrayList<>();
 //        workFlowEntities.add(workFlowEntity);
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
+        map.put("workRecord.chargeStaff.id", mWXGDEntity.getChargeStaff().id != null ? mWXGDEntity.getChargeStaff().id : EamApplication.getAccountInfo().staffId);
         map.put("operateType", Constant.Transition.SUBMIT);
 
         List<WorkFlowEntity> outcomeMapJson = workFlowVar.outcomeMapJson;

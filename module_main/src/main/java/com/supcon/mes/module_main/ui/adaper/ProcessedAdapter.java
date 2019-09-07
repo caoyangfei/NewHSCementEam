@@ -88,13 +88,17 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
             } else {
                 processContent.setVisibility(View.GONE);
             }
-            if (!TextUtils.isEmpty(data.prostatus)) {
-                if (data.prostatus.equals("编辑") || data.prostatus.equals("派工")) {
+            if (!TextUtils.isEmpty(data.newstate)) {
+                if (data.newstate.equals("派工")) {
                     processState.setTextColor(context.getResources().getColor(R.color.gray));
-                } else if (data.prostatus.equals("执行") || data.prostatus.contains("接单")) {
+                } else if (data.newstate.equals("执行")) {
                     processState.setTextColor(context.getResources().getColor(R.color.yellow));
-                } else if (data.prostatus.equals("验收")) {
+                } else if (data.newstate.equals("验收")) {
                     processState.setTextColor(context.getResources().getColor(R.color.blue));
+                } else if (data.newstate.equals("生效")) {
+                    processState.setTextColor(context.getResources().getColor(R.color.green));
+                } else if (data.newstate.equals("作废")) {
+                    processState.setTextColor(context.getResources().getColor(R.color.red));
                 } else {
                     processState.setTextColor(context.getResources().getColor(R.color.gray));
                 }

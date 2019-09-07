@@ -13,4 +13,5 @@ public class ProcessedEntity extends BaseEntity {
     public String tableno;
     public EamType eamid;
     public String content;
+    public String newstate;
 }

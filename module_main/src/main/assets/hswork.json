@@ -15,8 +15,7 @@
       "tag": "TEMPTASKQTY",
       "num": 0,
       "type": 2,
-      "isPower": false,
-      "menuOperateCodes": "mobileEAM_1.0.0_potrolTaskNew_tempList_self"
+      "isPower": false
     },
     {
       "name": "隐患清单",
@@ -33,7 +32,7 @@
       "tag": "",
       "num": 0,
       "type": 4,
-      "isPower": true,
+      "isPower": false,
       "menuOperateCodes": ""
     }
   ],
@@ -62,7 +61,7 @@
       "num": 0,
       "type": 7,
       "isPower": true,
-      "menuOperateCodes": "BEAM_1.0.0_baseInfo_dailyLubricateWarn_self"
+      "menuOperateCodes": "BEAM_1.0.0_baseInfo_lubricateWarnList_self"
     },
     {
       "name": "润滑记录",
@@ -70,7 +69,7 @@
       "tag": "",
       "num": 0,
       "type": 8,
-      "isPower": true,
+      "isPower": false,
       "menuOperateCodes": ""
     },
     {
@@ -79,7 +78,7 @@
       "tag": "",
       "num": 0,
       "type": 9,
-      "isPower": true,
+      "isPower": false,
       "menuOperateCodes": ""
     }
   ],
@@ -142,7 +141,7 @@
       "num": 0,
       "type": 16,
       "isPower": true,
-      "menuOperateCodes": ""
+      "menuOperateCodes": "BEAMEle_1.0.0_onOrOff_eleOffList_self"
     },
     {
       "name": "送电",
@@ -151,14 +150,14 @@
       "num": 0,
       "type": 17,
       "isPower": true,
-      "menuOperateCodes": ""
+      "menuOperateCodes": "BEAMEle_1.0.0_onOrOff_eleOnList_self"
     },
     {
       "name": "关联表单",
       "viewType": 0,
       "num": 0,
       "type": 18,
-      "isPower": true,
+      "isPower": false,
       "menuOperateCodes": ""
     },
     {
@@ -167,7 +166,7 @@
       "tag": "",
       "num": 0,
       "type": 19,
-      "isPower": true,
+      "isPower": false,
       "menuOperateCodes": ""
     }
   ],

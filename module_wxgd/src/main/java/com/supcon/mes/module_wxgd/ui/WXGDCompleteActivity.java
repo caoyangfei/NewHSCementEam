@@ -27,6 +27,7 @@ import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntityDao;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.controller.AcceptanceCheckController;
@@ -208,11 +209,11 @@ public class WXGDCompleteActivity extends BaseRefreshActivity {
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : EamApplication.getAccountInfo().staffName);
+        dispatcherStaff.setContent(!TextUtils.isEmpty(mWXGDEntity.getDispatcher().name) ? mWXGDEntity.getDispatcher().name : EamApplication.getAccountInfo().staffName);
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
-        chargeStaff.setValue(mWXGDEntity.chargeStaff != null ? mWXGDEntity.chargeStaff.name : "");
+        chargeStaff.setValue(Util.strFormat2(mWXGDEntity.getChargeStaff().name));
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planEndDate));

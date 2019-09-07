@@ -46,7 +46,7 @@ public interface Constant {
 
 
     interface Router {
-    
+
         String TXL_SEARCH_CONTACT_WITH_HEADER = "TXL_SEARCH_CONTACT_WITH_HEADER";
         String MAIN = "main";
         String MAIN_REDLION = "main_redlion";//红狮首页
@@ -598,13 +598,15 @@ public interface Constant {
 
         String STAR_TIME = "STAR_TIME";//巡检开始时间
         String END_TIME = "END_TIME";//巡检结束时间
-       //停机报警更新单个列表内容时所用的请求参数key值
+        //停机报警更新单个列表内容时所用的请求参数key值
         String STOP_POLICE_STAFF_ID = "staffId";
         String STOP_POLICE_ID = "id";
-        String STOP_POLICE_STOP_TYPE="stopType";
+        String STOP_POLICE_STOP_TYPE = "stopType";
         String STOP_POLICE_STOP_REASON = "stopReason";
         String STOP_POLICE_STOP_EXPLAIN = "stopExplain";
         String STOP_POLICE_EAM_IDS = "eamIds";
+
+        String NEWSTATE = "NEWSTATE";
     }
 
 
@@ -633,11 +635,11 @@ public interface Constant {
         String WXGD_SOURCE = "BEAM2003";// 工单来源
         String OIL_TYPE = "BEAM61"; // 加/换油
         String CHECK_RESULT = "BEAM033"; // 验收结论
-    
+
         //停机报警
         String TJ_TYPE = "BEAM2009";
         String TJ_REASON = "BEAM2_2012";
-    
+
     }
 
     /**

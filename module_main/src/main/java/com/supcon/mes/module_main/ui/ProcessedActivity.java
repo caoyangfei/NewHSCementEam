@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
@@ -63,7 +65,8 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
     ImageButton leftBtn;
     @BindByTag("titleText")
     TextView titleText;
-
+    @BindByTag("waitState")
+    RadioGroup waitState;
 
     private ProcessedAdapter processedAdapter;
     private DatePickController datePickController;
@@ -114,8 +117,16 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
             public void onRefresh(int pageIndex) {
+                presenterRouter.create(ProcessedAPI.class).workflowHandleList(queryParam, pageIndex);
+            }
+        });
 
-                presenterRouter.create(ProcessedAPI.class).workflowHandleList(pageIndex);
+        waitState.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = findViewById(checkedId);
+                queryParam.put(Constant.BAPQuery.NEWSTATE, radioButton.getText().toString());
+                refreshListController.refreshBegin();
             }
         });
 

@@ -1,5 +1,6 @@
 package com.supcon.mes.module_main.ui.adaper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -36,12 +37,14 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
     }
 
 
-    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener{
+    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener {
 
         @BindByTag("waitDealtEamName")
         TextView waitDealtEamName;
         @BindByTag("waitDealtTime")
         TextView waitDealtTime;
+        @BindByTag("waitDealtEamSource")
+        TextView waitDealtEamSource;
         @BindByTag("waitDealtEamState")
         TextView waitDealtEamState;
 
@@ -131,8 +134,18 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
         protected void update(WaitDealtEntity data) {
             waitDealtEamName.setText(Util.strFormat(data.eamname));
             waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "");
-            waitDealtEamState.setText(Util.strFormat(data.getStaffid().name));
+            waitDealtEamSource.setText(Util.strFormat(data.getStaffid().name));
 
+            if (!TextUtils.isEmpty(data.state)) {
+                waitDealtEamState.setText(data.state);
+                if (data.state.equals("编辑") || data.state.equals("派工")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
+                } else if (data.state.equals("执行")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
+                } else if (data.state.equals("验收")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.blue));
+                }
+            }
             if (TextUtils.isEmpty(data.processkey)) {
                 waitDealtEntrust.setVisibility(View.GONE);
             } else {

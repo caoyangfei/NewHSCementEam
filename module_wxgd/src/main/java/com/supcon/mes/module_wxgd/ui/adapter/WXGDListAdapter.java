@@ -19,6 +19,7 @@ import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.constant.WXGDConstant;
@@ -171,10 +172,10 @@ public class WXGDListAdapter extends BaseListDataRecyclerViewAdapter<WXGDEntity>
             tableNo.setText(data.tableNo);
             tableStatus.setText(data.pending == null ? "" : data.pending.taskDescription);
             eamName.setText(data.eamID == null ? "" : data.eamID.name);
-            location.setValue(data.eamID.installPlace != null && data.eamID.installPlace.name != null ? data.eamID.installPlace.name : "--");
-            repairGroup.setValue(data.repairGroup != null && data.repairGroup.name != null ? data.repairGroup.name : "--");
-            chargeStaff.setValue(data.chargeStaff != null && data.chargeStaff.name != null ? data.chargeStaff.name : "--");
-            workSource.setText(data.workSource != null && !"".equals(data.workSource.value) ? data.workSource.value : "--");
+            location.setValue((data.eamID.installPlace != null && data.eamID.installPlace.name != null) ? data.eamID.installPlace.name : "--");
+            repairGroup.setValue((data.repairGroup != null && data.repairGroup.name != null) ? data.repairGroup.name : "--");
+            chargeStaff.setValue(Util.strFormat(data.getChargeStaff().name));
+            workSource.setText((data.workSource != null && !TextUtils.isEmpty(data.workSource.value)) ? data.workSource.value : "--");
 
             if (data.eamID != null && data.eamID.id != null) {
                 new EamPicController().initEamPic(itemWXGDDeviceIc, data.eamID.id);

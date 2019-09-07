@@ -285,22 +285,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 }
                 switch (position) {
                     case 0:
-                        menuPopwindow.refreshList(aewMenu);
+                        if (!menuPopwindow.refreshList(aewMenu)) return;
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 1);
                         childView.setSelected(true);
                         break;
                     case 1:
-                        menuPopwindow.refreshList(lubricateMenu);
+                        if (!menuPopwindow.refreshList(lubricateMenu)) return;
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 0);
                         childView.setSelected(true);
                         break;
                     case 2:
-                        menuPopwindow.refreshList(repairMenu);
+                        if (!menuPopwindow.refreshList(repairMenu)) return;
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.left, 0);
                         childView.setSelected(true);
                         break;
                     case 3:
-                        menuPopwindow.refreshList(formMenu);
+                        if (!menuPopwindow.refreshList(formMenu)) return;
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.left, 1);
                         childView.setSelected(true);
                         break;

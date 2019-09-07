@@ -73,7 +73,7 @@
                 android:paddingStart="@dimen/dp_10"
                 android:tag="dealtOverdue"
                 android:text="超期"
-                android:textColor="@color/textColorGray"
+                android:textColor="@color/orange"
                 android:textSize="@dimen/fontSize_14sp" />
 
             <RadioButton

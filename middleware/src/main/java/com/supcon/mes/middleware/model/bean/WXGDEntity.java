@@ -112,4 +112,18 @@ public class WXGDEntity extends BaseEntity implements Cloneable {
         }
         return pending;
     }
+
+    public Staff getChargeStaff() {
+        if (chargeStaff == null) {
+            chargeStaff = new Staff();
+        }
+        return chargeStaff;
+    }
+
+    public Staff getDispatcher() {
+        if (dispatcher == null) {
+            dispatcher = new Staff();
+        }
+        return dispatcher;
+    }
 }

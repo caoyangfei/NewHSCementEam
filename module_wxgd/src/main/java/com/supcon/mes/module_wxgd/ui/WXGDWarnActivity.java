@@ -51,6 +51,7 @@ import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.controller.LubricateOilsController;
@@ -97,7 +98,7 @@ import java.util.concurrent.TimeUnit;
         RepairStaffController.class,
         MaintenanceController.class,
         LubricateOilsController.class, WXGDListPresenter.class})
-public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListContract.View,WXGDSubmitController.OnSubmitResultListener {
+public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListContract.View, WXGDSubmitController.OnSubmitResultListener {
 
     @BindByTag("leftBtn")
     ImageButton leftBtn;
@@ -158,8 +159,8 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
     private WXGDSubmitController mWxgdSubmitController;
     private RoleController roleController;
     private boolean saveAndExit;
-    
-    
+
+
     @Override
     protected int getLayoutID() {
         return R.layout.ac_wxgd_warn;
@@ -170,7 +171,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
         super.onInit();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
         EventBus.getDefault().register(this);
-    
+
         refreshController.setAutoPullDownRefresh(false);
         refreshController.setPullDownRefreshEnabled(false);
         mWXGDEntity = (WXGDEntity) getIntent().getSerializableExtra(Constant.IntentKey.WXGD_ENTITY);
@@ -282,11 +283,10 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
 
             new EamPicController().initEamPic(eamIc, mWXGDEntity.eamID.id);
         }
-
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
-        chargeStaff.setValue(mWXGDEntity.chargeStaff != null ? mWXGDEntity.chargeStaff.name : "");
+        chargeStaff.setValue(Util.strFormat2(mWXGDEntity.getChargeStaff().name));
         repairGroup.setValue(mWXGDEntity.repairGroup == null ? "" : mWXGDEntity.repairGroup.name);
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.planStartDate, "yyyy-MM-dd HH:mm:ss"));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : DateUtil.dateFormat(mWXGDEntity.planEndDate, "yyyy-MM-dd HH:mm:ss"));
@@ -304,7 +304,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
             @Override
             public void onRefresh() {
                 Map<String, Object> queryParam = new HashMap<>();
-                queryParam.put(Constant.BAPQuery.TABLE_NO, TextUtils.isEmpty(tmpTableNum)?mWXGDEntity.tableNo:tmpTableNum);
+                queryParam.put(Constant.BAPQuery.TABLE_NO, TextUtils.isEmpty(tmpTableNum) ? mWXGDEntity.tableNo : tmpTableNum);
                 presenterRouter.create(WXGDListAPI.class).listWxgds(1, queryParam);
             }
         });
@@ -330,7 +330,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
             @Override
             public void onChildViewClick(View childView, int action, Object obj) {
                 if (action == -1) {
-                    mWXGDEntity.chargeStaff.id = null;
+                    mWXGDEntity.getChargeStaff().id = null;
                 } else {
                     IntentRouter.go(context, Constant.Router.STAFF);
                 }
@@ -477,7 +477,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
         onLoading("工单提交中...");
         //封装公共参数
         Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
-
+        map.put("workRecord.chargeStaff.id", Util.strFormat2(mWXGDEntity.getChargeStaff().id));
         //封装工作流
         map = generateWorkFlow(workFlowVar, map);
 
@@ -627,16 +627,16 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
         if (commonSearchEvent.commonSearchEntity instanceof CommonSearchStaff) {
             CommonSearchStaff searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
             chargeStaff.setValue(searchStaff.name);
-            if(mWXGDEntity.chargeStaff==null)
-            mWXGDEntity.chargeStaff = new Staff();
-            mWXGDEntity.chargeStaff.id = searchStaff.id;
+            mWXGDEntity.getChargeStaff().id = searchStaff.id;
         }
     }
-//    @Subscribe(threadMode = ThreadMode.MAIN)
+
+    //    @Subscribe(threadMode = ThreadMode.MAIN)
 //    public void versionRefresh(VersionRefreshEvent versionRefreshEvent) {
 //        refreshController.refreshBegin();
 //    }
     String tmpTableNum;
+
     @Override
     public void submitSuccess(BapResultEntity bapResultEntity) {
         onLoadSuccessAndExit("处理成功", new OnLoaderFinishListener() {
@@ -646,8 +646,8 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
 //                    tmpTableNum =  bapResultEntity.tableInfoId+"";
 //                    EventBus.getDefault().post(new VersionRefreshEvent());
 //                } else {
-                    EventBus.getDefault().post(new RefreshEvent());
-                    finish();
+                EventBus.getDefault().post(new RefreshEvent());
+                finish();
 //                }
             }
         });
@@ -669,6 +669,7 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
     public void reSubmit(LoginEvent loginEvent) {
         SnackbarHelper.showMessage(rootView, "登陆成功，请重新操作!");
     }
+
     @Override
     public void listWxgdsSuccess(WXGDListEntity entity) {
         refreshController.refreshComplete();
@@ -678,9 +679,9 @@ public class WXGDWarnActivity extends BaseRefreshActivity implements WXGDListCon
             oldWxgdEntity = GsonUtil.gsonToBean(mWXGDEntity.toString(), WXGDEntity.class);
             initTableHeadData();
         }
-        
+
     }
-    
+
     @Override
     public void listWxgdsFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);

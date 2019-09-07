@@ -61,7 +61,6 @@ public class WXGDMapManager {
             map.put("id", Util.strFormat2(mWXGDEntity.id));
             map.put("workRecord.id", Util.strFormat2(mWXGDEntity.id));
         }
-        map.put("workRecord.chargeStaff.id", mWXGDEntity.chargeStaff != null ? Util.strFormat2(mWXGDEntity.chargeStaff.id) : "");
         map.put("workRecord.eamID.id", (mWXGDEntity.eamID != null && mWXGDEntity.eamID.id != null) ? Util.strFormat2(mWXGDEntity.eamID.id) : "");
         map.put("workRecord.planStartDate", mWXGDEntity.planStartDate == null ? "" : format.format(mWXGDEntity.planStartDate));
         map.put("workRecord.planEndDate", mWXGDEntity.planEndDate == null ? "" : format.format(mWXGDEntity.planEndDate));
@@ -82,7 +81,7 @@ public class WXGDMapManager {
         map.put("workRecord.periodUnit.value", mWXGDEntity.periodUnit != null ? Util.strFormat2(mWXGDEntity.periodUnit.value) : "");
         map.put("__file_upload", true);
 
-        map.put("workRecord.dispatcher.id", mWXGDEntity.dispatcher.id == null ? EamApplication.getAccountInfo().staffId : mWXGDEntity.dispatcher.id);
+        map.put("workRecord.dispatcher.id", mWXGDEntity.getDispatcher().id != null ? mWXGDEntity.getDispatcher().id : EamApplication.getAccountInfo().staffId);
         return map;
     }
 

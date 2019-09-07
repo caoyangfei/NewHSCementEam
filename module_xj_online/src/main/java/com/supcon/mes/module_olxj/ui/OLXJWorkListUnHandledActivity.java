@@ -1098,7 +1098,7 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
 
     @Override
     public void onBackPressed() {
-        if (mModifyController.isModifyed(mXJAreaEntity)) {
+        if (mXJAreaEntity != null && mModifyController.isModifyed(mXJAreaEntity)) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("页面已经被修改，是否要保存数据?")
                     .bindView(R.id.grayBtn, "保存")

@@ -329,11 +329,11 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             priority.setValue(mWXGDEntity.faultInfo.priority == null ? "" : mWXGDEntity.faultInfo.priority.value);
             faultInfoDescribe.setValue(mWXGDEntity.faultInfo.describe);
         }
-        dispatcherStaff.setContent(mWXGDEntity.dispatcher != null ? mWXGDEntity.dispatcher.name : EamApplication.getAccountInfo().staffName);
+        dispatcherStaff.setContent(!TextUtils.isEmpty(mWXGDEntity.getDispatcher().name) ? mWXGDEntity.getDispatcher().name : EamApplication.getAccountInfo().staffName);
         wosource.setContent(mWXGDEntity.workSource != null ? mWXGDEntity.workSource.value : "");
         repairType.setSpinner(mWXGDEntity.repairType != null ? mWXGDEntity.repairType.value : "");
         repairAdvise.setContent(mWXGDEntity.repairAdvise);
-        chargeStaff.setValue(mWXGDEntity.chargeStaff != null ? mWXGDEntity.chargeStaff.name : "");
+        chargeStaff.setValue(Util.strFormat2(mWXGDEntity.getChargeStaff().name));
         repairGroup.setValue(mWXGDEntity.repairGroup != null ? mWXGDEntity.repairGroup.name : "");
         planStartTime.setDate(mWXGDEntity.planStartDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planStartDate));
         planEndTime.setDate(mWXGDEntity.planEndDate == null ? "" : DateUtil.dateTimeFormat(mWXGDEntity.planEndDate));
@@ -521,7 +521,7 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
         try {
             onLoading("工单提交中...");
             Map<String, Object> map = WXGDMapManager.createMap(mWXGDEntity);
-
+            map.put("workRecord.chargeStaff.id", mWXGDEntity.getChargeStaff().id != null ? mWXGDEntity.getChargeStaff().id : EamApplication.getAccountInfo().staffId);
             //封装工作流
             map = generateWorkFlow(map, workFlowVar);
 

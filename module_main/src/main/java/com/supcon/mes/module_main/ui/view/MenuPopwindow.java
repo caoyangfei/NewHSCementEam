@@ -270,15 +270,23 @@ public class MenuPopwindow extends PopupWindow implements PopupWindow.OnDismissL
     }
 
     @SuppressLint("CheckResult")
-    public void refreshList(List<MenuPopwindowBean> list) {
+    public boolean refreshList(List<MenuPopwindowBean> list) {
         beans = new LinkedList<>();
         Flowable.fromIterable(list)
                 .filter(MenuPopwindowBean::isPower)
                 .subscribe(menuPopwindowBean -> beans.add(menuPopwindowBean), throwable -> {
                 }, () -> {
-                    myAdapter.setList(beans);
-                    myAdapter.notifyDataSetChanged();
+                    if (beans.size() > 0) {
+                        myAdapter.setList(beans);
+                        myAdapter.notifyDataSetChanged();
+                    }
                 });
+        if (beans.size() > 0) {
+            return true;
+        } else {
+            ToastUtils.show(context, "当前模块未分配操作权限!");
+            return false;
+        }
     }
 
     public List<MenuPopwindowBean> getBeans() {

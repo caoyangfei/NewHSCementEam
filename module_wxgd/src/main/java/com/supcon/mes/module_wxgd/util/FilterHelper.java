@@ -93,7 +93,7 @@ public class FilterHelper {
         List<String> list = new ArrayList<>();
         list.add("不限");
         list.add(Constant.WxgdStatus_CH.DISPATCH);
-        list.add(Constant.WxgdStatus_CH.CONFIRM);
+//        list.add(Constant.WxgdStatus_CH.CONFIRM);
         list.add(Constant.WxgdStatus_CH.IMPLEMENT);
         list.add(Constant.WxgdStatus_CH.ACCEPTANCE);
         list.add(Constant.WxgdStatus_CH.COMPLETE);

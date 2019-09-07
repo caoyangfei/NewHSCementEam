@@ -1,5 +1,6 @@
 package com.supcon.mes.module_main.ui.adaper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -50,6 +51,8 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         TextView waitDealtEamName;
         @BindByTag("waitDealtTime")
         TextView waitDealtTime;
+        @BindByTag("waitDealtEamSource")
+        TextView waitDealtEamSource;
         @BindByTag("waitDealtEamState")
         TextView waitDealtEamState;
 
@@ -165,6 +168,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             return R.layout.hs_item_wait_dealt;
         }
 
+        @SuppressLint("SetTextI18n")
         @Override
         protected void update(WaitDealtEntity data) {
             if (isEdit && !TextUtils.isEmpty(data.state) && data.state.equals("派工")) {
@@ -178,26 +182,25 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             } else {
                 waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "--");
             }
-            waitDealtEamState.setText(Util.strFormat(data.soucretype));
+            waitDealtEamSource.setText(Util.strFormat(data.soucretype));
 
             if (data.overdateflag.equals("1")) {
-                waitDealtEamState.setTextColor(context.getResources().getColor(R.color.orange));
+                waitDealtEamSource.setTextColor(context.getResources().getColor(R.color.orange));
             } else {
-//                if (!TextUtils.isEmpty(data.state)) {
-//                    if (data.state.equals("编辑") || data.state.equals("派工")) {
-//                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
-//                    } else if (data.state.equals("执行") || data.state.contains("接单")) {
-//                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
-//                    } else if (data.state.equals("验收")) {
-//                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.blue));
-//                    } else {
-//                        waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
-//                    }
-//                } else {
-                waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
-//                }
+                waitDealtEamSource.setTextColor(context.getResources().getColor(R.color.gray));
             }
-
+            if (!TextUtils.isEmpty(data.state)) {
+                waitDealtEamState.setText(data.state);
+                if (data.state.equals("编辑") || data.state.equals("派工")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
+                } else if (data.state.equals("执行")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
+                } else if (data.state.equals("验收")) {
+                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.blue));
+                }
+            } else {
+                waitDealtEamState.setText("");
+            }
             if (TextUtils.isEmpty(data.processkey)) {
                 waitDealtEntrust.setVisibility(View.GONE);
             } else {

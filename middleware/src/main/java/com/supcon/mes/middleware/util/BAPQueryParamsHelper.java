@@ -548,6 +548,15 @@ public class BAPQueryParamsHelper {
                 subcondEntity.paramStr = LIKE_OPT_Q;
                 subcondEntity.value = String.valueOf(value);
                 break;
+            case Constant.BAPQuery.NEWSTATE:
+                subcondEntity = new SubcondEntity();
+                subcondEntity.columnName = Constant.BAPQuery.NEWSTATE;
+                subcondEntity.type = TYPE_NORMAL;
+                subcondEntity.dbColumnType = TEXT;
+                subcondEntity.operator = Constant.BAPQuery.LIKE;
+                subcondEntity.paramStr = LIKE_OPT_BLUR;
+                subcondEntity.value = String.valueOf(value);
+                break;
         }
 
         return subcondEntity;

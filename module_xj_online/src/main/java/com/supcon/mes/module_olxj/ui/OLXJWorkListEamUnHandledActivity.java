@@ -172,7 +172,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
     public Map<String, Boolean> isColse = new LinkedHashMap<>();
     private OLXJTitleController titleController;
     private OLXJAreaEntity mXJAreaEntity;
-    private OLXJAreaEntity oldXJAreaEntity;
     private EamType eamType;
     private EamXJEntity eamXJEntity;
     private boolean isOneSubmit;
@@ -526,6 +525,10 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
                 }, () -> {
                     initWorkItemList(workItems);
+                    Flowable.timer(500, TimeUnit.MILLISECONDS)
+                            .subscribe(v -> {
+                                mModifyController = new ModifyController<>(mXJAreaEntity);
+                            });
                     if (workItems.size() == 0 && isDcs) {
                         ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
                         back();
@@ -1148,7 +1151,6 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                         mXJAreaEntity.signType = "cardType/02";
                         mXJAreaEntity.signedTime = DateUtil.DateToString(new Date(), "yyyy-MM-dd HH:mm:ss");
                         doRefresh(false);
-                        oldXJAreaEntity = mXJAreaEntity;
                         Collections.sort(mXJAreaEntity.workItemEntities);
                     }
                 } else {
@@ -1192,7 +1194,7 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
 
     @Override
     public void onBackPressed() {
-        if (mXJAreaEntity != null && !oldXJAreaEntity.toString().equals(mXJAreaEntity.toString())) {
+        if (mXJAreaEntity != null && mModifyController.isModifyed(mXJAreaEntity)) {
             new CustomDialog(context)
                     .twoButtonAlertDialog("是否保存当前设备巡检任务?")
                     .bindView(R.id.grayBtn, "保存")
