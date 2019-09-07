@@ -204,7 +204,7 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
             public void onRefresh(int pageIndex) {
-
+                setRadioEnable(false);
                 presenterRouter.create(WaitDealtAPI.class).getWaitDealt(pageIndex, 20, queryParam);
             }
         });
@@ -422,12 +422,14 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         } else {
             refreshListController.refreshComplete(null);
         }
+        setRadioEnable(true);
     }
 
     @Override
     public void getWaitDealtFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         refreshListController.refreshComplete(null);
+        setRadioEnable(true);
     }
 
     @Override
@@ -458,5 +460,9 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         EventBus.getDefault().unregister(this);
     }
 
-
+    public void setRadioEnable(boolean enable) {
+        for (int i = 0; i < waitState.getChildCount(); i++) {
+            waitState.getChildAt(i).setEnabled(enable);
+        }
+    }
 }

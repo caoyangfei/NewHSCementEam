@@ -117,6 +117,7 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
             public void onRefresh(int pageIndex) {
+                setRadioEnable(false);
                 presenterRouter.create(ProcessedAPI.class).workflowHandleList(queryParam, pageIndex);
             }
         });
@@ -153,12 +154,19 @@ public class ProcessedActivity extends BaseRefreshRecyclerActivity<ProcessedEnti
     @Override
     public void workflowHandleListSuccess(CommonBAPListEntity entity) {
         refreshListController.refreshComplete(entity.result);
+        setRadioEnable(true);
     }
 
     @Override
     public void workflowHandleListFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, ErrorMsgHelper.msgParse(errorMsg));
         refreshListController.refreshComplete(null);
+        setRadioEnable(true);
     }
 
+    public void setRadioEnable(boolean enable) {
+        for (int i = 0; i < waitState.getChildCount(); i++) {
+            waitState.getChildAt(i).setEnabled(enable);
+        }
+    }
 }
