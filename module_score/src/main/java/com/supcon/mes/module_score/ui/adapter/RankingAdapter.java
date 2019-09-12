@@ -74,12 +74,13 @@ public class RankingAdapter extends BaseListDataRecyclerViewAdapter<ScoreStaffEn
         @Override
         protected void update(ScoreStaffEntity data) {
             rankingLayout.setBackground(context.getResources().getDrawable(R.drawable.ranking_stroke));
+            ranking.setText("");
             if (getAdapterPosition() == 0) {
-                ranking.setBackground(context.getResources().getDrawable(R.mipmap.pic_no1));
+                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no1));
             } else if (getAdapterPosition() == 1) {
-                ranking.setBackground(context.getResources().getDrawable(R.mipmap.pic_no2));
+                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no2));
             } else if (getAdapterPosition() == 2) {
-                ranking.setBackground(context.getResources().getDrawable(R.mipmap.pic_no3));
+                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no3));
             } else {
                 ranking.setTextColor(context.getResources().getColor(R.color.color_9f9f9f));
                 ranking.setText(String.valueOf(getAdapterPosition() + 1));

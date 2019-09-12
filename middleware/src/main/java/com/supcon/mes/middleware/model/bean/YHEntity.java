@@ -13,6 +13,7 @@ public class YHEntity extends BaseEntity {
     public Map attrMap;
     public Area areaInstall;
     public Staff findStaffID;
+    public Staff chargeStaff;//负责人
     public long cid;
     public String describe;
     public WXGDEam eamID;

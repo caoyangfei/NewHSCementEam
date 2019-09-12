@@ -10,6 +10,7 @@ import com.supcon.mes.module_score.model.bean.ScoreDutyEamEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamListEntity;
 import com.supcon.mes.module_score.model.bean.ScoreEamPerformanceListEntity;
 import com.supcon.mes.module_score.model.bean.ScoreStaffEntity;
+import com.supcon.mes.module_score.model.bean.ScoreStaffDailyPerformanceEntity;
 import com.supcon.mes.module_score.model.bean.ScoreStaffPerformanceListEntity;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ public interface ScoreService {
     @GET
     Flowable<ScoreEamPerformanceListEntity> getScore(@Url String url, @Query("scoreHead.id") int scoreId);
 
+
     //提交
     @POST("/BEAM/scorePerformance/scoreHead/beamPerformanceEdit/submit.action?__pc__=YmVhbVNjb3JlTGlzdF9hZGRfYWRkX0JFQU1fMS4wLjBfc2NvcmVQZXJmb3JtYW5jZV9iZWFtU2NvcmVMaXN0fA__&_bapFieldPermissonModelCode_=BEAM_1.0.0_scorePerformance_ScoreHead&_bapFieldPermissonModelName_=ScoreHead")
     @Multipart
@@ -48,6 +50,10 @@ public interface ScoreService {
     @GET
     Flowable<ScoreStaffPerformanceListEntity> getInspectorStaffScore(@Url String url, @Query("workerScoreHead.id") int scoreId);
 
+    //巡检工每日人员评分
+    @GET
+    Flowable<CommonBAPListEntity<ScoreStaffDailyPerformanceEntity>> getInspectorStaffDailyScore(@Url String url, @Query("workerScoreHead.id") int scoreId);
+
     //机修工人员评分
     @GET
     Flowable<ScoreStaffPerformanceListEntity> getMechanicStaffScore(@Url String url, @Query("workerScoreHead.id") int scoreId);
@@ -60,8 +66,8 @@ public interface ScoreService {
     @POST
     @Multipart
     Flowable<BapResultEntity> doStaffSubmit(@Url String url, @PartMap Map<String, RequestBody> map);
-    
-    
+
+
     @GET("/BEAM/scorePerformance/scoreHead/checkIsDeal.action")
-    Flowable<ScoreDeviceCheckResultEntity> doCheckDevice(@Query("eamId")long eamId,@Query("dateString") String date);
+    Flowable<ScoreDeviceCheckResultEntity> doCheckDevice(@Query("eamId") long eamId, @Query("dateString") String date);
 }

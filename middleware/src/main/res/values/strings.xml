@@ -14,9 +14,11 @@
     <string name="device_style12"><![CDATA[<font color="#222222" size="14">%1$s</font><font color="#2f22f1" size="12"> (%2$s)</font>]]></string>
     <string name="device_style13"><![CDATA[<font color="#000000" size="16"><b>%1$s</b></font><font color="#222222" size="16"> %2$s</font>]]></string>
 
-    <string name="device_style15"><![CDATA[<font color="#a2a2a2" size="14"><b>%1$s</b></font><font color="#c82529" size="12">(%2$d)</font>]]></string>
+    <string name="device_style15"><![CDATA[<font color="#a2a2a2" size="14"><b>%1$s</b></font><font color="#c82529" size="12"> (%2$d)</font>]]></string>
 
-    <string name="device_style14"><![CDATA[<font color="#000000" size="16"><b>%1$s</b></font><font color="#222222" size="14">【 %2$s 】</font>]]></string>
+    <string name="device_style14"><![CDATA[<font color="#000000" size="16"><b>%1$s</b></font><font color="#222222" size="14"> 【 %2$s 】</font>]]></string>
+
+    <string name="device_style16"><![CDATA[<font color="#222222" size="14"><b>%1$s</b></font><font color="#626262" size="13"> %2$s</font>]]></string>
 
     <string name="content">内容:</string>
     <string name="claim">要求:</string>

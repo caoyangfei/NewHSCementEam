@@ -41,7 +41,7 @@
             android:drawablePadding="@dimen/dp_5"
             android:paddingStart="@dimen/dp_5"
             android:tag="processedDispatch"
-            android:text="派工"
+            android:text="待派工"
             android:textColor="@color/gray"
             android:textSize="@dimen/fontSize_14sp" />
 
@@ -55,7 +55,7 @@
             android:drawablePadding="@dimen/dp_5"
             android:paddingStart="@dimen/dp_5"
             android:tag="processedImplement"
-            android:text="执行"
+            android:text="待执行"
             android:textColor="@color/yellow"
             android:textSize="@dimen/fontSize_14sp" />
 
@@ -69,7 +69,7 @@
             android:drawablePadding="@dimen/dp_5"
             android:paddingStart="@dimen/dp_5"
             android:tag="processedAcceptance"
-            android:text="验收"
+            android:text="待验收"
             android:textColor="@color/blue"
             android:textSize="@dimen/fontSize_14sp" />
 
@@ -83,7 +83,7 @@
             android:drawablePadding="@dimen/dp_5"
             android:paddingStart="@dimen/dp_5"
             android:tag="processedTakeEffect"
-            android:text="生效"
+            android:text="已生效"
             android:textColor="@color/green"
             android:textSize="@dimen/fontSize_14sp" />
 

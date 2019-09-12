@@ -3,6 +3,7 @@ package com.supcon.mes.module_yhgl.ui;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.com_http.BaseEntity;
 import com.supcon.common.view.base.activity.BaseRefreshActivity;
+import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
@@ -137,10 +139,13 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     CustomSpinner yhEditType;
 
     @BindByTag("yhEditWXType")
-    CustomVerticalSpinner yhEditWXType;
+    CustomSpinner yhEditWXType;
 
-    @BindByTag("yhEditWXGroup")
-    CustomVerticalSpinner yhEditWXGroup;
+    @BindByTag("yhEditWXChargeGroup")
+    CustomVerticalTextView yhEditWXChargeGroup;
+
+    @BindByTag("yhEditWXChargeStaff")
+    CustomVerticalTextView yhEditWXChargeStaff;
 
     @BindByTag("yhEditDescription")
     CustomVerticalEditText yhEditDescription;
@@ -203,6 +208,9 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     private List<SystemCodeEntity> yhPriorityEntity;
     private List<SystemCodeEntity> yhTypeEntities;
 
+    private static String FINDSTAFF = "FINDSTAFF";
+    private static String CHARGESTAFF = "CHARGESTAFF";
+    private String staffType = FINDSTAFF;
 
     @Subscribe
     public void onReceiveImageDeleteEvent(ImageDeleteEvent imageDeleteEvent) {
@@ -288,27 +296,22 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             yhEditArea.setEditable(false);
         }
         yhEditFindStaff.setValue(mYHEntity.findStaffID != null ? mYHEntity.findStaffID.name : "");
+        yhEditWXChargeStaff.setValue(mYHEntity.chargeStaff != null ? mYHEntity.chargeStaff.name : "");
         yhEditFindTime.setDate(mYHEntity.findTime != 0 ? DateUtil.dateTimeFormat(mYHEntity.findTime) : "");
-
         yhEditArea.setSpinner(mYHEntity.areaInstall != null ? mYHEntity.areaInstall.name : "");
-
         if (mYHEntity.eamID != null && !TextUtils.isEmpty(mYHEntity.eamID.name)) {
             yhEditEamCode.setValue(mYHEntity.eamID.code);
             yhEditEamName.setValue(mYHEntity.eamID.name);
 //            yhEditEamModel.setValue(mYHEntity.eamID.model);
         }
-
-        yhEditWXGroup.setSpinner(mYHEntity.repiarGroup != null ? mYHEntity.repiarGroup.name : "");
+        yhEditWXChargeGroup.setContent(mYHEntity.repiarGroup != null ? mYHEntity.repiarGroup.name : "");
         if (!TextUtils.isEmpty(mYHEntity.describe)) {
             yhEditDescription.setInput(mYHEntity.describe);
         }
-
         getController(OnlineCameraController.class).init(Constant.IMAGE_SAVE_YHPATH, Constant.PicType.YH_PIC);
         if (mYHEntity.attachmentEntities != null) {
             getController(OnlineCameraController.class).setPicData(mYHEntity.attachmentEntities);
         }
-
-
         if (!TextUtils.isEmpty(mYHEntity.remark)) {
             yhEditMemo.setInput(mYHEntity.remark);
         }
@@ -355,7 +358,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             if (mYHEntity.repairType != null) {
                 yhEditWXType.setSpinner(mYHEntity.repairType.value);
                 if (Constant.YHWXType.JX_SYSCODE.equals(mYHEntity.repairType.id) || Constant.YHWXType.DX_SYSCODE.equals(mYHEntity.repairType.id)) {
-                    yhEditWXGroup.setEditable(false);
+                    yhEditWXChargeGroup.setEditable(false);
                 }
             }
         }
@@ -391,7 +394,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             }
         });
 
-        yhEditWXGroup.setOnChildViewClickListener((childView, action, obj) -> {
+        yhEditWXChargeGroup.setOnChildViewClickListener((childView, action, obj) -> {
             if (action == -1) {
                 mYHEntity.repiarGroup = null;
             } else {
@@ -405,9 +408,21 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                         .listener((SinglePicker.OnItemPickListener<String>) (index, item) -> {
                             RepairGroupEntity repairGroupEntity = mRepairGroups.get(item);
                             mYHEntity.repiarGroup = repairGroupEntity;
-                            yhEditWXGroup.setSpinner(item);
+                            yhEditWXChargeGroup.setContent(item);
                         })
-                        .show(yhEditWXGroup.getSpinnerValue());
+                        .show(yhEditWXChargeGroup.getContent());
+            }
+        });
+
+        yhEditWXChargeStaff.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                staffType = CHARGESTAFF;
+                if (action == -1) {
+                    mYHEntity.chargeStaff = null;
+                } else {
+                    IntentRouter.go(context, Constant.Router.STAFF);
+                }
             }
         });
 
@@ -434,7 +449,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         yhEditWXType.setOnChildViewClickListener((childView, action, obj) -> {
             if (action == -1) {
                 mYHEntity.repairType = null;
-                yhEditWXGroup.setEditable(true);
+                yhEditWXChargeGroup.setEditable(true);
             } else {
                 List<String> list = new ArrayList<>(wxTypes.keySet());
                 if (list.size() <= 0) {
@@ -450,11 +465,11 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
                             //大修或检修时，维修组不可编辑，若有值清空
                             if (Constant.YHWXType.DX.equals(item) || Constant.YHWXType.JX.equals(item)) {
-                                yhEditWXGroup.setEditable(false);
-                                yhEditWXGroup.setSpinner(null);
+                                yhEditWXChargeGroup.setEditable(false);
+                                yhEditWXChargeGroup.setContent(null);
                                 mYHEntity.repiarGroup = null;
                             } else {
-                                yhEditWXGroup.setEditable(true);
+                                yhEditWXChargeGroup.setEditable(true);
                             }
                         })
                         .show(yhEditWXType.getSpinnerValue());
@@ -598,7 +613,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
 
         yhEditFindStaff.setOnChildViewClickListener((childView, action, obj) -> {
-
+            staffType = FINDSTAFF;
             if (action == -1) {
                 mYHEntity.findStaffID = null;
             } else {
@@ -683,11 +698,19 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             return;
         }
         CommonSearchStaff searchStaff = (CommonSearchStaff) commonSearchEvent.commonSearchEntity;
-        yhEditFindStaff.setValue(searchStaff.name);
-        mYHEntity.findStaffID = new Staff();
-        mYHEntity.findStaffID.id = searchStaff.id;
-        mYHEntity.findStaffID.code = searchStaff.code;
-        mYHEntity.findStaffID.name = searchStaff.name;
+        if (staffType.equals(FINDSTAFF)) {
+            yhEditFindStaff.setValue(searchStaff.name);
+            mYHEntity.findStaffID = new Staff();
+            mYHEntity.findStaffID.id = searchStaff.id;
+            mYHEntity.findStaffID.code = searchStaff.code;
+            mYHEntity.findStaffID.name = searchStaff.name;
+        } else if (staffType.equals(CHARGESTAFF)) {
+            yhEditWXChargeStaff.setValue(searchStaff.name);
+            mYHEntity.chargeStaff = new Staff();
+            mYHEntity.chargeStaff.id = searchStaff.id;
+            mYHEntity.chargeStaff.code = searchStaff.code;
+            mYHEntity.chargeStaff.name = searchStaff.name;
+        }
     }
 
     /**
@@ -825,7 +848,9 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         if (isCancel) {
             return true;
         }
-
+        if (checkTableBlank()) {
+            return false;
+        }
         if (mYHEntity.findStaffID == null || null == mYHEntity.findStaffID.id) {
             SnackbarHelper.showError(rootView, "请填写发现人！");
             return false;
@@ -901,6 +926,7 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         map.put("faultInfo.sourceType.id", mYHEntity.sourceType != null ? mYHEntity.sourceType.id : "BEAM2006/02");
         map.put("faultInfo.sourceType.value", mYHEntity.sourceType != null ? mYHEntity.sourceType.value : "其他");
 
+        map.put("faultInfo.chargeStaff.id", mYHEntity.chargeStaff == null ? "" : Util.strFormat2(mYHEntity.chargeStaff.id));
 
         if (mYHEntity.pending != null && mYHEntity.pending.id != null) {
             map.put("pendingId", Util.strFormat2(mYHEntity.pending.id));
@@ -1157,5 +1183,19 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     public void queryYHListFailed(String errorMsg) {
         SnackbarHelper.showError(rootView, errorMsg);
         refreshController.refreshComplete();
+    }
+
+    /**
+     * @param
+     * @return
+     * @description 判断维修组和负责人必须填其中之一
+     * @author zhangwenshuai1 2018/10/23
+     */
+    private boolean checkTableBlank() {
+        if (TextUtils.isEmpty(yhEditWXChargeGroup.getValue()) && TextUtils.isEmpty(yhEditWXChargeStaff.getValue())) {
+            SnackbarHelper.showError(rootView, "维修组和负责人不允许同时为空！");
+            return true;
+        }
+        return false;
     }
 }

@@ -178,6 +178,7 @@ public interface Constant {
         String SCORE_INSPECTOR_STAFF_LIST = "SCORE_INSPECTOR_STAFF_LIST";//巡检人员列表
         String SCORE_MECHANIC_STAFF_LIST = "SCORE_MECHANIC_STAFF_LIST";//机修工列表
         String SCORE_INSPECTOR_STAFF_PERFORMANCE = "SCORE_INSPECTOR_STAFF_PERFORMANCE";//人员评分绩效
+        String SCORE_INSPECTOR_STAFF_DAILY_PERFORMANCE = "SCORE_INSPECTOR_STAFF_DAILY_PERFORMANCE";//日常人员绩效
         String SCORE_MECHANIC_STAFF_PERFORMANCE = "SCORE_MECHANIC_STAFF_PERFORMANCE";//机修工评分绩效
 
         String EAM = "EAM";//设备搜索
@@ -607,6 +608,7 @@ public interface Constant {
         String STOP_POLICE_EAM_IDS = "eamIds";
 
         String NEWSTATE = "NEWSTATE";
+
     }
 
 

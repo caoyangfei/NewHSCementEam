@@ -223,7 +223,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
         super.initData();
         workInfos = new ArrayList<>();
         WorkInfo workInfo1 = new WorkInfo();
-        workInfo1.name = "巡检预警";
+        workInfo1.name = "计划巡检";
         workInfo1.iconResId = R.drawable.menu_aew_selector;
         workInfos.add(workInfo1);
         WorkInfo workInfo2 = new WorkInfo();
@@ -285,10 +285,22 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                 }
                 switch (position) {
                     case 0:
-                        if (!menuPopwindow.refreshList(aewMenu)) return;
-                        menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 1);
-                        childView.setSelected(true);
-                        break;
+//                        if (!menuPopwindow.refreshList(aewMenu)) return;
+//                        menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 1);
+//                        childView.setSelected(true);
+
+                        Flowable.fromIterable(aewMenu)
+                                .filter(menuPopwindowBean -> menuPopwindowBean.getType() == Constant.HSWorkType.JHXJ)
+                                .subscribe(menuPopwindowBean -> {
+                                    oldPosition = -1;
+                                    menuPopwindow.changeWindowAlfa(1f);
+                                    if (menuPopwindowBean.isPower()) {
+                                        IntentRouter.go(getContext(), Constant.Router.JHXJ_LIST);
+                                    } else {
+                                        ToastUtils.show(context, "巡检模块未分配操作权限!");
+                                    }
+                                });
+                        return;
                     case 1:
                         if (!menuPopwindow.refreshList(lubricateMenu)) return;
                         menuPopwindow.showPopupWindow(childView, MenuPopwindow.right, 0);

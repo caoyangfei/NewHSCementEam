@@ -153,12 +153,12 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
         });
 
         refreshListController.setOnRefreshPageListener(pageIndex -> {
-            String url;
-            if (type.equals("BEAM_065/03")) {
-                url = "/BEAM/patrolWorkerScore/workerScoreHead/repairerScoreList-query.action";
-            } else {
-                url = "/BEAM/patrolWorkerScore/workerScoreHead/patrolScore-query.action";
-            }
+            String url="/BEAM/patrolWorkerScore/workerScoreHead/patrolMonhtList-query.action";
+//            if (type.equals("BEAM_065/03")) {
+////                url = "/BEAM/patrolWorkerScore/workerScoreHead/repairerScoreList-query.action";
+////            } else {
+////                url = "/BEAM/patrolWorkerScore/workerScoreHead/patrolScore-query.action";
+////            }
             presenterRouter.create(ScoreStaffListAPI.class).patrolScore(url, queryParam, pageIndex);
         });
         rankingAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
@@ -171,7 +171,7 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
                     if (type.equals("BEAM_065/03")) {
                         IntentRouter.go(context, Constant.Router.SCORE_MECHANIC_STAFF_PERFORMANCE, bundle);
                     } else {
-                        IntentRouter.go(context, Constant.Router.SCORE_INSPECTOR_STAFF_PERFORMANCE, bundle);
+                        IntentRouter.go(context, Constant.Router.SCORE_INSPECTOR_STAFF_DAILY_PERFORMANCE, bundle);
                     }
                 }
             }

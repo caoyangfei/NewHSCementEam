@@ -23,8 +23,7 @@
       "tag": "INSPANDSPFLTQTY",
       "num": 0,
       "type": 3,
-      "isPower": true,
-      "menuOperateCodes": "BEAM2_1.0.0_faultInfo_faultInfoList_self"
+      "isPower": false
     },
     {
       "name": "巡检手册",

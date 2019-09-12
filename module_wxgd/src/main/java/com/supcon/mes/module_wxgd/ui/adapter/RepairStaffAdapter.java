@@ -19,6 +19,8 @@ import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.CustomSwipeLayout;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.view.CustomDialog;
+import com.supcon.mes.mbap.view.CustomEditText;
+import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
 import com.supcon.mes.mbap.view.CustomVerticalTextView;
@@ -74,12 +76,10 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
         LinearLayout main;
         @BindByTag("index")
         TextView index;
-        @BindByTag("repairStaffDelete")
-        ImageView repairStaffDelete;
         @BindByTag("repairStaffName")
-        CustomVerticalTextView repairStaffName;
+        CustomTextView repairStaffName;
         @BindByTag("workHour")
-        CustomVerticalEditText workHour;
+        CustomTextView workHour;
         @BindByTag("actualStartTime")
         CustomVerticalDateView actualStartTime;
         @BindByTag("actualEndTime")
@@ -116,24 +116,6 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
             super.initListener();
 
             repairStaffName.setOnChildViewClickListener(this);
-
-            RxTextView.textChanges(workHour.editText())
-                    .skipInitialValue()
-                    .subscribe(charSequence -> {
-                        RepairStaffEntity repairStaffEntity = getItem(getAdapterPosition());
-                        if (TextUtils.isEmpty(charSequence)) {
-                            if (repairStaffEntity != null) {
-                                repairStaffEntity.workHour = BigDecimal.valueOf(0);
-                            }
-                            return;
-                        }
-                        if (charSequence.toString().indexOf(".") == 0) {
-//                            ToastUtils.show(context,"首位禁止輸入小数点！");
-                            workHour.setInput(null);
-                            return;
-                        }
-                        repairStaffEntity.workHour = new BigDecimal(charSequence.toString());
-                    });
 
             actualStartTime.setOnChildViewClickListener(new OnChildViewClickListener() {
                 @Override
@@ -199,17 +181,13 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
             index.setText(String.valueOf(getAdapterPosition() + 1));
 
             if (editable && data.timesNum != null && data.timesNum == repairSum) {
-                workHour.setEditable(true);
                 remark.setEditable(true);
                 actualStartTime.setEditable(true);
                 actualEndTime.setEditable(true);
-                remark.setEditable(true);
             } else {
-                workHour.setEditable(false);
                 remark.setEditable(false);
                 actualStartTime.setEditable(false);
                 actualEndTime.setEditable(false);
-                remark.setEditable(false);
             }
 
             if (data.repairStaff != null) {
@@ -217,10 +195,7 @@ public class RepairStaffAdapter extends BaseListDataRecyclerViewAdapter<RepairSt
             } else {
                 repairStaffName.setValue("");
             }
-
-            workHour.setInput(data.workHour == null ? "" : String.valueOf(data.workHour.setScale(2, BigDecimal.ROUND_HALF_UP)));
-            workHour.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
+            workHour.setContent(data.workHour == null ? "" : String.valueOf(data.workHour.setScale(2, BigDecimal.ROUND_HALF_UP)));
             if (data.startTime != null) {
                 actualStartTime.setDate(DateUtil.dateTimeFormat(data.startTime));
             } else {

@@ -43,6 +43,7 @@ public class WXGDWarnManager {
         lubricateOilsEntity.lubricate = lubricationWarnEntity.lubricateOil;
         lubricateOilsEntity.oilType = lubricationWarnEntity.oilType;
         lubricateOilsEntity.lubricatingPart = lubricationWarnEntity.lubricatePart;
+        lubricateOilsEntity.oilQuantity = lubricationWarnEntity.sum;
 
         JWXItem jwxItem = new JWXItem();
         jwxItem.id = lubricationWarnEntity.id;

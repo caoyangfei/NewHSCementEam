@@ -73,9 +73,6 @@ public class SystemCodeController extends BasePresenterController implements Sys
     @Override
     public void getSystemCodeListSuccess(List entity) {
 //        systemCodeEntities = entity.result;
-        //暂时先每次加载时清除数据库(先删除再添加)
-        EamApplication.dao().getSystemCodeEntityDao().deleteAll();
-
         LogUtil.d("insert SystemCode:" + entity.size());
         SystemCodeManager.getInstance().setSystemCodeList(entity);
     }
