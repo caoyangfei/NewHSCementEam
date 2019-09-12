@@ -83,7 +83,7 @@
             android:drawablePadding="@dimen/dp_5"
             android:paddingStart="@dimen/dp_5"
             android:tag="processedTakeEffect"
-            android:text="已生效"
+            android:text="已结束"
             android:textColor="@color/green"
             android:textSize="@dimen/fontSize_14sp" />
 

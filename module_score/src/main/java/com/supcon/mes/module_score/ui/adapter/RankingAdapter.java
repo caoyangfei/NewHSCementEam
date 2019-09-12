@@ -58,10 +58,10 @@ public class RankingAdapter extends BaseListDataRecyclerViewAdapter<ScoreStaffEn
         @Override
         protected void initListener() {
             super.initListener();
-            score.setOnClickListener(new View.OnClickListener() {
+            itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onItemChildViewClick(score, 0, getItem(getLayoutPosition()));
+                    onItemChildViewClick(itemView, 0, getItem(getLayoutPosition()));
                 }
             });
         }
@@ -89,7 +89,7 @@ public class RankingAdapter extends BaseListDataRecyclerViewAdapter<ScoreStaffEn
             name.setText(data.getPatrolWorker().name);
             depot.setText(Util.strFormat(data.getPatrolWorker().getMainPosition().getDepartment().name));
             score.setText(Util.big(data.score));
-            if (rank == getAdapterPosition()) {
+            if (rank == (getAdapterPosition() + 1)) {
                 if (rank > 3) {
                     ranking.setTextColor(context.getResources().getColor(R.color.color_dd4351));
                 }

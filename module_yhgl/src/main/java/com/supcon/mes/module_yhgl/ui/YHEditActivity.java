@@ -569,6 +569,11 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                 .subscribe(o -> {
                     mYHEntity.downStream.id = "BEAM2_2013/01";
                     List<LinkEntity> linkEntities = mLinkController.getLinkEntities();
+                    if (TextUtils.isEmpty(yhEditWXChargeGroup.getValue()) && TextUtils.isEmpty(yhEditWXChargeStaff.getValue())) {
+                        mYHEntity.chargeStaff = new Staff();
+                        mYHEntity.chargeStaff.id = EamApplication.getAccountInfo().staffId;
+                        yhEditWXChargeStaff.setContent(EamApplication.getAccountInfo().staffName);
+                    }
                     if (checkBeforeSubmit() && linkEntities.size() > 0) {
                         doSubmit(createWorkFlowVar(linkEntities.get(0)));
                     }

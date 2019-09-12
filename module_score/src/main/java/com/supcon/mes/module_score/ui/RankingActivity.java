@@ -164,15 +164,13 @@ public class RankingActivity extends BaseRefreshRecyclerActivity implements Scor
         rankingAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override
             public void onItemChildViewClick(View childView, int position, int action, Object obj) {
-                if (childView.getId() == R.id.score) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable(Constant.IntentKey.SCORE_ENTITY, ((ScoreStaffEntity) obj));
-                    bundle.putBoolean(Constant.IntentKey.isEdit, false);
-                    if (type.equals("BEAM_065/03")) {
-                        IntentRouter.go(context, Constant.Router.SCORE_MECHANIC_STAFF_PERFORMANCE, bundle);
-                    } else {
-                        IntentRouter.go(context, Constant.Router.SCORE_INSPECTOR_STAFF_DAILY_PERFORMANCE, bundle);
-                    }
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(Constant.IntentKey.SCORE_ENTITY, ((ScoreStaffEntity) obj));
+                bundle.putBoolean(Constant.IntentKey.isEdit, false);
+                if (type.equals("BEAM_065/03")) {
+                    IntentRouter.go(context, Constant.Router.SCORE_MECHANIC_STAFF_PERFORMANCE, bundle);
+                } else {
+                    IntentRouter.go(context, Constant.Router.SCORE_INSPECTOR_STAFF_DAILY_PERFORMANCE, bundle);
                 }
             }
         });

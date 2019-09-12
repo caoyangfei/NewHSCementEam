@@ -37,6 +37,17 @@
             android:textColor="@color/textColorlightblack"
             android:textSize="@dimen/fontSize_16sp" />
 
+        <TextView
+            android:id="@+id/scoreRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/expend"
+            android:tag="scoreRight"
+            android:text="考核标准"
+            android:textColor="@color/textColorlightblack"
+            android:textSize="@dimen/fontSize_14sp" />
+
         <ImageView
             android:id="@+id/expend"
             android:layout_width="wrap_content"
