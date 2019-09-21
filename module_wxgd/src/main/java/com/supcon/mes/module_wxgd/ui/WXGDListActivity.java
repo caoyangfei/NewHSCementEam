@@ -1,6 +1,7 @@
 package com.supcon.mes.module_wxgd.ui;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,13 +14,17 @@ import android.widget.TextView;
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.com_http.util.RxSchedulers;
+import com.supcon.common.view.App;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
 import com.supcon.common.view.listener.OnRefreshPageListener;
 import com.supcon.common.view.util.LogUtil;
+import com.supcon.common.view.util.SharedPreferencesUtils;
+import com.supcon.common.view.util.ToastUtils;
 import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.adapter.RecyclerEmptyAdapter;
 import com.supcon.mes.mbap.beans.FilterBean;
@@ -33,18 +38,22 @@ import com.supcon.mes.mbap.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.ModulePermissonCheckController;
 import com.supcon.mes.middleware.controller.RoleController;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.RoleEntity;
 import com.supcon.mes.middleware.model.bean.ScreenEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
+import com.supcon.mes.middleware.model.bean.YHEntity;
 import com.supcon.mes.middleware.model.event.LoginValidEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
+import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.EmptyViewHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.SystemCodeManager;
+import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.controller.WXGDSubmitController;
 import com.supcon.mes.module_wxgd.model.api.WXGDListAPI;
@@ -120,6 +129,9 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
     private String repairType;
 
 
+    private Long deploymentId;//隐患单
+    private boolean hasAddForumPermission;
+
     @Override
     protected IListAdapter createAdapter() {
         wxgdListAdapter = new WXGDListAdapter(context);
@@ -152,7 +164,7 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
         contentView.addItemDecoration(new SpaceItemDecoration(10));
 
         customSearchView.setHint("搜索");
-        searchTitleBar.disableRightBtn();
+        rightBtn.setImageResource(R.drawable.add);
 
         initFilter();
         initEmpty();
@@ -165,6 +177,14 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
             listRepairTypeFilter.setCurrentItem(repairType);
             queryParam.put(Constant.BAPQuery.REPAIR_TYPE, SystemCodeManager.getInstance().getSystemCodeEntityId(Constant.SystemCode.YH_WX_TYPE, repairType));
         }
+        ModulePermissonCheckController mModulePermissonCheckController = new ModulePermissonCheckController();
+        mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "faultInfoFW", new OnSuccessListener<Long>() {
+            @Override
+            public void onSuccess(Long result) {
+                deploymentId = result;
+                hasAddForumPermission = true;
+            }
+        }, null);
     }
 
     @Override
@@ -196,6 +216,19 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
         super.initListener();
 
         leftBtn.setOnClickListener(v -> finish());
+
+        RxView.clicks(rightBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(new Consumer<Object>() {
+                    @Override
+                    public void accept(Object o) throws Exception {
+                        if (hasAddForumPermission) {
+                            createYH();
+                        } else {
+                            ToastUtils.show(context, "当前用户并未拥有创建单据权限！");
+                        }
+                    }
+                });
 
         refreshListController.setOnRefreshPageListener(new OnRefreshPageListener() {
             @Override
@@ -284,6 +317,20 @@ public class WXGDListActivity extends BaseRefreshRecyclerActivity<WXGDEntity> im
                 }
             }
         });
+    }
+
+    //创建隐患大
+    private void createYH() {
+        YHEntity yhEntity = new YHEntity();
+        yhEntity.findStaffID = EamApplication.me();
+        yhEntity.findTime = System.currentTimeMillis();
+        yhEntity.cid = SharedPreferencesUtils.getParam(App.getAppContext(), Constant.CID, 0L);
+        yhEntity.id = -1;
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(Constant.IntentKey.YHGL_ENTITY, yhEntity);
+        bundle.putSerializable(Constant.IntentKey.DEPLOYMENT_ID, deploymentId);
+        IntentRouter.go(context, Constant.Router.YH_EDIT, bundle);
+
     }
 
     /**

@@ -1,14 +1,17 @@
 package com.supcon.mes.module_warn.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseFragmentActivity;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.NoScrollViewPager;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.NFCEvent;
@@ -24,6 +27,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author yangfei.cao
  * @ClassName hongShiCementEam
@@ -33,8 +38,10 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 @Router(Constant.Router.DAILY_LUBRICATION_EARLY_WARN)
 public class DailyLubricationWarnActivity extends BaseFragmentActivity {
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
     @BindByTag("tablayout")
     TabLayout tablayout;
     @BindByTag("sbdaViewPager")
@@ -75,7 +82,7 @@ public class DailyLubricationWarnActivity extends BaseFragmentActivity {
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
-        titleBar.setTitle("日常润滑任务");
+        titleText.setText("日常润滑任务");
         tablayout.setupWithViewPager(sbdaViewPager);
 
         DailyLubricationWarnAdapter dailyLubricationWarnAdapter = new DailyLubricationWarnAdapter(getSupportFragmentManager());
@@ -85,21 +92,16 @@ public class DailyLubricationWarnActivity extends BaseFragmentActivity {
         sbdaViewPager.setAdapter(dailyLubricationWarnAdapter);
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
         super.initListener();
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
 
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
     }
+
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void tabChange(TabEvent tabEvent) {
         tablayout.getTabAt(1).select();

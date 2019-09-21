@@ -10,7 +10,6 @@ import java.util.Map;
 
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import okhttp3.FormBody;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
@@ -131,10 +130,12 @@ public class WXGDSubmitPresenter extends WXGDSubmitContract.Presenter {
 
     //维修工单验收提交
     @Override
-    public void doAcceptChkSubmit(Map<String, Object> map) {
+    public void doAcceptChkSubmit(Map<String, Object> map, Map<String, Object> attachmentMap) {
         Map<String, RequestBody> formBody = FormDataHelper.createDataFormBody(map);
+        List<MultipartBody.Part> parts = FormDataHelper.createFileForm(attachmentMap);
+
         mCompositeSubscription.add(
-                HttpClient.doAcceptChk(formBody)
+                HttpClient.doAcceptChk(formBody, parts)
                         .onErrorReturn(new Function<Throwable, BapResultEntity>() {
                             @Override
                             public BapResultEntity apply(Throwable throwable) throws Exception {

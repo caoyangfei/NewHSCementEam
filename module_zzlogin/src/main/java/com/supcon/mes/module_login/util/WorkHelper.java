@@ -195,6 +195,12 @@ public class WorkHelper {
                     workInfo.iconResId = R.drawable.ic_data_xjbb;
                     workInfo.router = Constant.Router.XJBB;
                     break;
+
+                case Constant.WorkType.TSD_RECORD:
+
+                    workInfo.iconResId = R.drawable.ic_data_sbda;
+                    workInfo.router = Constant.Router.TSD_RECORD;
+                    break;
                 default:
 
                     break;

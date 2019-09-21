@@ -22,6 +22,7 @@ import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomHorizontalSearchTitleBar;
 import com.supcon.mes.mbap.view.CustomSearchView;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.KeyExpandHelper;
@@ -77,6 +78,7 @@ public class AcceptanceListActivity extends BaseRefreshRecyclerActivity<Acceptan
     private final Map<String, Object> queryParam = new HashMap<>();
     private String selecStr;
     private String tableNo;
+    private EamType eamType;
 
     @Override
     protected IListAdapter createAdapter() {
@@ -94,6 +96,10 @@ public class AcceptanceListActivity extends BaseRefreshRecyclerActivity<Acceptan
         super.onInit();
         EventBus.getDefault().register(this);
         tableNo = getIntent().getStringExtra(Constant.IntentKey.TABLENO);
+        eamType = (EamType) getIntent().getSerializableExtra(Constant.IntentKey.EAM);
+        if (eamType != null) {
+            selecStr = eamType.name;
+        }
     }
 
 
@@ -111,6 +117,7 @@ public class AcceptanceListActivity extends BaseRefreshRecyclerActivity<Acceptan
         contentView.addItemDecoration(new SpaceItemDecoration(15));
         customSearchView.setHint("请输入设备");
         searchTitleBar.enableRightBtn();
+        customSearchView.setInput(selecStr);
     }
 
     @SuppressLint("CheckResult")
@@ -131,6 +138,7 @@ public class AcceptanceListActivity extends BaseRefreshRecyclerActivity<Acceptan
                 .subscribe(o -> {
                     Bundle bundle = new Bundle();
                     bundle.putBoolean(Constant.IntentKey.isEdit, true);
+                    bundle.putSerializable(Constant.IntentKey.EAM, eamType);
                     IntentRouter.go(AcceptanceListActivity.this, Constant.Router.ACCEPTANCE_EDIT, bundle);
                 });
 

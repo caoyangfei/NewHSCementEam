@@ -7,13 +7,7 @@
     android:orientation="vertical">
 
 
-    <com.supcon.mes.mbap.view.CustomTitleBar
-        android:id="@+id/titleBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:tag="titleBar"
-        app:titlebar_bg_color="@color/themeColor"
-        app:titlebar_title_text="日常润滑任务" />
+    <include layout="@layout/ly_titlebar" />
 
     <LinearLayout
         android:layout_width="match_parent"

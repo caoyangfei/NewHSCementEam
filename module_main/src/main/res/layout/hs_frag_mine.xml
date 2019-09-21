@@ -107,7 +107,6 @@
                 android:layout_height="50dp"
                 android:tag="mobilePhone"
                 custom:arrow_icon="@drawable/ic_bluetooth_phone"
-                custom:arrow_text="138****8899"
                 tools:arrow_text="138****8899" />
 
             <include layout="@layout/ly_line" />
@@ -117,7 +116,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:tag="email"
-                custom:arrow_text="wangshizhan@supcon.com"
                 tools:arrow_text="wangshizhan@supcon.com" />
 
             <include layout="@layout/ly_line_10" />

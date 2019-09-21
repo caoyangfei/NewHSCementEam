@@ -172,8 +172,9 @@ public class WorkAdapter extends HeaderRecyclerViewAdapter<WorkInfo> {
                         case Constant.Router.ACCEPTANCE_LIST:
                             break;
                         default:
-                            ToastUtils.show(context,"暂无数据！");
-                            return;
+//                            ToastUtils.show(context,"暂无数据！");
+//                            return;
+                            break;
                     }
 
 

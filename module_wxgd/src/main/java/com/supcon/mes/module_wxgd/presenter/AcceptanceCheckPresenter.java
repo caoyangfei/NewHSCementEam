@@ -1,6 +1,6 @@
 package com.supcon.mes.module_wxgd.presenter;
 
-import com.supcon.mes.module_wxgd.model.bean.AcceptanceCheckListEntity;
+import com.supcon.mes.middleware.model.bean.AcceptanceCheckListEntity;
 import com.supcon.mes.module_wxgd.model.contract.AcceptanceCheckContract;
 import com.supcon.mes.module_wxgd.model.network.HttpClient;
 

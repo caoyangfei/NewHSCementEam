@@ -4,23 +4,22 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
+import com.supcon.common.BaseConstant;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
-import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.view.CustomTextView;
+import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.HtmlParser;
 import com.supcon.mes.middleware.util.HtmlTagHandler;
 import com.supcon.mes.middleware.util.Util;
-import com.supcon.mes.module_main.IntentRouter;
+import com.supcon.mes.module_login.IntentRouter;
 import com.supcon.mes.module_main.R;
 import com.supcon.mes.module_main.model.bean.ProcessedEntity;
-import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 
 /**
  * @author yangfei.cao
@@ -63,7 +62,21 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
         @Override
         protected void initListener() {
             super.initListener();
-
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ProcessedEntity item = getItem(getAdapterPosition());
+                    String url = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
+                            + Constant.WebUrl.FLOWVIEW + "&modelCode=" + item.modelcode + "&deploymentId=" + item.deploymentid + "&fvTableInfoId=" + item.tableid;
+                    Bundle bundle = new Bundle();
+                    bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
+                    bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
+                    bundle.putString(BaseConstant.WEB_URL, url);
+                    bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);
+                    bundle.putBoolean(BaseConstant.WEB_IS_LIST, true);
+                    IntentRouter.go(context, Constant.Router.PROCESSED_FLOW, bundle);
+                }
+            });
         }
 
         @Override
@@ -75,9 +88,9 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
         protected void update(ProcessedEntity data) {
             processTableNo.setText(Util.strFormat2(data.tableno));
             processState.setText(Util.strFormat2(data.prostatus));
-            if (!TextUtils.isEmpty(data.eamid.name) || !TextUtils.isEmpty(data.eamid.code)) {
-                String eam = String.format(context.getString(R.string.device_style10), data.eamid.name
-                        , data.eamid.code);
+            if (!TextUtils.isEmpty(data.getEamid().name) || !TextUtils.isEmpty(data.getEamid().code)) {
+                String eam = String.format(context.getString(R.string.device_style10), data.getEamid().name
+                        , data.getEamid().code);
                 processEam.setContent(HtmlParser.buildSpannedText(eam, new HtmlTagHandler()).toString());
             }
             processTime.setContent(data.createTime != null ? DateUtil.dateFormat(data.createTime, "yyyy-MM-dd HH:mm:ss") : "");

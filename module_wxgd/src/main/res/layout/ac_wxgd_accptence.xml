@@ -160,6 +160,27 @@
                         app:text="@string/acceptChkConclusion"
                         app:text_size="15" />
                 </LinearLayout>
+
+                <com.supcon.mes.mbap.view.CustomGalleryView
+                    android:id="@+id/yhGalleryView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/dp_1"
+                    android:background="@color/white"
+                    android:minHeight="@dimen/dp_30"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="@dimen/dp_10"
+                    android:paddingRight="@dimen/dp_20"
+                    android:paddingBottom="@dimen/dp_10"
+                    android:tag="yhGalleryView"
+                    app:columns="3"
+                    app:editable="true"
+                    app:icon_visible="true"
+                    app:text="验收照片"
+                    app:text_size="16" />
+
+                <include layout="@layout/ly_line_light_light" />
+
             </LinearLayout>
 
         </ScrollView>

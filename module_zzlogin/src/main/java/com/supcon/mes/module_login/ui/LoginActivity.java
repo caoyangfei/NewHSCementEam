@@ -11,10 +11,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.app.annotation.BindByTag;
+import com.app.annotation.Controller;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.supcon.common.view.base.activity.BasePresenterActivity;
+import com.supcon.common.view.base.activity.BaseControllerActivity;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.SharedPreferencesUtils;
 import com.supcon.mes.mbap.MBapApp;
@@ -46,6 +47,7 @@ import com.supcon.mes.module_login.presenter.LoginPresenter;
 import com.supcon.mes.module_login.presenter.MinePresenter;
 import com.supcon.mes.module_login.presenter.ZhiZhiUrlQueryPresenter;
 import com.supcon.mes.module_login.service.HeartBeatService;
+import com.supcon.mes.push.controller.DeviceTokenController;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -63,7 +65,8 @@ import io.reactivex.schedulers.Schedulers;
 
 @Router(Constant.Router.LOGIN)
 @Presenter(value = {LoginPresenter.class, ZhiZhiUrlQueryPresenter.class, MinePresenter.class})
-public class LoginActivity extends BasePresenterActivity implements LoginContract.View, ZhiZhiUrlQueryContract.View, MineContract.View {
+@Controller(DeviceTokenController.class)
+public class LoginActivity extends BaseControllerActivity implements LoginContract.View, ZhiZhiUrlQueryContract.View, MineContract.View {
 
 
     @BindByTag("usernameInput")
@@ -379,7 +382,7 @@ public class LoginActivity extends BasePresenterActivity implements LoginContrac
                 if (EamApplication.isHongshi()) {
                     IntentRouter.go(context, Constant.Router.MAIN_REDLION);
                 } else {
-                    IntentRouter.go(context, Constant.Router.MAIN);
+                    IntentRouter.go(context, Constant.Router.MAIN_REDLION);
                 }
                 isFirstIn = false;
 //            }

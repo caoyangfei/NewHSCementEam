@@ -26,6 +26,7 @@ import com.supcon.mes.middleware.controller.StaffPicController;
 import com.supcon.mes.middleware.util.ChannelUtil;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
+import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.model.api.MineAPI;
 import com.supcon.mes.module_login.model.contract.MineContract;
 import com.supcon.mes.module_login.presenter.MinePresenter;
@@ -119,6 +120,8 @@ public class MineFragment extends BaseControllerFragment implements MineContract
     @Override
     protected void initData() {
         super.initData();
+        mobilePhone.setText(Util.strFormat(EamApplication.getAccountInfo().mobile));
+        email.setText(Util.strFormat(EamApplication.getAccountInfo().email));
     }
 
     private void updateCacheSize() {
@@ -203,7 +206,7 @@ public class MineFragment extends BaseControllerFragment implements MineContract
 //        DeviceManager.getInstance().release();
         onLoadSuccessAndExit("登出成功！", () -> {
             Bundle bundle = new Bundle();
-            if(!EamApplication.isHongshi()) {
+            if (!EamApplication.isHongshi()) {
                 bundle.putInt(Constant.IntentKey.LOGIN_LOGO_ID, R.drawable.ic_login_logo_hl);
                 bundle.putInt(Constant.IntentKey.LOGIN_BG_ID, R.drawable.bg_login_hl);
             }

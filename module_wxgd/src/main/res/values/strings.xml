@@ -40,10 +40,6 @@
     <string name="historySparePart">历史记录</string>
     <string name="wxTimes">第%s次</string>
     <string name="acceptanceTimes">第%s次验收</string>
-    <string name="acceptChkStaff">验收人</string>
-    <string name="acceptChkStaffCode">验收人编码</string>
-    <string name="acceptChkTime">验收时间</string>
-    <string name="acceptChkConclusion">验收结论</string>
     <string name="lastDuration">上次执行时长(H):</string>
     <string name="useQuantity">领用量:</string>
     <string name="actualQuantity">实际用量:</string>

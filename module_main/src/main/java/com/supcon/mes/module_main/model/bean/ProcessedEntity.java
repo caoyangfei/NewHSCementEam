@@ -14,4 +14,14 @@ public class ProcessedEntity extends BaseEntity {
     public EamType eamid;
     public String content;
     public String newstate;
+    public String modelcode;
+    public Long deploymentid;
+    public Long tableid;
+
+    public EamType getEamid() {
+        if (eamid == null) {
+            eamid = new EamType();
+        }
+        return eamid;
+    }
 }

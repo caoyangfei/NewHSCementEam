@@ -17,16 +17,28 @@ import com.supcon.common.view.util.DisplayUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.constant.Constant;
+import com.supcon.mes.middleware.controller.AttachmentController;
+import com.supcon.mes.middleware.controller.AttachmentDownloadController;
 import com.supcon.mes.middleware.controller.EamPicController;
+import com.supcon.mes.middleware.controller.OnlineCameraController;
+import com.supcon.mes.middleware.model.bean.AttachmentEntity;
+import com.supcon.mes.middleware.model.bean.AttachmentListEntity;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
+import com.supcon.mes.middleware.model.listener.OnAPIResultListener;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_wxgd.IntentRouter;
 import com.supcon.mes.module_wxgd.R;
 import com.supcon.mes.module_wxgd.constant.WXGDConstant;
 
+import java.util.List;
+
 public class WXGDListAdapter extends BaseListDataRecyclerViewAdapter<WXGDEntity> {
+
+    private AttachmentDownloadController mDownloadController;
+
     public WXGDListAdapter(Context context) {
         super(context);
+      
     }
 
     @Override
@@ -79,6 +91,9 @@ public class WXGDListAdapter extends BaseListDataRecyclerViewAdapter<WXGDEntity>
         LinearLayout receiveBtnLl;
 
         ImageView itemWXGDDeviceIc;
+
+        private OnlineCameraController mOnlineCameraController;
+        private AttachmentController mAttachmentController;
 
 
         public ViewHolder(Context context) {
@@ -261,7 +276,51 @@ public class WXGDListAdapter extends BaseListDataRecyclerViewAdapter<WXGDEntity>
                 receiveBtnLl.setVisibility(View.GONE);
             }
 
+            mOnlineCameraController = new OnlineCameraController(itemView);
+//            mOnlineCameraController.addGalleryView(getAdapterPosition(), itemGalleryView);
+            if (data.attachmentEntities != null) {
+//                downloadAttachment(data.attachmentEntities);
+            } else {
+
+                if (mAttachmentController == null) {
+                    mAttachmentController = new AttachmentController();
+                }
+
+                mAttachmentController.refreshGalleryView(new OnAPIResultListener<AttachmentListEntity>() {
+                    @Override
+                    public void onFail(String errorMsg) {
+                    }
+
+                    @Override
+                    public void onSuccess(AttachmentListEntity entity) {
+                        if (entity.result != null && entity.result.size() == 0) {
+                            return;
+                        }
+                        data.attachmentEntities = entity.result;
+//                        downloadAttachment(entity.result);
+                    }
+                }, data.tableInfoId);
+            }
 
         }
+
+        private void downloadAttachment(List<AttachmentEntity> attachmentEntities) {
+
+            if (mDownloadController == null) {
+                mDownloadController = new AttachmentDownloadController(Constant.IMAGE_SAVE_YHPATH);
+            }
+
+//            mDownloadController.downloadYHPic(attachmentEntities, "BEAM2_1.0.0_faultInfo",
+//                    result -> itemGalleryView.setGalleryBeans(result));
+        }
+
+    }
+
+    public void onDestroy(){
+
+        if(mDownloadController!=null){
+            mDownloadController.dispose();
+        }
+
     }
 }

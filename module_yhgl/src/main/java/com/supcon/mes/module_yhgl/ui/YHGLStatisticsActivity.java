@@ -33,7 +33,6 @@ import com.supcon.mes.middleware.util.AnimatorUtil;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
-import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_yhgl.R;
 import com.supcon.mes.module_yhgl.model.api.YHGLStatisticsAPI;
 import com.supcon.mes.module_yhgl.model.bean.YHListEntity;
@@ -184,7 +183,7 @@ public class YHGLStatisticsActivity extends BaseRefreshRecyclerActivity<YHEntity
                 datePickController.listener((year, month, day, hour, minute, second) -> {
                     if (compareTime(startDate.getText().toString(), year + "-" + month + "-" + day)) {
                         endDate.setText(year + "-" + month + "-" + day);
-                        queryParam.put(Constant.BAPQuery.YH_DATE_END, year + "-" + month + "-" + day + " 00:00:00");
+                        queryParam.put(Constant.BAPQuery.YH_DATE_END, year + "-" + month + "-" + day + " 23:59:59");
                         workCountQueryParam.put("endTime", year + "-" + month + "-" + day);
                         refreshListController.refreshBegin();
                     }

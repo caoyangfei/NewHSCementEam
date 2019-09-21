@@ -18,16 +18,12 @@ import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
-import com.supcon.common.view.listener.OnChildViewClickListener;
-import com.supcon.common.view.listener.OnRefreshListener;
 import com.supcon.common.view.ptr.PtrFrameLayout;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
-import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LinkEntity;
 import com.supcon.mes.mbap.beans.WorkFlowEntity;
 import com.supcon.mes.mbap.beans.WorkFlowVar;
-import com.supcon.mes.mbap.listener.OnTextListener;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.view.CustomDialog;
@@ -50,7 +46,6 @@ import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -82,8 +77,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 
 /**
  * @author yangfei.cao
@@ -128,7 +121,7 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
     CustomWorkFlowView transition;
     @BindByTag("workFlowBar")
     LinearLayout workFlowBar;
-    
+
     private AcceptanceEntity acceptanceEntity;
     private AcceptanceEditceAdapter acceptanceEditceAdapter;
     private String eamCodeStr;
@@ -137,6 +130,7 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
     private Long deploymentId;
     private String powerCode;
     private LinkController mLinkController;
+    private EamType eamType;
 
     @Override
     protected IListAdapter createAdapter() {
@@ -154,6 +148,7 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         super.onInit();
         EventBus.getDefault().register(this);
         acceptanceEntity = (AcceptanceEntity) getIntent().getSerializableExtra(Constant.IntentKey.ACCEPTANCE_ENTITY);
+        eamType = (EamType) getIntent().getSerializableExtra(Constant.IntentKey.EAM);
         isEdit = getIntent().getBooleanExtra(Constant.IntentKey.isEdit, false);
 
         nfcHelper = NFCHelper.getInstance();
@@ -191,16 +186,16 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
 
         eamCode.setEnabled(isEdit);
         eamName.setEnabled(isEdit);
-        
+
 //        initLink();
     }
-    
+
     private void initLink() {
         mLinkController.setCancelShow(acceptanceEntity.faultID != null && TextUtils.isEmpty(acceptanceEntity.faultID.tableNo));
         mLinkController.initPendingTransition(transition, acceptanceEntity.pending.id);
     }
-    
-    
+
+
     @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
@@ -301,13 +296,18 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         super.initData();
         if (acceptanceEntity == null) {
             acceptanceEntity = new AcceptanceEntity();
-            acceptanceEntity.getBeamID().id = -1;
-        } else {
-            eamCode.setContent(Util.strFormat2(acceptanceEntity.getBeamID().code));
-            eamName.setContent(Util.strFormat2(acceptanceEntity.getBeamID().name));
-            acceptanceDept.setContent(Util.strFormat2(acceptanceEntity.getDept().name));
-            acceptanceArea.setContent(Util.strFormat2(acceptanceEntity.getArea().name));
+            if (eamType != null) {
+                acceptanceEntity.beamID = eamType;
+                acceptanceEntity.dept = eamType.getUseDept();
+                acceptanceEntity.area = eamType.getInstallPlace();
+            } else {
+                acceptanceEntity.getBeamID().id = -1;
+            }
         }
+        eamCode.setContent(Util.strFormat2(acceptanceEntity.getBeamID().code));
+        eamName.setContent(Util.strFormat2(acceptanceEntity.getBeamID().name));
+        acceptanceDept.setContent(Util.strFormat2(acceptanceEntity.getDept().name));
+        acceptanceArea.setContent(Util.strFormat2(acceptanceEntity.getArea().name));
 
         if (TextUtils.isEmpty(acceptanceEntity.getCheckStaff().name)) {
             Staff checkStaff = new Staff();
@@ -323,10 +323,10 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         ModulePermissonCheckController mModulePermissonCheckController = new ModulePermissonCheckController();
         mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "checkApplyFW",
                 result -> {
-            deploymentId = result;
-            ModulePowerController modulePowerController = new ModulePowerController();
-            modulePowerController.checkModulePermission(deploymentId, result1 -> powerCode = result1.powerCode);
-        }, null);
+                    deploymentId = result;
+                    ModulePowerController modulePowerController = new ModulePowerController();
+                    modulePowerController.checkModulePermission(deploymentId, result1 -> powerCode = result1.powerCode);
+                }, null);
 
         mLinkController = new LinkController();
         mLinkController.initStartTransition(null, "checkApplyFW");
@@ -435,9 +435,11 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
         SnackbarHelper.showError(rootView, errorMsg);
         refreshListController.refreshComplete(null);
     }
+
     private void doSave() {
-    
+
     }
+
     private void doSubmit(WorkFlowVar workFlowVar) {
         List<WorkFlowEntity> workFlowEntities = new ArrayList<>();
         WorkFlowEntity workFlowEntity = new WorkFlowEntity();

@@ -182,7 +182,6 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
         titleText.setText("计划巡检");
         xjTitleAdd.setVisibility(View.GONE);
         initEmptyView();
-
     }
 
     @SuppressLint("CheckResult")
@@ -389,9 +388,19 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
     }
 
     private void showFinishDialog(OLXJTaskEntity olxjTaskEntity) {
-        boolean isAllFinished = mOLXJTaskListAdapter.isAllFinished();
+//        boolean isAllFinished = mOLXJTaskListAdapter.isAllFinished();
+//        new CustomDialog(context)
+//                .twoButtonAlertDialog(isAllFinished ? "确定提交任务？" : "还存在未完成的巡检项，确定是否提交任务？")
+//                .bindClickListener(R.id.grayBtn, v -> {
+//                }, true)
+//                .bindClickListener(R.id.redBtn, v -> {
+//
+//                    onLoading("正在提交任务...");
+//                    presenterRouter.create(OLXJTaskStatusAPI.class).endTasks(String.valueOf(olxjTaskEntity.id), "结束任务", true);
+//                }, true)
+//                .show();
         new CustomDialog(context)
-                .twoButtonAlertDialog(isAllFinished ? "确定提交任务？" : "还存在未完成的巡检项，确定是否提交任务？")
+                .twoButtonAlertDialog("当前巡检任务已完成,是否确定结束任务?")
                 .bindClickListener(R.id.grayBtn, v -> {
                 }, true)
                 .bindClickListener(R.id.redBtn, v -> {
@@ -563,10 +572,13 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
             mOLXJTaskListAdapter.setAreaEntities(mAreaEntities);
             saveAreaCache(mAreaEntities.toString());
             saveTask(mOLXJTaskEntity.toString());
+
+            if (mOLXJTaskListAdapter.isAllFinished()) {
+                showFinishDialog(mOLXJTaskListAdapter.getList().get(0));
+            }
         }
 
     }
-
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void scanBarCode(BarcodeEvent barcodeEvent) {

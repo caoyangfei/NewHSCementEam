@@ -2,11 +2,14 @@ package com.supcon.mes.module_yhgl.util;
 
 import android.annotation.SuppressLint;
 
+import com.supcon.mes.mbap.utils.DateUtil;
+import com.supcon.mes.middleware.model.bean.AcceptanceCheckEntity;
 import com.supcon.mes.middleware.model.bean.LubricateOilsEntity;
 import com.supcon.mes.middleware.model.bean.MaintainEntity;
 import com.supcon.mes.middleware.model.bean.RepairStaffEntity;
 import com.supcon.mes.middleware.model.bean.SparePartEntity;
 import com.supcon.mes.middleware.util.Util;
+import com.supcon.mes.module_yhgl.model.dto.AcceptanceCheckEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.IdDto;
 import com.supcon.mes.module_yhgl.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.MaintainDto;
@@ -155,6 +158,29 @@ public class YHGLMapManager {
             maintainDtos.add(maintainDto);
         }
         return maintainDtos;
+    }
+
+    /**
+     * @description 验收结论提交
+     * @param
+     * @return
+     * @author zhangwenshuai1 2019/9/20
+     *
+     */
+    public static LinkedList<AcceptanceCheckEntityDto> translateCheckResultDto(List<AcceptanceCheckEntity> list){
+        LinkedList<AcceptanceCheckEntityDto> checkEntityDtos = new LinkedList<>();
+        AcceptanceCheckEntityDto acceptanceCheckEntityDto;
+        IdDto idDto;
+        for (AcceptanceCheckEntity checkEntity : list){
+            acceptanceCheckEntityDto = new AcceptanceCheckEntityDto();
+            acceptanceCheckEntityDto.checkTime = DateUtil.dateTimeFormat(checkEntity.checkTime);
+            idDto = new IdDto(Util.strFormat2(checkEntity.getCheckStaff().id));
+            acceptanceCheckEntityDto.checkStaff = idDto;
+            idDto = new IdDto(Util.strFormat2(checkEntity.getCheckResult().id));
+            acceptanceCheckEntityDto.checkResult = idDto;
+            checkEntityDtos.add(acceptanceCheckEntityDto);
+        }
+        return checkEntityDtos;
     }
 
     /**

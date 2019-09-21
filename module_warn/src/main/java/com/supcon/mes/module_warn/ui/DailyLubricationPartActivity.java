@@ -7,7 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
@@ -19,7 +21,6 @@ import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.EmptyAdapterHelper;
@@ -59,8 +60,10 @@ import io.reactivex.Flowable;
 @Router(Constant.Router.DAILY_LUBRICATION_EARLY_PART_WARN)
 @Presenter(value = {DailyLubricationWarnPresenter.class, CompletePresenter.class})
 public class DailyLubricationPartActivity extends BaseRefreshRecyclerActivity<DailyLubricateTaskEntity> implements DailyLubricationWarnContract.View, CompleteContract.View {
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
     @BindByTag("contentView")
     RecyclerView contentView;
 
@@ -112,6 +115,7 @@ public class DailyLubricationPartActivity extends BaseRefreshRecyclerActivity<Da
         if (!isEdit) {
             btnLayout.setVisibility(View.GONE);
         }
+        titleText.setText("润滑信息");
     }
 
     @SuppressLint("CheckResult")
@@ -125,17 +129,9 @@ public class DailyLubricationPartActivity extends BaseRefreshRecyclerActivity<Da
             presenterRouter.create(DailyLubricationWarnAPI.class).getLubrications(queryParam,pageQueryParams);
         });
 
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
-
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
 
         RxView.clicks(dispatch)
                 .throttleFirst(2, TimeUnit.SECONDS)

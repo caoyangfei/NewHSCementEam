@@ -1,6 +1,7 @@
 package com.supcon.mes.module_yhgl.model.network;
 
 import com.app.annotation.apt.ApiFactory;
+import com.supcon.mes.middleware.model.bean.AcceptanceCheckListEntity;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
 import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
@@ -111,6 +112,15 @@ public interface NetworkAPI {
      */
     @GET("/BEAM2/faultInfo/faultInfo/data-dg1557457043896.action")
     Flowable<MaintenanceListEntity> listMaintenance(@Query("faultInfo.id") long id);
+
+    /**
+     * @param
+     * @return
+     * @description 获取维修工单验收
+     * @author wnagshizhan 2018/8/28
+     */
+    @GET("/BEAM2/workList/workRecord/data-dg1531695961597.action")
+    Flowable<AcceptanceCheckListEntity> listAcceptances(@Query("workRecord.id") long id);
 
     /**
      * @param productCode 备件编码

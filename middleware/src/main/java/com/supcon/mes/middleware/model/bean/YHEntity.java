@@ -19,7 +19,7 @@ public class YHEntity extends BaseEntity {
     public WXGDEam eamID;
     public SystemCodeEntity faultInfoType;
     public SystemCodeEntity faultState;
-    public SystemCodeEntity downStream;
+    public SystemCodeEntity downStream; // 处理方式
     public SystemCodeEntity sourceType;
     public long findTime;
     public long id;

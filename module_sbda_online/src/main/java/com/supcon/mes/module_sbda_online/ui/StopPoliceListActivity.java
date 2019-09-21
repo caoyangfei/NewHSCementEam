@@ -7,19 +7,19 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
-import com.supcon.common.view.view.loader.base.LoaderController;
-import com.supcon.common.view.view.loader.base.OnLoaderFinishListener;
 import com.supcon.mes.mbap.beans.LoginEvent;
 import com.supcon.mes.mbap.utils.DateUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
@@ -30,7 +30,6 @@ import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomFilterView;
 import com.supcon.mes.mbap.view.CustomTextView;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.DatePickController;
@@ -83,8 +82,10 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
     @BindByTag("contentView")
     RecyclerView contentView;
 
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
 
     @BindByTag("listEamNameFilter")
     CustomFilterView listEamNameFilter;
@@ -128,7 +129,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         refreshListController.setAutoPullDownRefresh(true);
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
-
+        titleText.setText("停机报警");
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(5));
 
@@ -349,6 +350,7 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
         }
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
         super.initListener();
@@ -361,17 +363,9 @@ public class StopPoliceListActivity extends BaseRefreshRecyclerActivity<StopPoli
             showPopUp(stopPoliceEntity);
         });
 
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
-
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
 
         refreshListController.setOnRefreshPageListener((page) -> {
             if (!queryParam.containsKey(Constant.BAPQuery.ON_OR_OFF)) {

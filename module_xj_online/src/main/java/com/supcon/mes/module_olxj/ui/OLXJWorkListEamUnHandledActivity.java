@@ -58,7 +58,6 @@ import com.supcon.mes.middleware.util.SystemCodeManager;
 import com.supcon.mes.module_olxj.IntentRouter;
 import com.supcon.mes.module_olxj.R;
 import com.supcon.mes.module_olxj.constant.OLXJConstant;
-import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.controller.OLXJTaskAreaController;
 import com.supcon.mes.module_olxj.controller.OLXJTitleController;
@@ -76,11 +75,8 @@ import com.supcon.mes.module_olxj.model.contract.OLXJWorkSubmitContract;
 import com.supcon.mes.module_olxj.model.event.AreaRefreshEvent;
 import com.supcon.mes.module_olxj.presenter.OLXJEamTaskPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
-import com.supcon.mes.module_olxj.presenter.OLXJTaskStatusPresenter;
-import com.supcon.mes.module_olxj.presenter.OLXJTempTaskListPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
-import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListEamAdapterNew;
 import com.supcon.mes.module_olxj.util.XJJudgeHelper;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
@@ -444,22 +440,9 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
         olxjAreaEntity.signReason = mXJAreaEntity.signReason;
         olxjAreaEntity.signCode = mXJAreaEntity.signCode;
         olxjAreaEntity.staffId = mXJAreaEntity.staffId;
-        olxjAreaEntity.workItemEntities.addAll(mXJAreaEntity.workItemEntities);
-        Flowable.fromIterable(olxjAreaEntity.workItemEntities)
-                .filter(olxjWorkItemEntity -> {
-                    if (olxjWorkItemEntity.id == xjWorkItemEntity.id) {
-                        return true;
-                    }
-                    return false;
-                })
-                .subscribe(olxjWorkItemEntity -> {
-                    int position = olxjAreaEntity.workItemEntities.indexOf(olxjWorkItemEntity);
-                    olxjAreaEntity.workItemEntities.set(position, xjWorkItemEntity);
-                }, throwable -> {
-                }, () -> {
-                    onLoading("正在打包并上传巡检数据，请稍后...");
-                    presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
-                });
+        olxjAreaEntity.workItemEntities.add(xjWorkItemEntity);
+        onLoading("正在打包并上传巡检数据，请稍后...");
+        presenterRouter.create(OLXJEamTaskAPI.class).updateTaskById(Long.parseLong(eamXJEntity.taskId));
     }
 
     @SuppressLint("CheckResult")
@@ -529,8 +512,12 @@ public class OLXJWorkListEamUnHandledActivity extends BaseRefreshRecyclerActivit
                             .subscribe(v -> {
                                 mModifyController = new ModifyController<>(mXJAreaEntity);
                             });
-                    if (workItems.size() == 0 && isDcs) {
-                        ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
+                    if (workItems.size() == 0) {
+                        if (isDcs) {
+                            ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "当前设备已关机,无巡检设备!");
+                        } else {
+                            ToastUtils.show(OLXJWorkListEamUnHandledActivity.this, "设备已巡检完毕!");
+                        }
                         back();
                     }
                 });

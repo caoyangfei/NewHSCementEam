@@ -73,7 +73,6 @@ import com.supcon.mes.module_olxj.model.event.AreaRefreshEvent;
 import com.supcon.mes.module_olxj.presenter.OLXJExemptionPresenter;
 import com.supcon.mes.module_olxj.presenter.OLXJWorkSubmitPresenter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJHistorySheetAdapter;
-import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapter;
 import com.supcon.mes.module_olxj.ui.adapter.OLXJWorkListAdapterNew;
 import com.supcon.mes.module_olxj.util.XJJudgeHelper;
 import com.supcon.mes.sb2.model.event.ThermometerEvent;
@@ -85,20 +84,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import org.reactivestreams.Publisher;
 
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import io.reactivex.Flowable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -453,22 +448,9 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
         olxjAreaEntity.signReason = mXJAreaEntity.signReason;
         olxjAreaEntity.signCode = mXJAreaEntity.signCode;
         olxjAreaEntity.staffId = mXJAreaEntity.staffId;
-        olxjAreaEntity.workItemEntities.addAll(mXJAreaEntity.workItemEntities);
-        Flowable.fromIterable(olxjAreaEntity.workItemEntities)
-                .filter(olxjWorkItemEntity -> {
-                    if (olxjWorkItemEntity.id == xjWorkItemEntity.id) {
-                        return true;
-                    }
-                    return false;
-                })
-                .subscribe(olxjWorkItemEntity -> {
-                    int position = olxjAreaEntity.workItemEntities.indexOf(olxjWorkItemEntity);
-                    olxjAreaEntity.workItemEntities.set(position, xjWorkItemEntity);
-                }, throwable -> {
-                }, () -> {
-                    onLoading("正在打包并上传巡检数据，请稍后...");
-                    presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
-                });
+        olxjAreaEntity.workItemEntities.add(xjWorkItemEntity);
+        onLoading("正在打包并上传巡检数据，请稍后...");
+        presenterRouter.create(OLXJWorkSubmitAPI.class).uploadOLXJAreaData(olxjAreaEntity);
     }
 
     private void showSubmitDialog(String msg) {
@@ -568,16 +550,19 @@ public class OLXJWorkListUnHandledActivity extends BaseRefreshRecyclerActivity<O
                             .subscribe(v -> {
                                 mModifyController = new ModifyController<>(mXJAreaEntity);
                             });
-                    if (isDcs) {
-                        if (workItems.size() == 0) {
+
+                    if (workItems.size() == 0) {
+                        if (isDcs) {
                             ToastUtils.show(OLXJWorkListUnHandledActivity.this, "当前设备已关机,无巡检设备!");
-                            back();
-                            Flowable.timer(300, TimeUnit.MILLISECONDS)
-                                    .subscribe(v -> {
-                                        EventBus.getDefault().post(mXJAreaEntity);
-                                        EventBus.getDefault().post(new AreaRefreshEvent());
-                                    });
+                        } else {
+                            ToastUtils.show(OLXJWorkListUnHandledActivity.this, "当前设备已提交完毕!");
                         }
+                        back();
+                        Flowable.timer(300, TimeUnit.MILLISECONDS)
+                                .subscribe(v -> {
+                                    EventBus.getDefault().post(mXJAreaEntity);
+                                    EventBus.getDefault().post(new AreaRefreshEvent());
+                                });
                     }
                 });
 

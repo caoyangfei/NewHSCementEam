@@ -1,23 +1,16 @@
 package com.supcon.mes.module_main.ui.adaper;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.base.adapter.viewholder.BaseRecyclerViewHolder;
-import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.DateUtil;
-import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
-import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
-import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
+import com.supcon.mes.module_main.model.bean.AnomalyEntity;
 
 /**
  * @author yangfei.cao
@@ -26,30 +19,31 @@ import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
  * ------------- Description -------------
  * 异常记录adapter
  */
-public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEntity> {
+public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<AnomalyEntity> {
     public AnomalyAdapter(Context context) {
         super(context);
     }
 
     @Override
-    protected BaseRecyclerViewHolder<WaitDealtEntity> getViewHolder(int viewType) {
+    protected BaseRecyclerViewHolder<AnomalyEntity> getViewHolder(int viewType) {
         return new ContentViewHolder(context);
     }
 
 
-    class ContentViewHolder extends BaseRecyclerViewHolder<WaitDealtEntity> implements View.OnClickListener {
+    class ContentViewHolder extends BaseRecyclerViewHolder<AnomalyEntity> {
 
-        @BindByTag("waitDealtEamName")
-        TextView waitDealtEamName;
-        @BindByTag("waitDealtTime")
-        TextView waitDealtTime;
-        @BindByTag("waitDealtEamSource")
-        TextView waitDealtEamSource;
-        @BindByTag("waitDealtEamState")
-        TextView waitDealtEamState;
-
-        @BindByTag("waitDealtEntrust")
-        ImageView waitDealtEntrust;
+        @BindByTag("anomalyTableNo")
+        TextView anomalyTableNo;
+        @BindByTag("anomalyState")
+        TextView anomalyState;
+        @BindByTag("anomalyStaff")
+        TextView anomalyStaff;
+        @BindByTag("anomalyTime")
+        TextView anomalyTime;
+        @BindByTag("anomalyContent")
+        TextView anomalyContent;
+        @BindByTag("anomalySoucretype")
+        TextView anomalySoucretype;
 
 
         public ContentViewHolder(Context context) {
@@ -58,105 +52,33 @@ public class AnomalyAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtEnt
 
 
         @Override
-        protected void initListener() {
-            super.initListener();
-            waitDealtEntrust.setOnClickListener(this::onClick);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    WaitDealtEntity item = getItem(getAdapterPosition());
-                    if (TextUtils.isEmpty(item.processkey)) {
-                        if (item.dataid == null || TextUtils.isEmpty(item.soucretype)) {
-                            ToastUtils.show(context, "未查询到当前单据状态!");
-                            return;
-                        }
-                        if (!TextUtils.isEmpty(item.istemp) && item.soucretype.equals("巡检提醒")) {
-                            if (item.istemp.equals("1")) {
-                                IntentRouter.go(context, Constant.Router.LSXJ_LIST);
-                            } else {
-                                IntentRouter.go(context, Constant.Router.JHXJ_LIST);
-                            }
-                        } else {
-                            if (TextUtils.isEmpty(item.peroidtype)) {
-                                ToastUtils.show(context, "未查询到当前单据周期类型!");
-                                return;
-                            }
-                            Bundle bundle = new Bundle();
-                            bundle.putLong(Constant.IntentKey.WARN_ID, item.dataid);
-                            bundle.putString(Constant.IntentKey.PROPERTY, item.peroidtype);
-                            if (item.soucretype.equals("润滑提醒")) {
-                                IntentRouter.go(context, Constant.Router.LUBRICATION_EARLY_WARN, bundle);
-                            } else if (item.soucretype.equals("零部件提醒")) {
-                                IntentRouter.go(context, Constant.Router.SPARE_EARLY_WARN, bundle);
-                            } else if (item.soucretype.equals("维保提醒")) {
-                                IntentRouter.go(context, Constant.Router.MAINTENANCE_EARLY_WARN, bundle);
-                            }
-                        }
-
-                    } else {
-                        if (!TextUtils.isEmpty(item.tableno)) {
-                            Bundle bundle = new Bundle();
-                            bundle.putString(Constant.IntentKey.TABLENO, item.tableno);
-                            if (item.processkey.equals("work")) {
-                                if (!TextUtils.isEmpty(item.openurl)) {
-                                    switch (item.openurl) {
-                                        case Constant.WxgdView.RECEIVE_OPEN_URL:
-                                            IntentRouter.go(context, Constant.Router.WXGD_RECEIVE, bundle);
-                                            break;
-                                        case Constant.WxgdView.DISPATCH_OPEN_URL:
-                                            IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
-                                            break;
-                                        case Constant.WxgdView.EXECUTE_OPEN_URL:
-                                            IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
-                                            break;
-                                        case Constant.WxgdView.ACCEPTANCE_OPEN_URL:
-                                            IntentRouter.go(context, Constant.Router.WXGD_ACCEPTANCE, bundle);
-                                            break;
-                                    }
-                                } else {
-                                    ToastUtils.show(context, "未查询到工单状态状态!");
-                                }
-                            } else if (item.processkey.equals("faultInfoFW")) {
-                                IntentRouter.go(context, Constant.Router.YH_EDIT, bundle);
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        @Override
         protected int layoutId() {
-            return R.layout.hs_item_wait_dealt;
+            return R.layout.hs_item_anomaly;
         }
 
         @Override
-        protected void update(WaitDealtEntity data) {
-            waitDealtEamName.setText(Util.strFormat(data.eamname));
-            waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "");
-            waitDealtEamSource.setText(Util.strFormat(data.getStaffid().name));
-
+        protected void update(AnomalyEntity data) {
+            anomalyTableNo.setText(Util.strFormat2(data.tableno));
+            anomalyState.setText(Util.strFormat2(data.state));
+            anomalySoucretype.setText(data.soucretype);
+            anomalyStaff.setText(String.format(context.getString(R.string.device_style6), "待办人:", Util.strFormat(data.staffname)));
+            anomalyTime.setText(data.creatime != null ? DateUtil.dateFormat(data.creatime, "yyyy-MM-dd") : "");
+            anomalyContent.setText(String.format(context.getString(R.string.device_style6), "内容:", Util.strFormat(data.content)));
             if (!TextUtils.isEmpty(data.state)) {
-                waitDealtEamState.setText(data.state);
-                if (data.state.equals("编辑") || data.state.equals("派工")) {
-                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.gray));
+                if (data.state.equals("派工")) {
+                    anomalyState.setTextColor(context.getResources().getColor(R.color.gray));
                 } else if (data.state.equals("执行")) {
-                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.yellow));
+                    anomalyState.setTextColor(context.getResources().getColor(R.color.yellow));
                 } else if (data.state.equals("验收")) {
-                    waitDealtEamState.setTextColor(context.getResources().getColor(R.color.blue));
+                    anomalyState.setTextColor(context.getResources().getColor(R.color.blue));
+                } else {
+                    anomalyState.setTextColor(context.getResources().getColor(R.color.gray));
                 }
-            }
-            if (TextUtils.isEmpty(data.processkey)) {
-                waitDealtEntrust.setVisibility(View.GONE);
             } else {
-                waitDealtEntrust.setVisibility(View.VISIBLE);
+                anomalyState.setTextColor(context.getResources().getColor(R.color.gray));
             }
         }
 
-        @Override
-        public void onClick(View view) {
-            onItemChildViewClick(view, 0, getItem(getAdapterPosition()));
-        }
     }
 
 }

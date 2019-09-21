@@ -75,24 +75,24 @@ public class RankingAdapter extends BaseListDataRecyclerViewAdapter<ScoreStaffEn
         protected void update(ScoreStaffEntity data) {
             rankingLayout.setBackground(context.getResources().getDrawable(R.drawable.ranking_stroke));
             ranking.setText("");
-            if (getAdapterPosition() == 0) {
-                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no1));
-            } else if (getAdapterPosition() == 1) {
-                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no2));
-            } else if (getAdapterPosition() == 2) {
-                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no3));
-            } else {
-                ranking.setTextColor(context.getResources().getColor(R.color.color_9f9f9f));
-                ranking.setText(String.valueOf(getAdapterPosition() + 1));
-                ranking.setBackground(null);
-            }
+//            if (getAdapterPosition() == 0) {
+//                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no1));
+//            } else if (getAdapterPosition() == 1) {
+//                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no2));
+//            } else if (getAdapterPosition() == 2) {
+//                ranking.setBackground(context.getResources().getDrawable(R.drawable.pic_no3));
+//            } else {
+            ranking.setTextColor(context.getResources().getColor(R.color.color_9f9f9f));
+            ranking.setText(String.valueOf(getAdapterPosition() + 1));
+            ranking.setBackground(null);
+//            }
             name.setText(data.getPatrolWorker().name);
             depot.setText(Util.strFormat(data.getPatrolWorker().getMainPosition().getDepartment().name));
             score.setText(Util.big(data.score));
             if (rank == (getAdapterPosition() + 1)) {
-                if (rank > 3) {
-                    ranking.setTextColor(context.getResources().getColor(R.color.color_dd4351));
-                }
+//                if (rank > 3) {
+                ranking.setTextColor(context.getResources().getColor(R.color.color_dd4351));
+//                }
                 rankingLayout.setBackground(context.getResources().getDrawable(R.drawable.ranking_stroke_select));
             }
         }

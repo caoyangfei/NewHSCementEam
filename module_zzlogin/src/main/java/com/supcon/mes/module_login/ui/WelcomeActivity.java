@@ -51,7 +51,7 @@ public class WelcomeActivity extends Activity {
                 if (EamApplication.isHongshi()) {
                     IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION, bundle);
                 } else {
-                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN, bundle);
+                    IntentRouter.go(WelcomeActivity.this, Constant.Router.MAIN_REDLION, bundle);
                 }
                 //在线模式使用心跳防止session过期
                 HeartBeatService.startLoginLoop(this);

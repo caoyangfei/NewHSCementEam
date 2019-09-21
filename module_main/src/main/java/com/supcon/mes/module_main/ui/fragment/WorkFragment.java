@@ -44,9 +44,6 @@ import com.supcon.mes.middleware.model.bean.EamType;
 import com.supcon.mes.middleware.model.contract.EamContract;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
 import com.supcon.mes.middleware.model.event.NFCEvent;
-import com.supcon.mes.middleware.model.event.RefreshEvent;
-import com.supcon.mes.middleware.model.listener.OnFailListener;
-import com.supcon.mes.middleware.model.listener.OnSuccessListener;
 import com.supcon.mes.middleware.presenter.EamPresenter;
 import com.supcon.mes.middleware.ui.view.MarqueeTextView;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
@@ -92,7 +89,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -343,7 +339,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                             break;
                         case Constant.HSWorkType.TD:
                             String tdurl = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
-                                    + Constant.WebUrl.TD_LIST;
+                                    + Constant.WebUrl.TD_LIST+"&date="+System.currentTimeMillis();
                             bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
                             bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
                             bundle.putString(BaseConstant.WEB_URL, tdurl);
@@ -352,7 +348,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                             break;
                         case Constant.HSWorkType.SD:
                             String sdurl = "http://" + EamApplication.getIp() + ":" + EamApplication.getPort()
-                                    + Constant.WebUrl.SD_LIST;
+                                    + Constant.WebUrl.SD_LIST+"&date="+System.currentTimeMillis();
                             bundle.putString(BaseConstant.WEB_AUTHORIZATION, EamApplication.getAuthorization());
                             bundle.putString(BaseConstant.WEB_COOKIE, EamApplication.getCooki());
                             bundle.putBoolean(BaseConstant.WEB_HAS_REFRESH, true);

@@ -38,7 +38,7 @@ public interface WXGDSubmitAPI {
      * @description 验收提交
      * @author zhangwenshuai1 2018/9/11
      */
-    void doAcceptChkSubmit(Map<String, Object> map);
+    void doAcceptChkSubmit(Map<String, Object> map, Map<String, Object> attachmentMap);
 
 
 }

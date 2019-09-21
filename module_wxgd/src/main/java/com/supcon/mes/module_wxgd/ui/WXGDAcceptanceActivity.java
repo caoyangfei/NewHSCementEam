@@ -28,6 +28,7 @@ import com.supcon.mes.mbap.utils.controllers.DatePickController;
 import com.supcon.mes.mbap.utils.controllers.SinglePickController;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
+import com.supcon.mes.mbap.view.CustomGalleryView;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
@@ -38,6 +39,7 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
 import com.supcon.mes.middleware.controller.LinkController;
+import com.supcon.mes.middleware.controller.OnlineCameraController;
 import com.supcon.mes.middleware.controller.RoleController;
 import com.supcon.mes.middleware.model.bean.AcceptanceCheckEntity;
 import com.supcon.mes.middleware.model.bean.AccountInfo;
@@ -48,6 +50,7 @@ import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntityDao;
 import com.supcon.mes.middleware.model.bean.WXGDEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
+import com.supcon.mes.middleware.model.event.ImageDeleteEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.ErrorMsgHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
@@ -90,7 +93,7 @@ import java.util.Map;
 
 @Router(value = Constant.Router.WXGD_ACCEPTANCE)
 @Presenter(value = {WXGDListPresenter.class, GenerateAcceptancePresenter.class})
-@Controller(value = {SparePartController.class, RepairStaffController.class, LubricateOilsController.class, MaintenanceController.class, AcceptanceCheckController.class})
+@Controller(value = {SparePartController.class, RepairStaffController.class, LubricateOilsController.class, MaintenanceController.class, AcceptanceCheckController.class, OnlineCameraController.class})
 public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDSubmitController.OnSubmitResultListener, WXGDListContract.View, GenerateAcceptanceContract.View {
 
     @BindByTag("leftBtn")
@@ -161,6 +164,9 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
 
     @BindByTag("acceptApplyBtn")
     Button acceptApplyBtn;
+
+    @BindByTag("yhGalleryView")
+    CustomGalleryView yhGalleryView;
 
     private AcceptanceCheckController mAcceptanceCheckController;
     private RepairStaffController mRepairStaffController;
@@ -249,7 +255,19 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
             initTableHeadView();
             // 初始化工作流
             initLink();
+
+            getController(OnlineCameraController.class).init(Constant.IMAGE_SAVE_YHPATH, Constant.PicType.YH_PIC);
+            if (mWXGDEntity.attachmentEntities != null) {
+                getController(OnlineCameraController.class).setPicData(mWXGDEntity.attachmentEntities);
+            }
         }
+    }
+
+    @Subscribe
+    public void onReceiveImageDeleteEvent(ImageDeleteEvent imageDeleteEvent) {
+        getController(OnlineCameraController.class).deleteGalleryBean(yhGalleryView.getGalleryAdapter().getList().get(imageDeleteEvent.getPos()), imageDeleteEvent.getPos());
+//        yhGalleryView.deletePic(imageDeleteEvent.getPos());
+        EventBus.getDefault().post(new RefreshEvent());
     }
 
     /**
@@ -573,7 +591,14 @@ public class WXGDAcceptanceActivity extends BaseRefreshActivity implements WXGDS
         //表头检验结论
         map.put("workRecord.checkResult.id", currentAcceptChkEntity.checkResult == null ? "" : currentAcceptChkEntity.checkResult.id);
         map.put("workRecord.repairSum", mWXGDEntity.repairSum + 1);
-        wxgdSubmitController.doAcceptChkSubmit(map);
+
+        Map<String, Object> attachmentMap = new HashMap<>();
+        getController(OnlineCameraController.class).doSave(attachmentMap);
+        if (attachmentMap.size() != 0) {
+            attachmentMap.put("linkId", String.valueOf(mWXGDEntity.tableInfoId));
+        }
+
+        wxgdSubmitController.doAcceptChkSubmit(map, attachmentMap);
 
     }
 

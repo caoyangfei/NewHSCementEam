@@ -31,10 +31,12 @@ import com.supcon.mes.mbap.utils.GsonUtil;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
 import com.supcon.mes.mbap.utils.controllers.DatePickController;
 import com.supcon.mes.mbap.utils.controllers.SinglePickController;
+import com.supcon.mes.mbap.view.CustomDateView;
 import com.supcon.mes.mbap.view.CustomDialog;
 import com.supcon.mes.mbap.view.CustomEditText;
 import com.supcon.mes.mbap.view.CustomGalleryView;
 import com.supcon.mes.mbap.view.CustomSpinner;
+import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.mbap.view.CustomVerticalDateView;
 import com.supcon.mes.mbap.view.CustomVerticalEditText;
 import com.supcon.mes.mbap.view.CustomVerticalSpinner;
@@ -43,6 +45,7 @@ import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.LinkController;
 import com.supcon.mes.middleware.controller.OnlineCameraController;
+import com.supcon.mes.middleware.model.bean.AcceptanceCheckEntity;
 import com.supcon.mes.middleware.model.bean.Area;
 import com.supcon.mes.middleware.model.bean.AreaDao;
 import com.supcon.mes.middleware.model.bean.BapResultEntity;
@@ -52,6 +55,7 @@ import com.supcon.mes.middleware.model.bean.RepairGroupEntity;
 import com.supcon.mes.middleware.model.bean.RepairGroupEntityDao;
 import com.supcon.mes.middleware.model.bean.Staff;
 import com.supcon.mes.middleware.model.bean.SystemCodeEntity;
+import com.supcon.mes.middleware.model.bean.SystemCodeEntityDao;
 import com.supcon.mes.middleware.model.bean.WXGDEam;
 import com.supcon.mes.middleware.model.bean.YHEntity;
 import com.supcon.mes.middleware.model.event.CommonSearchEvent;
@@ -72,6 +76,7 @@ import com.supcon.mes.module_yhgl.model.api.YHSubmitAPI;
 import com.supcon.mes.module_yhgl.model.bean.YHListEntity;
 import com.supcon.mes.module_yhgl.model.contract.YHListContract;
 import com.supcon.mes.module_yhgl.model.contract.YHSubmitContract;
+import com.supcon.mes.module_yhgl.model.dto.AcceptanceCheckEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.LubricateOilsEntityDto;
 import com.supcon.mes.module_yhgl.model.dto.MaintainDto;
 import com.supcon.mes.module_yhgl.model.dto.RepairStaffDto;
@@ -91,11 +96,15 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.functions.Predicate;
 
 import static com.supcon.mes.middleware.constant.Constant.IntentKey.DEPLOYMENT_ID;
 
@@ -115,22 +124,22 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
     TextView titleText;
 
     @BindByTag("yhEditFindTime")
-    CustomVerticalDateView yhEditFindTime;
+    CustomDateView yhEditFindTime;
 
     @BindByTag("yhEditFindStaff")
-    CustomVerticalTextView yhEditFindStaff;
+    CustomTextView yhEditFindStaff;
 
     @BindByTag("yhEditArea")
-    CustomVerticalSpinner yhEditArea;
+    CustomSpinner yhEditArea;
 
     @BindByTag("yhEditPriority")
-    CustomVerticalSpinner yhEditPriority;
+    CustomSpinner yhEditPriority;
 
     @BindByTag("yhEditEamCode")
-    CustomVerticalTextView yhEditEamCode;
+    CustomTextView yhEditEamCode;
 
     @BindByTag("yhEditEamName")
-    CustomVerticalTextView yhEditEamName;
+    CustomTextView yhEditEamName;
 
 //    @BindByTag("yhEditEamModel")
 //    CustomTextView yhEditEamModel;
@@ -155,6 +164,15 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
     @BindByTag("yhEditMemo")
     CustomVerticalEditText yhEditMemo;
+
+    @BindByTag("acceptChkStaff")
+    CustomVerticalTextView acceptChkStaff;
+    @BindByTag("acceptChkStaffCode")
+    CustomVerticalTextView acceptChkStaffCode;
+    @BindByTag("acceptChkTime")
+    CustomVerticalDateView acceptChkTime;
+    @BindByTag("acceptChkResult")
+    CustomVerticalSpinner acceptChkResult;
 
     @BindByTag("yhEditCommentInput")
     CustomEditText yhEditCommentInput;
@@ -210,7 +228,13 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
     private static String FINDSTAFF = "FINDSTAFF";
     private static String CHARGESTAFF = "CHARGESTAFF";
+    private static String CHECK_STAFF = "CHECK_STAFF";
     private String staffType = FINDSTAFF;
+
+    private AcceptanceCheckEntity currentAcceptChkEntity = new AcceptanceCheckEntity();  //当前验收数据
+    private String currentAcceptChkDateTime = DateUtil.dateTimeFormat(new Date().getTime()); // 当前验收时间
+    private List<SystemCodeEntity> checkResultList = new ArrayList<>();
+    private List<String> checkResultListStr = new ArrayList<>();
 
     @Subscribe
     public void onReceiveImageDeleteEvent(ImageDeleteEvent imageDeleteEvent) {
@@ -245,12 +269,15 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
         initSinglePickController();
         initDatePickController();
-//        initAttachmentController();
+        initCheckResult();
     }
 
-//    private void initAttachmentController() {
-//        mAttachmentController = new AttachmentController();
-//    }
+    private void initCheckResult() {
+        checkResultList = EamApplication.dao().getSystemCodeEntityDao().queryBuilder().where(SystemCodeEntityDao.Properties.EntityCode.eq(Constant.SystemCode.CHECK_RESULT)).list();
+        for (SystemCodeEntity entity : checkResultList) {
+            checkResultListStr.add(entity.value);
+        }
+    }
 
     private void initDatePickController() {
         mDatePickController = new DatePickController(this);
@@ -315,6 +342,19 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         if (!TextUtils.isEmpty(mYHEntity.remark)) {
             yhEditMemo.setInput(mYHEntity.remark);
         }
+
+        initCheckView();
+    }
+
+    private void initCheckView() {
+        acceptChkStaff.setContent(EamApplication.getAccountInfo().staffName);
+        acceptChkStaffCode.setContent(EamApplication.getAccountInfo().staffCode);
+        acceptChkTime.setContent(currentAcceptChkDateTime);
+        currentAcceptChkEntity.checkStaff = new Staff();
+        currentAcceptChkEntity.checkStaff.id = EamApplication.getAccountInfo().staffId;
+        currentAcceptChkEntity.checkStaff.code = EamApplication.getAccountInfo().staffCode;
+        currentAcceptChkEntity.checkStaff.name = EamApplication.getAccountInfo().staffName;
+        currentAcceptChkEntity.checkTime = DateUtil.dateFormat(currentAcceptChkDateTime,"yyyy-MM-dd HH:mm:ss");
     }
 
     @Override
@@ -523,57 +563,17 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                 .skipInitialValue()
                 .debounce(500, TimeUnit.MILLISECONDS)
                 .subscribe(charSequence -> mYHEntity.describe = charSequence.toString());
-/*        yhEditGalleryView.setOnChildViewClickListener((childView, action, obj) -> {
-
-            int position = (int) obj;
-
-            if (position == -1) {
-//                startCamera();
-
-                if (action == CustomGalleryView.ACTION_TAKE_PICTURE_FROM_CAMERA) {
-                    getController(BaseCameraController.class).startCamera(Constant.YH_PATH, Constant.PicType.YH_PIC);
-                }
-                else if (action == CustomGalleryView.ACTION_TAKE_PICTURE_FROM_GALLERY) {
-                    getController(BaseCameraController.class).startGallery(Constant.YH_PATH, Constant.PicType.YH_PIC);
-                }
-
-                return;
-            }
-            List<GalleryBean> galleryBeans = yhEditGalleryView.getGalleryAdapter().getList();
-            GalleryBean galleryBean = galleryBeans.get(position);
-            if (action == CustomGalleryView.ACTION_VIEW) {
-                Bundle bundle = FaultPicHelper.genRequestBundle(context, childView, galleryBeans, position, true);
-                getWindow().setWindowAnimations(R.style.fadeStyle);
-                IntentRouter.go(context, Constant.Router.IMAGE_VIEW, bundle);
-            } else if (action == CustomGalleryView.ACTION_DELETE) {
-
-                new CustomDialog(context)
-                        .twoButtonAlertDialog("是否删除图片?")
-                        .bindView(R.id.grayBtn, "取消")
-                        .bindView(R.id.redBtn, "确定")
-                        .bindClickListener(R.id.grayBtn, v1 -> {
-                        }, true)
-                        .bindClickListener(R.id.redBtn, v3 -> {
-                            yhEditGalleryView.deletePic(position);
-                            deleteBitmap(galleryBean);
-                        }, true)
-                        .show();
-
-            }
-
-        });*/
-
 
         RxView.clicks(xqBtn)
                 .throttleFirst(2, TimeUnit.SECONDS)
                 .subscribe(o -> {
                     mYHEntity.downStream.id = "BEAM2_2013/01";
                     List<LinkEntity> linkEntities = mLinkController.getLinkEntities();
-                    if (TextUtils.isEmpty(yhEditWXChargeGroup.getValue()) && TextUtils.isEmpty(yhEditWXChargeStaff.getValue())) {
-                        mYHEntity.chargeStaff = new Staff();
-                        mYHEntity.chargeStaff.id = EamApplication.getAccountInfo().staffId;
-                        yhEditWXChargeStaff.setContent(EamApplication.getAccountInfo().staffName);
-                    }
+//                    if (TextUtils.isEmpty(yhEditWXChargeGroup.getValue()) && TextUtils.isEmpty(yhEditWXChargeStaff.getValue())) {
+//                        mYHEntity.chargeStaff = new Staff();
+//                        mYHEntity.chargeStaff.id = EamApplication.getAccountInfo().staffId;
+//                        yhEditWXChargeStaff.setContent(EamApplication.getAccountInfo().staffName);
+//                    }
                     if (checkBeforeSubmit() && linkEntities.size() > 0) {
                         doSubmit(createWorkFlowVar(linkEntities.get(0)));
                     }
@@ -590,7 +590,13 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                 });
 
         RxView.clicks(ysBtn)
-                .throttleFirst(2, TimeUnit.SECONDS)
+                .throttleFirst(1, TimeUnit.SECONDS)
+                .filter(new Predicate<Object>() {
+                    @Override
+                    public boolean test(Object o) throws Exception {
+                        return checkResult();
+                    }
+                })
                 .subscribe(o -> {
                     mYHEntity.downStream.id = "BEAM2_2013/03";
                     List<LinkEntity> linkEntities = mLinkController.getLinkEntities();
@@ -652,6 +658,72 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
                 }
             }
         });
+
+        acceptChkTime.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                if (action == -1) {
+                    currentAcceptChkEntity.checkTime = null;
+                    currentAcceptChkDateTime = "";
+                } else {
+                    mDatePickController.listener((year, month, day, hour, minute, second) -> {
+                        currentAcceptChkDateTime = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
+                        acceptChkTime.setDate(currentAcceptChkDateTime);
+                        currentAcceptChkEntity.checkTime = DateUtil.dateFormat(currentAcceptChkDateTime, "yyyy-MM-dd HH:mm:ss");
+                    }).show("".equals(currentAcceptChkDateTime) ? new Date().getTime() : DateUtil.dateFormat(currentAcceptChkDateTime, "yyyy-MM-dd HH:mm:ss"));
+                }
+            }
+        });
+
+        acceptChkResult.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                if (action == -1) {
+                    currentAcceptChkEntity.checkResult = null;
+                } else {
+                    if (checkResultListStr.size() <= 0) {
+                        ToastUtils.show(context, "验收列表数据为空,请退出app重启加载");
+                        return;
+                    }
+                    mSinglePickController.list(checkResultListStr)
+                            .listener((index, item) -> {
+                                acceptChkResult.setSpinner(String.valueOf(item));
+
+                                currentAcceptChkEntity.checkResult = checkResultList.get(checkResultListStr.indexOf(String.valueOf(item)));
+                            }).show(acceptChkResult.getSpinnerValue());
+                }
+            }
+        });
+
+        acceptChkStaff.setOnChildViewClickListener(new OnChildViewClickListener() {
+            @Override
+            public void onChildViewClick(View childView, int action, Object obj) {
+                if (action == -1) {
+                    currentAcceptChkEntity.checkStaff = null;
+                    acceptChkStaffCode.setValue(null);
+                } else {
+                    staffType = CHECK_STAFF;
+                    IntentRouter.go(context, Constant.Router.STAFF);
+                }
+            }
+        });
+
+    }
+
+    private boolean checkResult() {
+        if (currentAcceptChkEntity.checkStaff == null){
+            ToastUtils.show(context,"请填写验收人员");
+            return false;
+        }
+        if (currentAcceptChkEntity.checkTime == null){
+            ToastUtils.show(context,"请填写验收时间");
+            return false;
+        }
+        if (currentAcceptChkEntity.checkResult == null){
+            ToastUtils.show(context,"请填写验收结论");
+            return false;
+        }
+        return true;
     }
 
     private WorkFlowVar createWorkFlowVar(LinkEntity linkEntity) {
@@ -715,6 +787,13 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
             mYHEntity.chargeStaff.id = searchStaff.id;
             mYHEntity.chargeStaff.code = searchStaff.code;
             mYHEntity.chargeStaff.name = searchStaff.name;
+        }else if (CHECK_STAFF.equals(staffType)){
+            acceptChkStaff.setValue(searchStaff.name);
+            acceptChkStaffCode.setValue(searchStaff.code);
+            currentAcceptChkEntity.checkStaff = new Staff();
+            currentAcceptChkEntity.checkStaff.id = searchStaff.id;
+            currentAcceptChkEntity.checkStaff.code = searchStaff.code;
+            currentAcceptChkEntity.checkStaff.name = searchStaff.name;
         }
     }
 
@@ -853,9 +932,9 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         if (isCancel) {
             return true;
         }
-        if (checkTableBlank()) {
-            return false;
-        }
+//        if (checkTableBlank()) {
+//            return false;
+//        }
         if (mYHEntity.findStaffID == null || null == mYHEntity.findStaffID.id) {
             SnackbarHelper.showError(rootView, "请填写发现人！");
             return false;
@@ -1041,6 +1120,15 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
         map.put("dg1557457043896ListJson", maintainDtos);
         map.put("dgLists['dg1557457043896']", maintainDtos);
 
+        if (!TextUtils.isEmpty(currentAcceptChkEntity.getCheckResult().id)){
+            List<AcceptanceCheckEntity> list = new ArrayList();
+            list.add(currentAcceptChkEntity);
+            LinkedList<AcceptanceCheckEntityDto> acceptanceCheckEntityDtos =  YHGLMapManager.translateCheckResultDto(list);
+            map.put("dg1568882818859ModelCode", "BEAM2_1.0.0_faultInfo_FaultCheck");
+            map.put("dg1568882818859ListJson", acceptanceCheckEntityDtos);
+            map.put("dgLists['dg1568882818859']", acceptanceCheckEntityDtos);
+        }
+
 
         Map<String, Object> attachmentMap = new HashMap<>();
 
@@ -1086,39 +1174,6 @@ public class YHEditActivity extends BaseRefreshActivity implements YHSubmitContr
 
         return !TextUtils.isEmpty(yhEditCommentInput.getInput());
     }
-
-/*
-    private void uploadLocalPic(File file) {
-        onLoading("正在上传照片...");
-        mAttachmentController.uploadAttachment(new OnSuccessListener<String>() {
-            @Override
-            public void onSuccess(String result) {
-                GalleryBean galleryBean = new GalleryBean();
-                galleryBean.localPath = file.getAbsolutePath();
-                galleryBean.url = result;
-                yhEditGalleryView.addGalleryBean(galleryBean);
-                onLoadSuccess("照片上传成功！");
-                pics.add(galleryBean);
-            }
-        }, file);
-    }
-
-    private void deleteBitmap(GalleryBean galleryBean) {
-        if (pics.contains(galleryBean)) {
-            pics.remove(galleryBean);
-//            return;
-        }
-
-        String picPath = galleryBean.url;
-
-        if (mYHEntity.attachmentEntities != null)
-            for (AttachmentEntity attachmentEntity : mYHEntity.attachmentEntities) {
-                if (attachmentEntity.path.equals(picPath)) {
-                    mAttachmentController.deleteAttachment(result ->
-                            SnackbarHelper.showMessage(rootView, "删除附件成功！"), attachmentEntity.id);
-                }
-            }
-    }*/
 
     @Override
     public void doSubmitSuccess(BapResultEntity entity) {

@@ -7,10 +7,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.listener.OnItemChildViewClickListener;
@@ -18,7 +21,6 @@ import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.constant.ListType;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.NFCEvent;
@@ -47,6 +49,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
 
@@ -60,8 +63,11 @@ import io.reactivex.Flowable;
 @Router(Constant.Router.PLAN_LUBRICATION_EARLY_WARN)
 @Presenter(value = {DailyLubricationWarnPresenter.class, DailyReceivePresenter.class})
 public class PlanLubricationWarnActivity extends BaseRefreshRecyclerActivity<DailyLubricateTaskEntity> implements DailyLubricationWarnContract.View {
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
+
 
     @BindByTag("contentView")
     RecyclerView contentView;
@@ -117,28 +123,21 @@ public class PlanLubricationWarnActivity extends BaseRefreshRecyclerActivity<Dai
         refreshListController.setPullDownRefreshEnabled(true);
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
         contentView.setLayoutManager(new LinearLayoutManager(context));
-        titleBar.setTitle("计划润滑");
+        titleText.setText("计划润滑");
 
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
         super.initListener();
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
-
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
         refreshListController.setOnRefreshPageListener((page) -> {
             queryParam.put(Constant.BAPQuery.NAME, EamApplication.getAccountInfo().staffName);
             Map<String, Object> pageQueryParams = new HashMap<>();
-            pageQueryParams.put("isReceive", "unreceive");
+//            pageQueryParams.put("isReceive", "unreceive");
             pageQueryParams.put("page.pageNo", page);
             presenterRouter.create(DailyLubricationWarnAPI.class).getLubrications(queryParam, pageQueryParams);
         });

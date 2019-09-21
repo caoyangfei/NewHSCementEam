@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,7 +30,6 @@ import com.supcon.mes.mbap.view.CustomSwitchButton;
 import com.supcon.mes.mbap.view.CustomTextView;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
-import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
@@ -44,8 +41,6 @@ import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
 import com.supcon.mes.module_olxj.ui.OLXJWorkListUnHandledActivity;
 
-import org.greenrobot.eventbus.EventBus;
-
 import java.io.File;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -53,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -327,7 +321,7 @@ public class OLXJWorkListAdapterNew extends BaseListDataRecyclerViewAdapter<OLXJ
                 @Override
                 public void onClick(View view) {
                     if (isExpand) {
-                        ufItemPriority.setText("点击展开更多");
+                        ufItemPriority.setText("点击展开");
                         Drawable drawable = context.getResources().getDrawable(R.drawable.ic_zk);
                         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                         ufItemPriority.setCompoundDrawables(null, null, drawable, null);
@@ -335,7 +329,7 @@ public class OLXJWorkListAdapterNew extends BaseListDataRecyclerViewAdapter<OLXJ
                         notifyItemRangeRemoved(getAdapterPosition() + 1, workItemEntities.size());
                         notifyItemRangeChanged(getAdapterPosition() + 1, workItemEntities.size());
                     } else {
-                        ufItemPriority.setText("点击关闭展开");
+                        ufItemPriority.setText("点击关闭");
                         Drawable drawable = context.getResources().getDrawable(R.drawable.ic_sq);
                         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                         ufItemPriority.setCompoundDrawables(null, null, drawable, null);

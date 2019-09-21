@@ -145,6 +145,7 @@ public interface Constant {
 
         String TD = "TD";
         String SD = "SD";
+        String TSD_RECORD = "TSD_RECORD";
 
         String BJSQ_LIST = "BJSQ_LIST";
         String XJLX_LIST = "XJLX_LIST";
@@ -192,6 +193,7 @@ public interface Constant {
         String MULTI_DEPART_SELECT = "MULTI_PART_SELECT";
         String TXL_VIEW = "TXL_VIEW";
         String MINE = "MIME";
+        String PROCESSED_FLOW = "PROCESSED_FLOW";//流程图
     }
 
 
@@ -356,6 +358,8 @@ public interface Constant {
         int SCORE_INSPECTOR_PERSON_LIST = 28;//巡检人员评分
         int SCORE_MECHANIC_PERSON_LIST = 29;//巡检人员评分
         int ACCEPTANCE_LIST = 30;//验收
+
+        int TSD_RECORD = 31;//停送电记录
     }
 
     interface HSWorkType {//设备功能类型
@@ -668,11 +672,11 @@ public interface Constant {
      * 维修工单单据状态
      */
     interface WxgdStatus_CH {
-        String DISPATCH = "派工";
+        String DISPATCH = "待派工";
         String CONFIRM = "接收";
-        String IMPLEMENT = "执行";
-        String ACCEPTANCE = "验收";
-        String COMPLETE = "完成";
+        String IMPLEMENT = "待执行";
+        String ACCEPTANCE = "待验收";
+        String COMPLETE = "已完成";
     }
 
     interface WxgdWorkSource {
@@ -768,10 +772,14 @@ public interface Constant {
 
     interface WebUrl {
 
-        String TD_LIST = "/BEAMEle/onOrOff/onoroff/eleOffList.action?__pc__=QkVBTUVsZV8xLjAuMF9vbk9yT2ZmX2VsZU9mZkxpc3Rfc2VsZnw_&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOnList&openType=page&clientType=mobile";
-        String SD_LIST = "/BEAMEle/onOrOff/onoroff/eleOnList.action?__pc__=QkVBTUVsZV8xLjAuMF9vbk9yT2ZmX2VsZU9uTGlzdF9zZWxmfA__&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOffList&openType=page&clientType=mobile";
+        //        String TD_LIST = "/BEAMEle/onOrOff/onoroff/eleOffList.action?__pc__=QkVBTUVsZV8xLjAuMF9vbk9yT2ZmX2VsZU9mZkxpc3Rfc2VsZnw_&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOnList&openType=page&clientType=mobile";
+        String TD_LIST = "/BEAMEle/onOrOff/onoroff/eleOffList.action?__pc__=QkVBTUVsZV8xLjAuMF9vbk9yT2ZmX2VsZU9mZkxpc3Rfc2VsZnw_&openType=page&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOffList&clientType=mobile";
+        String SD_LIST = "/BEAMEle/onOrOff/onoroff/eleOnList.action?__pc__=QkVBTUVsZV8xLjAuMF9vbk9yT2ZmX2VsZU9uTGlzdF9zZWxmfA__&workFlowMenuCode=BEAMEle_1.0.0_onOrOff_eleOnList&openType=page&clientType=mobile";
+        String TSD_RECORD = "/BEAMEle/dataStatistic/dataStatistic/statisticList.action?__pc__=QkVBTUVsZV8xLjAuMF9kYXRhU3RhdGlzdGljX3N0YXRpc3RpY0xpc3Rfc2VsZnw_&date=1568618663077&openType=page&workFlowMenuCode=BEAMEle_1.0.0_dataStatistic_statisticList&clientType=mobile";
+
         String SCORE = "/BEAM/scoreStandard/soring/eamScoreView.action?clientType=mobile&eamID=";
         String XJ = "/mobileEAM/work/work/pointsList.action?taskId=";
+        String FLOWVIEW = "/ec/workflow/flowViewH5.action?env=runtime&__res_html=true";
     }
 
     interface ZZ {

@@ -104,7 +104,6 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
     private CommonSearchStaff searchStaff;
     private String reason;
     private Map<String, Object> queryParam = new HashMap<>();
-    private Long deploymentId;
     private String powerCode;
 
     private List<RepairGroupEntity> mRepairGroups;
@@ -153,9 +152,8 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         ModulePermissonCheckController mModulePermissonCheckController = new ModulePermissonCheckController();
         mModulePermissonCheckController.checkModulePermission(EamApplication.getUserName(), "work",
                 result -> {
-                    deploymentId = result;
                     ModulePowerController modulePowerController = new ModulePowerController();
-                    modulePowerController.checkModulePermission(deploymentId, result1 -> powerCode = result1.powerCode);
+                    modulePowerController.checkModulePermission(result, result1 -> powerCode = result1.powerCode);
                 }, null);
         initRepairGroup();
     }
@@ -243,28 +241,42 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
         });
         dispatch.setOnClickListener(view -> {
             List<WaitDealtEntity> list = waitDealtAdapter.getList();
-            StringBuffer pendingids = new StringBuffer();
-            StringBuffer ids = new StringBuffer();
+            StringBuffer workPendingIds = new StringBuffer();
+            StringBuffer workIds = new StringBuffer();
+            StringBuffer faultIds = new StringBuffer();
+            StringBuffer faultPendingIds = new StringBuffer();
             Flowable.fromIterable(list)
                     .filter(waitDealtEntity -> waitDealtEntity.isCheck)
                     .subscribe(waitDealtEntity -> {
-                        pendingids.append(waitDealtEntity.pendingid).append(",");
-                        ids.append(waitDealtEntity.dataid).append(",");
+                        if (waitDealtEntity.state.equals("编辑")) {
+                            faultPendingIds.append(waitDealtEntity.pendingid).append(",");
+                            faultIds.append(waitDealtEntity.dataid).append(",");
+                        } else if (waitDealtEntity.state.equals("派工")) {
+                            workPendingIds.append(waitDealtEntity.pendingid).append(",");
+                            workIds.append(waitDealtEntity.dataid).append(",");
+                        }
                     }, throwable -> {
                     }, () -> {
-                        if (!TextUtils.isEmpty(pendingids.toString()) && !TextUtils.isEmpty(ids.toString())) {
-                            pendingids.deleteCharAt(pendingids.length() - 1);
-                            ids.deleteCharAt(ids.length() - 1);
-                            Map<String, Object> queryMap = new HashMap<>();
-                            queryMap.put("ids", ids);
-                            queryMap.put("deploymentId", deploymentId);
-                            queryMap.put("pendingIds", pendingids.toString());
-                            queryMap.put("outcomeStr", "task,Link2079,派单,批量派工");
+                        Map<String, Object> queryMap = new HashMap<>();
+                        if (!TextUtils.isEmpty(workPendingIds.toString()) || !TextUtils.isEmpty(faultPendingIds.toString())) {
+                            if (!TextUtils.isEmpty(workPendingIds.toString())) {
+                                workPendingIds.deleteCharAt(workPendingIds.length() - 1);
+                                workIds.deleteCharAt(workIds.length() - 1);
+                                queryMap.put("workIds", workIds);
+                                queryMap.put("workPendingIds", workPendingIds.toString());
+                            }
+                            if (!TextUtils.isEmpty(faultPendingIds.toString())) {
+                                faultPendingIds.deleteCharAt(faultPendingIds.length() - 1);
+                                faultIds.deleteCharAt(faultIds.length() - 1);
+                                queryMap.put("faultIds", faultIds);
+                                queryMap.put("faultPendingIds", faultPendingIds.toString());
+                            }
                             queryMap.put("batchType", "plpg");
                             dispatchDialog(queryMap);
                         } else {
                             ToastUtils.show(context, "请选择待派单据！");
                         }
+
                     });
 
         });
@@ -310,9 +322,9 @@ public class WaitDealtActivity extends BaseRefreshRecyclerActivity<WaitDealtEnti
                     @Override
                     public void onClick(View v12) {
                         if (searchStaff != null) {
-                            queryMap.put("workStaffBatchId", searchStaff.id);
+                            queryMap.put("staffBatchId", searchStaff.id);
                         }
-                        if (!queryMap.containsKey("repairGroupBatchId") && !queryMap.containsKey("workStaffBatchId")) {
+                        if (!queryMap.containsKey("repairGroupBatchId") && !queryMap.containsKey("staffBatchId")) {
                             ToastUtils.show(WaitDealtActivity.this, "维修组和负责人不能同时为空!");
                             return;
                         }

@@ -1,12 +1,15 @@
 package com.supcon.mes.module_sbda_online.ui;
 
+import android.annotation.SuppressLint;
 import android.support.design.widget.TabLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.apt.Router;
+import com.jakewharton.rxbinding2.view.RxView;
 import com.supcon.common.view.base.activity.BaseFragmentActivity;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.NoScrollViewPager;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.module_sbda_online.R;
@@ -19,6 +22,8 @@ import com.supcon.mes.module_sbda_online.ui.fragment.RoutineFragment;
 import com.supcon.mes.module_sbda_online.ui.fragment.SparePartFragment;
 import com.supcon.mes.module_sbda_online.ui.fragment.SubsidiaryFragment;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author yangfei.cao
  * @ClassName hongShiCementEam
@@ -28,8 +33,10 @@ import com.supcon.mes.module_sbda_online.ui.fragment.SubsidiaryFragment;
 @Router(Constant.Router.SBDA_ONLINE_VIEW)
 public class SBDAOnlineViewActivity extends BaseFragmentActivity {
 
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
     @BindByTag("tablayout")
     TabLayout tablayout;
     @BindByTag("sbdaViewPager")
@@ -53,7 +60,7 @@ public class SBDAOnlineViewActivity extends BaseFragmentActivity {
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
-
+        titleText.setText("设备档案");
         tablayout.setupWithViewPager(sbdaViewPager);
         SBDAOnlineViewAdapter sbdaOnlineViewAdapter = new SBDAOnlineViewAdapter(getSupportFragmentManager());
         sbdaOnlineViewAdapter.addFragment(RoutineFragment.newInstance(eamId, eamCode), "常规信息");
@@ -67,19 +74,12 @@ public class SBDAOnlineViewActivity extends BaseFragmentActivity {
 
     }
 
+    @SuppressLint("CheckResult")
     @Override
     protected void initListener() {
         super.initListener();
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
-
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
     }
 }

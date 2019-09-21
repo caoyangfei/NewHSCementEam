@@ -37,8 +37,8 @@ public class WXGDSubmitController extends BasePresenterController implements WXG
     }
 
     @Override
-    public void doAcceptChkSubmit(Map<String, Object> map) {
-        presenterRouter.create(WXGDSubmitAPI.class).doAcceptChkSubmit(map);
+    public void doAcceptChkSubmit(Map<String, Object> map, Map<String, Object> attachmentMap) {
+        presenterRouter.create(WXGDSubmitAPI.class).doAcceptChkSubmit(map, attachmentMap);
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.supcon.mes.middleware.model.bean.CommonListEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
 import com.supcon.mes.middleware.model.bean.StandingCropEntity;
-import com.supcon.mes.module_wxgd.model.bean.AcceptanceCheckListEntity;
+import com.supcon.mes.middleware.model.bean.AcceptanceCheckListEntity;
 import com.supcon.mes.module_wxgd.model.bean.GenerateAcceptanceEntity;
 import com.supcon.mes.module_wxgd.model.bean.LubricateOilsListEntity;
 import com.supcon.mes.module_wxgd.model.bean.MaintenanceListEntity;
@@ -17,13 +17,16 @@ import com.supcon.mes.module_wxgd.model.bean.SparePartRefListEntity;
 import com.supcon.mes.module_wxgd.model.bean.SparePartsConsumeEntity;
 import com.supcon.mes.module_wxgd.model.bean.WXGDListEntity;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.PartMap;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
@@ -152,7 +155,7 @@ public interface ApiService {
      */
     @POST("/BEAM2/workList/workRecord/workCheckEdit/submit.action?__pc__=dGFzazE5ODd8d29yaw__&_bapFieldPermissonModelCode_=BEAM2_1.0.0_workList_WorkRecord&_bapFieldPermissonModelName_=WorkRecord&superEdit=false")
     @Multipart
-    Flowable<BapResultEntity> doAcceptChk(@PartMap Map<String, RequestBody> map);
+    Flowable<BapResultEntity> doAcceptChk(@PartMap Map<String, RequestBody> map, @Part List<MultipartBody.Part> partList);
 
     /**
      * @param productCode 备件编码

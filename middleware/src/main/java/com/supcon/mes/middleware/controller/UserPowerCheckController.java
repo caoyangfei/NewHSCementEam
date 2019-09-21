@@ -4,18 +4,10 @@ import com.app.annotation.Presenter;
 import com.supcon.common.view.base.controller.BasePresenterController;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.mes.mbap.utils.GsonUtil;
-import com.supcon.mes.middleware.model.api.ModulePowerAPI;
 import com.supcon.mes.middleware.model.api.UserPowerCheckAPI;
-import com.supcon.mes.middleware.model.bean.BapResultEntity;
-import com.supcon.mes.middleware.model.bean.CommonEntity;
-import com.supcon.mes.middleware.model.contract.ModulePowerContract;
 import com.supcon.mes.middleware.model.contract.UserPowerCheckContract;
-import com.supcon.mes.middleware.model.listener.OnFailListener;
 import com.supcon.mes.middleware.model.listener.OnSuccessListener;
-import com.supcon.mes.middleware.presenter.ModulePowerPresenter;
 import com.supcon.mes.middleware.presenter.UserPowerCheckPresenter;
-
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -43,8 +35,13 @@ public class UserPowerCheckController extends BasePresenterController implements
     @Override
     public void checkUserPowerSuccess(Object object) {
         if (mOnSuccessListener != null) {
-            Map<String, Boolean> stringTMap = GsonUtil.gsonToMaps(object.toString());
-            mOnSuccessListener.onSuccess(stringTMap);
+            try {
+                Map<String, Boolean> stringTMap = GsonUtil.gsonToMaps(object.toString());
+                mOnSuccessListener.onSuccess(stringTMap);
+            } catch (Exception e) {
+                LogUtil.e("获取权限失败");
+            }
+
         }
     }
 

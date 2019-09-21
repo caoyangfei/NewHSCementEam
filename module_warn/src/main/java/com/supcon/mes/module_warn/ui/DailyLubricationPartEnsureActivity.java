@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
@@ -18,7 +20,6 @@ import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.SpaceItemDecoration;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.event.NFCEvent;
 import com.supcon.mes.middleware.model.event.RefreshEvent;
@@ -60,8 +61,10 @@ import io.reactivex.Flowable;
 @Router(Constant.Router.DAILY_LUBRICATION_EARLY_PART_ENSURE_WARN)
 @Presenter(value = {DailyLubricationWarnPresenter.class, CompletePresenter.class})
 public class DailyLubricationPartEnsureActivity extends BaseRefreshRecyclerActivity<DailyLubricateTaskEntity> implements DailyLubricationWarnContract.View, CompleteContract.View {
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
     @BindByTag("contentView")
     RecyclerView contentView;
 
@@ -121,6 +124,7 @@ public class DailyLubricationPartEnsureActivity extends BaseRefreshRecyclerActiv
         refreshListController.setEmpterAdapter(EmptyAdapterHelper.getRecyclerEmptyAdapter(context, null));
         contentView.setLayoutManager(new LinearLayoutManager(context));
         contentView.addItemDecoration(new SpaceItemDecoration(15));
+        titleText.setText("日常润滑任务");
     }
 
     @SuppressLint("CheckResult")
@@ -134,17 +138,10 @@ public class DailyLubricationPartEnsureActivity extends BaseRefreshRecyclerActiv
             presenterRouter.create(DailyLubricationWarnAPI.class).getLubrications(queryParam, pageQueryParams);
         });
 
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
 
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
 
         RxView.clicks(ensure)
                 .throttleFirst(2, TimeUnit.SECONDS)

@@ -6,6 +6,7 @@ import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.CommonEntity;
 import com.supcon.mes.middleware.model.bean.FastQueryCondEntity;
 import com.supcon.mes.middleware.model.bean.ResultEntity;
+import com.supcon.mes.module_main.model.bean.AnomalyEntity;
 import com.supcon.mes.module_main.model.bean.EamEntity;
 import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 import com.supcon.mes.module_main.model.bean.ScoreEntity;
@@ -68,6 +69,11 @@ public interface MainService {
     Flowable<CommonBAPListEntity<ProcessedEntity>> workflowHandleList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @Query("page.pageNo") int pageNo, @Query("page.pageSize") int pageSize);
 
     //批量派单
-    @GET("/BEAM2/workList/workRecord/bulkSubmitCustom.action")
+    @GET("/BEAM2/workList/workRecord/bulkSubmitWorkAndFault.action ")
     Flowable<ResultEntity> bulkSubmitCustom(@QueryMap Map<String, Object> queryMap);
+
+    //首页待办数量
+    @GET("/BEAM2/personWork/abnormalinfoofeam/abnormalInfoList-query.action")
+    Flowable<CommonBAPListEntity<AnomalyEntity>> getAnomalyList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
+
 }

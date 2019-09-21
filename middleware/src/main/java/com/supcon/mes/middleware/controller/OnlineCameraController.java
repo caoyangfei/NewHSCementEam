@@ -214,7 +214,7 @@ public class OnlineCameraController extends BaseCameraController {
             Map<String, Object> file = new HashMap<>();
             file.put("file.filePath", galleryBean.url);
             file.put("file.name", galleryBean.url.substring(galleryBean.url.lastIndexOf("\\") + 1));
-            file.put("file.memos", "pda隐患拍照上传");
+            file.put("file.memos", "pda拍照上传");
             file.put("file.fileType", "attachment");
             files.add(file);
         }

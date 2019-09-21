@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,11 +27,9 @@ import com.supcon.mes.mbap.view.CustomGalleryView;
 import com.supcon.mes.mbap.view.CustomSpinner;
 import com.supcon.mes.mbap.view.CustomSwitchButton;
 import com.supcon.mes.mbap.view.CustomTextView;
-import com.supcon.mes.mbap.view.CustomVerticalSpinner;
 import com.supcon.mes.middleware.EamApplication;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.controller.EamPicController;
-import com.supcon.mes.middleware.model.event.RefreshEvent;
 import com.supcon.mes.middleware.util.FaultPicHelper;
 import com.supcon.mes.middleware.util.SnackbarHelper;
 import com.supcon.mes.middleware.util.Util;
@@ -43,9 +40,6 @@ import com.supcon.mes.module_olxj.controller.DeviceDCSParamController;
 import com.supcon.mes.module_olxj.controller.OLXJCameraController;
 import com.supcon.mes.module_olxj.model.bean.OLXJWorkItemEntity;
 import com.supcon.mes.module_olxj.ui.OLXJWorkListEamUnHandledActivity;
-import com.supcon.mes.sb2.util.SB2ThermometerHelper;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -330,7 +324,7 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
                 @Override
                 public void onClick(View view) {
                     if (isExpand) {
-                        ufItemPriority.setText("点击展开更多");
+                        ufItemPriority.setText("点击展开");
                         Drawable drawable = context.getResources().getDrawable(R.drawable.ic_zk);
                         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                         ufItemPriority.setCompoundDrawables(null, null, drawable, null);
@@ -338,7 +332,7 @@ public class OLXJWorkListEamAdapterNew extends BaseListDataRecyclerViewAdapter<O
                         notifyItemRangeRemoved(getAdapterPosition() + 1, workItemEntities.size());
                         notifyItemRangeChanged(getAdapterPosition() + 1, workItemEntities.size());
                     } else {
-                        ufItemPriority.setText("点击关闭展开");
+                        ufItemPriority.setText("点击关闭");
                         Drawable drawable = context.getResources().getDrawable(R.drawable.ic_sq);
                         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
                         ufItemPriority.setCompoundDrawables(null, null, drawable, null);

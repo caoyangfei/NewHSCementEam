@@ -3,27 +3,25 @@ package com.supcon.mes.module_warn.ui;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.app.annotation.BindByTag;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
-import com.supcon.common.view.base.activity.BaseFragmentActivity;
 import com.supcon.common.view.base.activity.BaseRefreshActivity;
 import com.supcon.common.view.base.adapter.BaseListDataRecyclerViewAdapter;
 import com.supcon.common.view.listener.OnChildViewClickListener;
 import com.supcon.common.view.util.LogUtil;
 import com.supcon.common.view.util.ToastUtils;
 import com.supcon.mes.mbap.utils.StatusBarUtils;
-import com.supcon.mes.mbap.view.CustomTitleBar;
 import com.supcon.mes.mbap.view.CustomVerticalTextView;
-import com.supcon.mes.mbap.view.NoScrollViewPager;
 import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.model.bean.CommonBAPListEntity;
 import com.supcon.mes.middleware.model.bean.EamType;
@@ -42,14 +40,9 @@ import com.supcon.mes.module_warn.model.bean.DelayEntity;
 import com.supcon.mes.module_warn.model.bean.TemLubricateTaskEntity;
 import com.supcon.mes.module_warn.model.contract.CompleteContract;
 import com.supcon.mes.module_warn.model.contract.TemporaryContract;
-import com.supcon.mes.module_warn.model.event.TabEvent;
 import com.supcon.mes.module_warn.presenter.CompletePresenter;
 import com.supcon.mes.module_warn.presenter.TemporaryPresenter;
-import com.supcon.mes.module_warn.ui.adapter.DailyLubricationWarnAdapter;
 import com.supcon.mes.module_warn.ui.adapter.TemporaryAdapter;
-import com.supcon.mes.module_warn.ui.fragment.DailyLubricateReceiveTaskFragment;
-import com.supcon.mes.module_warn.ui.fragment.DailyLubricateTaskFragment;
-import com.supcon.mes.module_warn.ui.fragment.TemporaryTaskFragment;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -72,8 +65,11 @@ import io.reactivex.Flowable;
 @Router(Constant.Router.TEMPORARY_LUBRICATION_EARLY_WARN)
 @Presenter(value = {TemporaryPresenter.class, CompletePresenter.class})
 public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implements TemporaryContract.View, CompleteContract.View {
-    @BindByTag("titleBar")
-    CustomTitleBar titleBar;
+    @BindByTag("leftBtn")
+    ImageButton leftBtn;
+    @BindByTag("titleText")
+    TextView titleText;
+
     @BindByTag("contentView")
     RecyclerView recyclerView;
     @BindByTag("eamCode")
@@ -119,7 +115,7 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
     protected void initView() {
         super.initView();
         StatusBarUtils.setWindowStatusBarColor(this, R.color.themeColor);
-        titleBar.setTitle("临时润滑");
+        titleText.setText("临时润滑");
 
         refreshController.setAutoPullDownRefresh(false);
         refreshController.setPullDownRefreshEnabled(false);
@@ -143,17 +139,9 @@ public class TemporaryLubricationWarnActivity extends BaseRefreshActivity implem
     @Override
     protected void initListener() {
         super.initListener();
-        titleBar.setOnTitleBarListener(new CustomTitleBar.OnTitleBarListener() {
-            @Override
-            public void onLeftBtnClick() {
-                back();
-            }
-
-            @Override
-            public void onRightBtnClick() {
-
-            }
-        });
+        RxView.clicks(leftBtn)
+                .throttleFirst(2, TimeUnit.SECONDS)
+                .subscribe(o -> onBackPressed());
 
         refreshController.setOnRefreshListener(() -> {
             Map<String, Object> pageQueryParams = new HashMap<>();

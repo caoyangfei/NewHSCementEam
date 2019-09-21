@@ -101,6 +101,8 @@ public class WXGDEntity extends BaseEntity implements Cloneable {
 
     public String workOrderContext; //工单内容
 
+    public List<AttachmentEntity> attachmentEntities;
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();

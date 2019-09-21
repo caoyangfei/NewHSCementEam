@@ -24,6 +24,7 @@
   {"name":"停送电管理","viewType":1,"num":0,"type":-2,"router":"", "isOpen":false},
   {"name":"停电申请","viewType":0,"num":0,"type":9,"router":"", "isOpen":true, "pendingUrl":"/BEAMEle/onOrOff/onoroff/eleOffList-pending.action?1=1&permissionCode=BEAMEle_1.0.0_onOrOff_eleOffList&page.pageSize=1&page.maxPageSize=500"},
   {"name":"送电申请","viewType":0,"num":0,"type":10,"router":"", "isOpen":true, "pendingUrl":"/BEAMEle/onOrOff/onoroff/eleOnList-pending.action?1=1&permissionCode=BEAMEle_1.0.0_onOrOff_eleOnList&page.pageSize=1&page.maxPageSize=500"},
+  {"name":"停送电记录","viewType":0,"num":0,"type":31,"router":"", "isOpen":true},
   {"name":"备件更换预警","viewType":0,"num":0,"type":23,"router":"", "isOpen":true , "pendingUrl":"/BEAM/baseInfo/sparePart/data-dg1535424823416.action,/BEAM/baseInfo/sparePart/data-dg1543250233613.action"},
   {"name":"润滑预警","viewType":0,"num":0,"type":24,"router":"", "isOpen":true , "pendingUrl":"/BEAM/baseInfo/jWXItem/data-dg1530747504994.action,/BEAM/baseInfo/jWXItem/data-dg1530749613834.action"},
   {"name":"日常润滑任务","viewType":0,"num":0,"type":25,"router":"", "isOpen":true , "pendingUrl":"/BEAM/baseInfo/jWXItem/data-dg1558678704208.action"},
