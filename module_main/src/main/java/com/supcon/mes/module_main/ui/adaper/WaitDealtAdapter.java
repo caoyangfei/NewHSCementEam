@@ -91,7 +91,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 public void onClick(View view) {
                     WaitDealtEntity item = getItem(getAdapterPosition());
                     if (isEdit) {
-                        if (!TextUtils.isEmpty(item.state) && (item.state.equals("派工") || item.state.equals("编辑"))) {
+                        if (!TextUtils.isEmpty(item.state) && (item.state.equals("派工"))) {
                             chkBox.performClick();
                         } else {
                             ToastUtils.show(context, "请先取消派单进去再进入详情操作！");
@@ -175,7 +175,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         @SuppressLint("SetTextI18n")
         @Override
         protected void update(WaitDealtEntity data) {
-            if (isEdit && !TextUtils.isEmpty(data.state) && (data.state.equals("派工") || data.state.equals("编辑"))) {
+            if (isEdit && !TextUtils.isEmpty(data.state) && (data.state.equals("派工"))) {
                 chkBox.setVisibility(View.VISIBLE);
                 chkBox.setChecked(data.isCheck);
             } else {

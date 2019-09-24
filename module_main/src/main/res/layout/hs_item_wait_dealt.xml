@@ -28,8 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/dp_10"
-            android:layout_marginRight="@dimen/dp_10"
-            android:layout_toLeftOf="@+id/waitDealtEamSourceLayout"
+            android:layout_marginRight="@dimen/dp_30"
+            android:layout_toLeftOf="@+id/waitDealtEamState"
             android:orientation="vertical"
             android:padding="@dimen/dp_5">
 
@@ -76,31 +76,27 @@
             android:textSize="@dimen/fontSize_14sp"
             tools:text="待验收" />
 
-        <LinearLayout
-            android:id="@+id/waitDealtEamSourceLayout"
+
+        <TextView
+            android:id="@+id/waitDealtEamSource"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/waitDealtEamState"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="@dimen/dp_5"
+            android:layout_marginEnd="@dimen/dp_10"
+            android:tag="waitDealtEamSource"
+            tools:text="来源" />
+
+        <ImageView
+            android:id="@+id/waitDealtEntrust"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/waitDealtContentLayout"
-            android:layout_alignParentEnd="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/waitDealtEamSource"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/dp_10"
-                android:tag="waitDealtEamSource"
-                tools:text="来源" />
-
-            <ImageView
-                android:id="@+id/waitDealtEntrust"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/dp_10"
-                android:src="@drawable/btn_entrust"
-                android:tag="waitDealtEntrust" />
-        </LinearLayout>
+            android:layout_alignParentRight="true"
+            android:padding="@dimen/dp_10"
+            android:src="@drawable/btn_entrust"
+            android:tag="waitDealtEntrust" />
 
         <View
             android:layout_width="match_parent"

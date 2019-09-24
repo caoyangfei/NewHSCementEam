@@ -191,7 +191,7 @@ public class AcceptanceEditActivity extends BaseRefreshRecyclerActivity<Acceptan
     }
 
     private void initLink() {
-        mLinkController.setCancelShow(acceptanceEntity.faultID != null && TextUtils.isEmpty(acceptanceEntity.faultID.tableNo));
+        mLinkController.setCancelShow(acceptanceEntity.faultID == null || TextUtils.isEmpty(acceptanceEntity.faultID.tableNo));
         mLinkController.initPendingTransition(transition, acceptanceEntity.pending.id);
     }
 

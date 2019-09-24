@@ -280,7 +280,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
      * @author zhangwenshuai1 2018/9/1
      */
     private void initLink() {
-        mLinkController.setCancelShow(mWXGDEntity.workSource != null ? mWXGDEntity.faultInfo != null && TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo) ? true : false : false);
+        mLinkController.setCancelShow(mWXGDEntity.faultInfo == null || TextUtils.isEmpty(mWXGDEntity.faultInfo.tableNo));
         mLinkController.initPendingTransition(transition, mWXGDEntity.pending.id);
     }
 

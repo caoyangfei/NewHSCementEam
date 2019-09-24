@@ -262,7 +262,7 @@ public class WXGDExecuteActivity extends BaseRefreshActivity implements WXGDSubm
 
     public void updateInitView() {
         if (mWXGDEntity != null) {
-            titleText.setText(mWXGDEntity.pending == null ? "" : mWXGDEntity.pending.taskDescription);
+            titleText.setText((mWXGDEntity.pending != null && isEdit) ? mWXGDEntity.pending.taskDescription : "通知");
             initTableHeadView();
         }
 
