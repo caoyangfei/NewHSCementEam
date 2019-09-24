@@ -794,4 +794,23 @@ public interface Constant {
         String SCORE_FRACTION = "BEAM_1_0_0_scoreStandard_itemDetailList_LISTPT_ASSO_8395ad9a_dea0_4fb2_aad1_78cb7ef73cea";
         String SCORE_ITEM = "BEAM_1_0_0_scoreStandard_itemDetailList_LISTPT_ASSO_3e07e500_557f_4b41_9c6b_1396785b8113";
     }
+
+    /**
+     * 我的流程(处理过的)单据状态
+     */
+    interface TableStatus_CH {
+        String PRE_DISPATCH = "待派工";
+        String PRE_EXECUTE = "待执行";
+        String PRE_ACCEPT = "待验收";
+        String PRE_NOTIFY = "待通知";
+        String END = "已结束";
+        String CANCEL = "作废";
+
+        String EDIT = "编辑";
+        String DISPATCH = "派工";
+        String EXECUTE = "执行";
+        String NOTIFY = "通知";
+        String ACCEPT = "验收";
+
+    }
 }

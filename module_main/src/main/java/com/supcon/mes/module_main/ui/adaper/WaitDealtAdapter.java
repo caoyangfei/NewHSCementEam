@@ -3,6 +3,8 @@ package com.supcon.mes.module_main.ui.adaper;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.CheckBox;
@@ -19,7 +21,11 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.model.bean.FlowProcessEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yangfei.cao
@@ -63,10 +69,20 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         @BindByTag("chkBox")
         CheckBox chkBox;
 
+        @BindByTag("flowProcessView")
+        RecyclerView flowProcessView;
+
         public ContentViewHolder(Context context) {
             super(context);
         }
 
+        @Override
+        protected void initView() {
+            super.initView();
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+            linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+            flowProcessView.setLayoutManager(linearLayoutManager); // 水平线性布局
+        }
 
         @Override
         protected void initListener() {
@@ -218,6 +234,62 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             } else {
                 waitDealtEntrust.setImageDrawable(context.getResources().getDrawable(R.drawable.btn_entrusted));
             }
+
+            if (!"MainActivity".equals(context.getClass().getSimpleName())){
+                flowProcessShow(data);
+            }
         }
+
+        /**
+         * 工作流程展示
+         *
+         * @param data
+         */
+        private void flowProcessShow(WaitDealtEntity data) {
+            List<FlowProcessEntity> list = new ArrayList<>();
+            FlowProcessEntity flowProcessEntity;
+            if (!TextUtils.isEmpty(data.processkey)) {
+                if (Constant.TableStatus_CH.EDIT.equals(data.state) || Constant.TableStatus_CH.DISPATCH.equals(data.state)) {
+//                    this.flowProcessView.setVisibility(View.VISIBLE);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = data.state;
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    flowProcessEntity.isFinish = false;
+                    list.add(flowProcessEntity);
+                } else if (Constant.TableStatus_CH.EXECUTE.equals(data.state) || Constant.TableStatus_CH.NOTIFY.equals(data.state)) {
+//                    this.flowProcessView.setVisibility(View.VISIBLE);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = "派工";
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    flowProcessEntity.isFinish = true;
+                    list.add(flowProcessEntity);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = data.state;
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    list.add(flowProcessEntity);
+                } else if (Constant.TableStatus_CH.ACCEPT.equals(data.state)) {
+//                    this.flowProcessView.setVisibility(View.VISIBLE);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = "派工";
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    flowProcessEntity.isFinish = true;
+                    list.add(flowProcessEntity);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = "执行";
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    flowProcessEntity.isFinish = true;
+                    list.add(flowProcessEntity);
+                    flowProcessEntity = new FlowProcessEntity();
+                    flowProcessEntity.flowProcess = data.state;
+                    flowProcessEntity.time = data.endtimeactual != null ? DateUtil.dateTimeFormat(data.endtimeactual) : null;
+                    list.add(flowProcessEntity);
+                } else {
+//                    this.flowProcessView.setVisibility(View.GONE);
+                }
+            }
+            this.flowProcessView.setAdapter(new FlowProcessAdapter(context, list)); // 设置数据item
+        }
+
+
     }
 }

@@ -62,7 +62,7 @@ ext{
     httpVersion         = '9.7.29.2'
     viewVersion         = '9.7.29.2'
     routerVersion       = '9.7.29.2'
-    mbapVersion         = '9.7.29.2'
+    mbapVersion         = '9.7.29.2debug1'
 
     vibVersion          = '9.7.29.1'
     sb2Version          = '9.7.29.1'

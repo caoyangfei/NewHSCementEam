@@ -47,6 +47,9 @@ public class WaitDealtEntity extends BaseEntity {
 
     public boolean isCheck;
 
+    public Long endtime;
+    public Long endtimeactual;
+
     public Staff getStaffid() {
         if (staffid == null) {
             staffid = new Staff();
