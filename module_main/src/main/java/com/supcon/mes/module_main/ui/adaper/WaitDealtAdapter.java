@@ -139,6 +139,8 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                                         case Constant.WxgdView.DISPATCH_OPEN_URL:
                                             IntentRouter.go(context, Constant.Router.WXGD_DISPATCHER, bundle);
                                             break;
+                                        case Constant.WxgdView.VIEW_OPEN_URL:
+                                            bundle.putBoolean(Constant.IntentKey.isEdit, false);
                                         case Constant.WxgdView.EXECUTE_OPEN_URL:
                                             IntentRouter.go(context, Constant.Router.WXGD_EXECUTE, bundle);
                                             break;

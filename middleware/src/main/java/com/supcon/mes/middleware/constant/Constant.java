@@ -741,6 +741,7 @@ public interface Constant {
         String EXECUTE_OPEN_URL = "/BEAM2/workList/workRecord/workExecuteEdit.action";//执行
         String STOP_OPEN_URL = "/BEAM2/workList/workRecord/workExecuteEdit.action";
         String ACCEPTANCE_OPEN_URL = "/BEAM2/workList/workRecord/workCheckEdit.action";//验收
+        String VIEW_OPEN_URL = "/BEAM2/workList/workRecord/workView.action";//通知
     }
 
     /**
