@@ -55,6 +55,8 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
         TextView waitDealtEamSource;
         @BindByTag("waitDealtEamState")
         TextView waitDealtEamState;
+        @BindByTag("waitDealtContent")
+        TextView waitDealtContent;
 
         @BindByTag("waitDealtEntrust")
         ImageView waitDealtEntrust;
@@ -184,6 +186,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                 waitDealtTime.setText(data.excutetime != null ? DateUtil.dateFormat(data.excutetime, "yyyy-MM-dd HH:mm:ss") : "--");
             }
             waitDealtEamSource.setText(Util.strFormat(data.soucretype));
+            waitDealtContent.setText(String.format(context.getString(R.string.device_style6), "内容:", Util.strFormat(data.content)));
 
             if (data.overdateflag.equals("1")) {
                 waitDealtEamSource.setTextColor(context.getResources().getColor(R.color.orange));

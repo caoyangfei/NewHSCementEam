@@ -551,7 +551,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     }
 
     private void getWorkData() {
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 2, new HashMap<>());
         presenterRouter.create(EamAnomalyAPI.class).getMainWorkCount(String.valueOf(EamApplication.getAccountInfo().getStaffId()));
         isRefreshing = true;
     }
@@ -590,7 +590,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     @Override
     public void proxyPendingSuccess(BapResultEntity entity) {
         onLoadSuccess("待办委托成功");
-        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 3, new HashMap<>());
+        presenterRouter.create(WaitDealtAPI.class).getWaitDealt(1, 2, new HashMap<>());
     }
 
     @Override

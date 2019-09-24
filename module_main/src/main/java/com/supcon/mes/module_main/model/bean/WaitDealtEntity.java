@@ -43,6 +43,8 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String entrflag;
 
+    public String content;//内容
+
     public boolean isCheck;
 
     public Staff getStaffid() {
