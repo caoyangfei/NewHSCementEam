@@ -173,6 +173,8 @@ public class YHGLMapManager {
         IdDto idDto;
         for (AcceptanceCheckEntity checkEntity : list){
             acceptanceCheckEntityDto = new AcceptanceCheckEntityDto();
+            acceptanceCheckEntityDto.sort = "0";
+            acceptanceCheckEntityDto.rowIndex = "0";
             acceptanceCheckEntityDto.checkTime = DateUtil.dateTimeFormat(checkEntity.checkTime);
             idDto = new IdDto(Util.strFormat2(checkEntity.getCheckStaff().id));
             acceptanceCheckEntityDto.checkStaff = idDto;

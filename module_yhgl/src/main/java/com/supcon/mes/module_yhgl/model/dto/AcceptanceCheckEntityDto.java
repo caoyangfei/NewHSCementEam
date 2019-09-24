@@ -12,4 +12,6 @@ public class AcceptanceCheckEntityDto extends BaseEntity {
     public IdDto checkStaff;
     public IdDto checkResult;
     public String remark;
+    public String sort;
+    public String rowIndex;
 }
