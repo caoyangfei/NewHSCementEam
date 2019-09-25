@@ -109,7 +109,7 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
             }
             itemFlowName.setText(data.flowProcess);
             if (!TextUtils.isEmpty(data.time)){
-                itemFlowTime.setText(data.time.substring(5));
+                itemFlowTime.setText(data.time.substring(5,data.time.length()-3));
             }else {
                 itemFlowTime.setText("--");
             }
