@@ -3,6 +3,7 @@ package com.supcon.mes.module_main.ui.adaper;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -107,7 +108,11 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
 
             }
             itemFlowName.setText(data.flowProcess);
-            itemFlowTime.setText(data.time);
+            if (!TextUtils.isEmpty(data.time)){
+                itemFlowTime.setText(data.time.substring(5));
+            }else {
+                itemFlowTime.setText("--");
+            }
         }
     }
 }
