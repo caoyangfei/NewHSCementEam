@@ -601,6 +601,7 @@ public class WXGDDispatcherActivity extends BaseRefreshActivity implements WXGDD
         } else if (Constant.YHWXType.JX_SYSCODE.equals(str)) {
             map.put("workRecord.repairType.id", Constant.YHWXType.JX_SYSCODE);
         }
+        map.put("workRecord.chargeStaff.id", Util.strFormat2(mWXGDEntity.getChargeStaff().id)); // 负责人
 
         map.put("operateType", Constant.Transition.SAVE);
 
