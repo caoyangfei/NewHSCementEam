@@ -89,6 +89,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -124,9 +125,9 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     TextView score;
 
     @BindByTag("workName")
-    TextView workName;
+    TextView workName;  // 登录人员
     @BindByTag("workDepot")
-    TextView workDepot;
+    TextView workDepot; // 部门
 
     private boolean hidden;
     private WorkAdapter workAdapter;
@@ -144,7 +145,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     private String reason;
     private MarqueeTextView marqueeTextView;
     private boolean isRefreshing;
-    private TextView waitMore;
+    private TextView waitMore;  // 工作提醒：更多
     private AtomicBoolean atomicBoolean = new AtomicBoolean(false);
     private UserPowerCheckController userPowerCheckController;
 
@@ -744,7 +745,7 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
                                                     menuPopwindowBean.setPower(result.get(menuPopwindowBean.getMenuOperateCodes()));
                                                 }
                                             }, throwable -> {
-                                            }, () -> getWorkData());
+                                            }, () -> WorkFragment.this.getWorkData());
 
                                 });
                     } else {
