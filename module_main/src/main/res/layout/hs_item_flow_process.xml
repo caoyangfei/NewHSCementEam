@@ -6,6 +6,15 @@
     android:background="@color/white"
     android:paddingTop="@dimen/dp_10"
     android:orientation="vertical">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/itemFlowName"
+        android:tag="itemFlowName"
+        android:textColor="@color/xjAreaBlue"
+        android:textSize="@dimen/fontSize_12sp"
+        tools:text="流程"
+        android:gravity="start"/>
     <LinearLayout
         android:id="@+id/itemFlowDotLayout"
         android:layout_width="match_parent"
@@ -25,7 +34,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:scaleType="centerInside"
-            android:src="@drawable/ic_edit_ing"
+            android:src="@drawable/ic_other"
             android:tag="itemFlowDot" />
         <View
             android:id="@+id/itemFlowLineRight"
@@ -45,11 +54,11 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/itemFlowName"
-            android:tag="itemFlowName"
+            android:id="@+id/itemFlowStaff"
+            android:tag="itemFlowStaff"
             android:textColor="@color/xjAreaBlue"
             android:textSize="@dimen/fontSize_12sp"
-            tools:text="流程"
+            tools:text="处理人"
             android:gravity="start"/>
         <TextView
             android:layout_width="match_parent"

@@ -21,7 +21,9 @@ import com.supcon.mes.middleware.constant.Constant;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_main.IntentRouter;
 import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.controller.DealInfoController;
 import com.supcon.mes.module_main.model.bean.FlowProcessEntity;
+import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 
 import java.util.ArrayList;
@@ -71,6 +73,7 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
 
         @BindByTag("flowProcessView")
         RecyclerView flowProcessView;
+        private DealInfoController dealInfoController;
 
         public ContentViewHolder(Context context) {
             super(context);
@@ -236,7 +239,17 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             }
 
             if (!"MainActivity".equals(context.getClass().getSimpleName())){
-                flowProcessShow(data);
+                // 只处理工单、隐患单
+                if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey)) && !TextUtils.isEmpty(data.openurl)){
+                    ProcessedEntity processedEntity = new ProcessedEntity();
+                    processedEntity.prostatus = data.state;
+                    processedEntity.openurl = data.openurl;
+                    processedEntity.staffname = data.getStaffid().name;
+                    processedEntity.tableid = data.tableid;
+                    dealInfoController = new DealInfoController(context,flowProcessView,processedEntity);
+                    dealInfoController.getDealInfoList();
+                }
+//                flowProcessShow(data);
             }
         }
 

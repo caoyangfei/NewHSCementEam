@@ -17,6 +17,8 @@ public class ProcessedEntity extends BaseEntity {
     public String modelcode; // 模型编码
     public Long deploymentid; // 部署ID
     public Long tableid;
+    public String processkey; // 单据流程关键字
+    public String openurl; // 打开URl
 
     public EamType getEamid() {
         if (eamid == null) {

@@ -48,6 +48,8 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
         TextView itemFlowName;
         @BindByTag("itemFlowTime")
         TextView itemFlowTime;
+        @BindByTag("itemFlowStaff")
+        TextView itemFlowStaff;
 
         public ViewHolder(Context context) {
             super(context);
@@ -108,7 +110,8 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
 
             }
             itemFlowName.setText(data.flowProcess);
-            if (!TextUtils.isEmpty(data.time)){
+            itemFlowStaff.setText(data.dealStaff);
+            if (!TextUtils.isEmpty(data.time) && !"--".equals(data.time)){
                 itemFlowTime.setText(data.time.substring(5,data.time.length()-3));
             }else {
                 itemFlowTime.setText("--");

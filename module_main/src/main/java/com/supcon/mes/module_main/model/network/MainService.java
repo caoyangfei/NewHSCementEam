@@ -13,10 +13,12 @@ import com.supcon.mes.module_main.model.bean.ScoreEntity;
 import com.supcon.mes.module_main.model.bean.WaitDealtEntity;
 import com.supcon.mes.module_main.model.bean.WorkNumEntity;
 
+import java.util.List;
 import java.util.Map;
 
 import io.reactivex.Flowable;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 
@@ -76,4 +78,13 @@ public interface MainService {
     @GET("/BEAM2/personWork/abnormalinfoofeam/abnormalInfoList-query.action")
     Flowable<CommonBAPListEntity<AnomalyEntity>> getAnomalyList(@Query("fastQueryCond") FastQueryCondEntity fastQueryCondEntity, @QueryMap Map<String, Object> pageQueryMap);
 
+    /**
+     * 获取隐患处理意见
+     *
+     * @param module 实体编码
+     * @param table 模型即表名
+     * @param tableInfoId 表单id
+     */
+    @GET("/BEAM2/{module}/{table}/dealInfo-list.action")
+    Flowable<List> getDealInfoList(@Path("module") String moduleName, @Path("table") String tableName, @Query("tableInfoId") long tableInfoId);
 }

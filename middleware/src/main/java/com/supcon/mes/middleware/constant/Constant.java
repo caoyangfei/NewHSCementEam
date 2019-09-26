@@ -813,4 +813,24 @@ public interface Constant {
         String ACCEPT = "验收";
 
     }
+    /**
+     * 我的流程(处理过的)单据类型
+     */
+    interface ProcessKey {
+        String WORK = "work"; // 工单
+        String FAULT_INFO = "faultInfoFW"; // 隐患登录
+        String EAM_INFO_EDIT = "eaminfoEdit"; // 设备档案新增申请
+        String EAM_INFO = "eaminfo"; // 设备档案申请修改
+        String CHANGE_WF = "changeWF"; // 设备状态变更
+        String CHECK_APPLY_FW = "checkApplyFW"; // 验收申请
+        String ENTRUST_REPAIR = "entrustRepair"; // 委外维修单
+        String INSTALL_NEW_WF = "installNewWF"; // 安装验收移交
+        String RUN_STATE_WF = "RunningStateWF"; // 运行记录处理
+        String SAPRE_PART_APPLY = "sparePartApply"; // 备件领用申请
+        String WORK_ALLOT_NEW_WF = "workAllotNewWF"; // 设备调拨
+        String TEMP_WF = "tempWF"; // 临时任务
+        String POTROL_TASK_WF = "potrolTaskWF"; // 点巡检任务
+
+    }
+
 }

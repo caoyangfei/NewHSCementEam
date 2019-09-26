@@ -21,6 +21,7 @@ import com.supcon.mes.middleware.util.HtmlTagHandler;
 import com.supcon.mes.middleware.util.Util;
 import com.supcon.mes.module_login.IntentRouter;
 import com.supcon.mes.module_main.R;
+import com.supcon.mes.module_main.controller.DealInfoController;
 import com.supcon.mes.module_main.model.bean.FlowProcessEntity;
 import com.supcon.mes.module_main.model.bean.ProcessedEntity;
 
@@ -61,6 +62,7 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
         CustomTextView processContent;
         @BindByTag("flowProcessView")
         RecyclerView flowProcessView;
+        private DealInfoController dealInfoController;
 
         public ContentViewHolder(Context context) {
             super(context);
@@ -101,6 +103,15 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
 
         @Override
         protected void update(ProcessedEntity data) {
+
+            // 只处理工单、隐患单
+            if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey)) && !TextUtils.isEmpty(data.openurl)){
+                dealInfoController = new DealInfoController(context,flowProcessView,data);
+                dealInfoController.getDealInfoList();
+                flowProcessView.setVisibility(View.VISIBLE);
+            }else {
+                flowProcessView.setVisibility(View.GONE);
+            }
             processTableNo.setText(Util.strFormat2(data.tableno));
             processState.setText(Util.strFormat2(data.prostatus));
             if (!TextUtils.isEmpty(data.getEamid().name) || !TextUtils.isEmpty(data.getEamid().code)) {
@@ -134,7 +145,7 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
                 processState.setTextColor(context.getResources().getColor(R.color.gray));
             }
 
-            flowProcessShow(data);
+//            flowProcessShow(data);
         }
 
         /**
