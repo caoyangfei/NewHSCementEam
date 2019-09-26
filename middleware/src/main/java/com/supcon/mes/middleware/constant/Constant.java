@@ -811,6 +811,7 @@ public interface Constant {
         String EXECUTE = "执行";
         String NOTIFY = "通知";
         String ACCEPT = "验收";
+        String RECALL = "撤回";
 
     }
     /**

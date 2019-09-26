@@ -74,7 +74,7 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
                     itemFlowTime.setVisibility(View.GONE);
                 }
             } else if (Constant.TableStatus_CH.PRE_EXECUTE.equals(data.flowProcess) || Constant.TableStatus_CH.PRE_NOTIFY.equals(data.flowProcess)
-                    || Constant.TableStatus_CH.EXECUTE.equals(data.flowProcess) || Constant.TableStatus_CH.NOTIFY.equals(data.flowProcess)) {
+                    || Constant.TableStatus_CH.EXECUTE.equals(data.flowProcess)) {
                 if (data.isFinish) {
                     itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_excute_end));
                     itemFlowLineRight.setVisibility(View.VISIBLE);
@@ -83,7 +83,16 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
                     itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_excute_ing));
                     itemFlowLineRight.setVisibility(View.GONE);
                     itemFlowTime.setVisibility(View.GONE);
-
+                }
+            } else if (Constant.TableStatus_CH.NOTIFY.equals(data.flowProcess)) {
+                if (data.isFinish) {
+                    itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_notify_end));
+                    itemFlowLineRight.setVisibility(View.VISIBLE);
+                    itemFlowTime.setVisibility(View.VISIBLE);
+                } else {
+                    itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_notify_ing));
+                    itemFlowLineRight.setVisibility(View.GONE);
+                    itemFlowTime.setVisibility(View.GONE);
                 }
             } else if (Constant.TableStatus_CH.PRE_ACCEPT.equals(data.flowProcess) || Constant.TableStatus_CH.ACCEPT.equals(data.flowProcess)) {
                 if (data.isFinish) {
@@ -111,9 +120,9 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
             }
             itemFlowName.setText(data.flowProcess);
             itemFlowStaff.setText(data.dealStaff);
-            if (!TextUtils.isEmpty(data.time) && !"--".equals(data.time)){
-                itemFlowTime.setText(data.time.substring(5,data.time.length()-3));
-            }else {
+            if (!TextUtils.isEmpty(data.time) && !"--".equals(data.time)) {
+                itemFlowTime.setText(data.time.substring(5, data.time.length() - 3));
+            } else {
                 itemFlowTime.setText("--");
             }
         }

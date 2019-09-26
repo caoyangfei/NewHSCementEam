@@ -79,11 +79,12 @@ public class DealInfoController extends BasePresenterController implements DealI
 
         for (int i = 1 ; i < entity.size();i++){
             List<Object> data = (List<Object>) entity.get(i);
+            if (Constant.TableStatus_CH.RECALL.equals(data.get(0).toString())) continue; // 过滤撤回活动
             int count = 0;
             for (int j = 0;j < flowProcessEntityList.size();j++){
                 if (!data.get(0).toString().equals(flowProcessEntityList.get(j).flowProcess)){
                     count++;
-                    if (count == flowProcessEntityList.size()){
+                    if (count == flowProcessEntityList.size()){ // 添加
                         flowProcessEntity = new FlowProcessEntity();
                         flowProcessEntity.isFinish = true;
                         flowProcessEntity.flowProcess = data.get(0).toString(); // 活动名称
@@ -92,7 +93,7 @@ public class DealInfoController extends BasePresenterController implements DealI
                         flowProcessEntityList.add(flowProcessEntity);
                         break;
                     }
-                }else {
+                }else {  // 替换
                     flowProcessEntity = flowProcessEntityList.get(j);
                     flowProcessEntity.isFinish = true;
                     flowProcessEntity.flowProcess = data.get(0).toString(); // 活动名称
@@ -100,6 +101,14 @@ public class DealInfoController extends BasePresenterController implements DealI
                     flowProcessEntity.dealStaff = data.get(4).toString(); // 用户
                     break;
                 }
+            }
+        }
+
+        //删除存在和当前活动状态相同者
+        for (FlowProcessEntity flowProEntity :flowProcessEntityList){
+            if (flowProEntity.flowProcess.equals(processedEntity.prostatus)){
+                flowProcessEntityList.remove(flowProEntity);
+                break;
             }
         }
         genFlowProEntity(flowProcessEntityList); // 需要添加当前状态

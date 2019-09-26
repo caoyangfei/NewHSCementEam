@@ -104,8 +104,10 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
         @Override
         protected void update(ProcessedEntity data) {
 
-            // 只处理工单、隐患单
-            if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey)) && !TextUtils.isEmpty(data.openurl)){
+            // 只处理工单、隐患单、验收单、运行记录
+            if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey)
+                    || Constant.ProcessKey.CHECK_APPLY_FW.equals(data.processkey) || Constant.ProcessKey.RUN_STATE_WF.equals(data.processkey))
+                    && !TextUtils.isEmpty(data.openurl)){
                 dealInfoController = new DealInfoController(context,flowProcessView,data);
                 dealInfoController.getDealInfoList();
                 flowProcessView.setVisibility(View.VISIBLE);
