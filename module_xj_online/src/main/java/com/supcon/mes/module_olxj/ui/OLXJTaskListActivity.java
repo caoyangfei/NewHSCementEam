@@ -20,6 +20,7 @@ import com.app.annotation.Controller;
 import com.app.annotation.Presenter;
 import com.app.annotation.apt.Router;
 import com.jakewharton.rxbinding2.view.RxView;
+import com.supcon.common.com_http.util.RxSchedulers;
 import com.supcon.common.view.base.activity.BaseRefreshRecyclerActivity;
 import com.supcon.common.view.base.adapter.IListAdapter;
 import com.supcon.common.view.util.DisplayUtil;
@@ -66,6 +67,8 @@ import com.supcon.mes.sb2.model.event.UhfRfidEvent;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -388,6 +391,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
     }
 
     private void showFinishDialog(OLXJTaskEntity olxjTaskEntity) {
+        LogUtil.e("巡检是否弹出:弹出框");
 //        boolean isAllFinished = mOLXJTaskListAdapter.isAllFinished();
 //        new CustomDialog(context)
 //                .twoButtonAlertDialog(isAllFinished ? "确定提交任务？" : "还存在未完成的巡检项，确定是否提交任务？")
@@ -565,6 +569,7 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
     }
 
 
+    @SuppressLint("CheckResult")
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onAreaUpdate(OLXJAreaEntity areaEntity) {
         if (enterPosition != -1) {
@@ -573,9 +578,20 @@ public class OLXJTaskListActivity extends BaseRefreshRecyclerActivity<OLXJTaskEn
             saveAreaCache(mAreaEntities.toString());
             saveTask(mOLXJTaskEntity.toString());
 
-            if (mOLXJTaskListAdapter.isAllFinished()) {
-                showFinishDialog(mOLXJTaskListAdapter.getList().get(0));
-            }
+
+            Flowable.timer(300, TimeUnit.MICROSECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Consumer<Long>() {
+                        @Override
+                        public void accept(Long aLong) throws Exception {
+                            LogUtil.e("巡检是否弹出:" + mOLXJTaskListAdapter.isAllFinished());
+                            if (mOLXJTaskListAdapter.isAllFinished()) {
+                                LogUtil.e("巡检是否弹出:" + mOLXJTaskListAdapter.isAllFinished());
+                                showFinishDialog(mOLXJTaskListAdapter.getList().get(0));
+                            }
+                        }
+                    });
+
         }
 
     }
