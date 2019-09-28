@@ -146,9 +146,10 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
                         }
 
                     } else {
-                        if (!TextUtils.isEmpty(item.tableno)) {
+                        if (!TextUtils.isEmpty(item.workTableno) || !TextUtils.isEmpty(item.tableno)) {
                             Bundle bundle = new Bundle();
-                            bundle.putString(Constant.IntentKey.TABLENO, item.tableno);
+                            bundle.putString(Constant.IntentKey.TABLENO, TextUtils.isEmpty(item.workTableno) ? item.tableno : item.workTableno);
+                            // 工单、巡检可跳转
                             if (item.processkey.equals("work")) {
                                 if (!TextUtils.isEmpty(item.openurl)) {
                                     switch (item.openurl) {
@@ -239,10 +240,10 @@ public class WaitDealtAdapter extends BaseListDataRecyclerViewAdapter<WaitDealtE
             }
 
             if (!"MainActivity".equals(context.getClass().getSimpleName())){
-                // 只处理工单、隐患单、验收单、运行记录
+                // 只处理工单、隐患单、验收单、运行记录、备件领用申请
                 if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey))
                         || Constant.ProcessKey.CHECK_APPLY_FW.equals(data.processkey) || Constant.ProcessKey.RUN_STATE_WF.equals(data.processkey)
-                        && !TextUtils.isEmpty(data.openurl)){
+                        || Constant.ProcessKey.SPARE_PART_APPLY.equals(data.processkey) && !TextUtils.isEmpty(data.openurl)){
                     ProcessedEntity processedEntity = new ProcessedEntity();
                     processedEntity.prostatus = data.state;
                     processedEntity.openurl = data.openurl;

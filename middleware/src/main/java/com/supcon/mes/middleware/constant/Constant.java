@@ -194,6 +194,10 @@ public interface Constant {
         String TXL_VIEW = "TXL_VIEW";
         String MINE = "MIME";
         String PROCESSED_FLOW = "PROCESSED_FLOW";//流程图
+        String SPARE_PART_APPLY_LIST = "SPARE_PART_APPLY_LIST"; // 备件领用申请list
+        String SPARE_PART_APPLY_EDIT = "SPARE_PART_APPLY_EDIT"; // 备件领用申请编辑
+        String SPARE_PART_APPLY_SUBMIT_EDIT = "SPARE_PART_APPLY_SUBMIT_EDIT"; // 备件领用申请审批编辑
+        String SPARE_PART_APPLY_VIEW = "SPARE_PART_APPLY_VIEW"; // 备件领用申请查看
     }
 
 
@@ -314,6 +318,8 @@ public interface Constant {
 
         String TASKID = "TASKID";//设备巡检任务id
         String TITLE_CONTENT = "TITLE_CONTENT";
+        String TABLE_ID = "TABLE_ID";
+        String PENDING_ID = "PENDING_ID";
     }
 
     interface FilterSearchParam {
@@ -478,6 +484,7 @@ public interface Constant {
     interface TimeString {
         String START_TIME = " 00:00:00";
         String END_TIME = " 23:59:59";
+        String YEAR_MONTH_DAY_HOUR_MIN_SEC = "yyyy-MM-dd HH:mm:ss";
     }
 
     interface PicType {
@@ -812,6 +819,8 @@ public interface Constant {
         String NOTIFY = "通知";
         String ACCEPT = "验收";
         String RECALL = "撤回";
+        String REVIEW = "审核";
+        String CONFIRM = "接单(确认)";
 
     }
     /**
@@ -827,7 +836,7 @@ public interface Constant {
         String ENTRUST_REPAIR = "entrustRepair"; // 委外维修单
         String INSTALL_NEW_WF = "installNewWF"; // 安装验收移交
         String RUN_STATE_WF = "RunningStateWF"; // 运行记录处理
-        String SAPRE_PART_APPLY = "sparePartApply"; // 备件领用申请
+        String SPARE_PART_APPLY = "sparePartApply"; // 备件领用申请
         String WORK_ALLOT_NEW_WF = "workAllotNewWF"; // 设备调拨
         String TEMP_WF = "tempWF"; // 临时任务
         String POTROL_TASK_WF = "potrolTaskWF"; // 点巡检任务

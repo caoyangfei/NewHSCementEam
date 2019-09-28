@@ -34,13 +34,24 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public class SparePartReceiveAdapter extends BaseListDataRecyclerViewAdapter<SparePartReceiveEntity> {
+
+    private boolean editable;
+
     public SparePartReceiveAdapter(Context context) {
         super(context);
+    }
+    public SparePartReceiveAdapter(Context context,boolean editable) {
+        super(context);
+        this.editable = editable;
     }
 
     @Override
     protected BaseRecyclerViewHolder<SparePartReceiveEntity> getViewHolder(int viewType) {
         return new ViewHolder(context);
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
     }
 
     class ViewHolder extends BaseRecyclerViewHolder<SparePartReceiveEntity> {
@@ -119,6 +130,11 @@ public class SparePartReceiveAdapter extends BaseListDataRecyclerViewAdapter<Spa
             Spanned modelSpecif = HtmlParser.buildSpannedText(String.format(context.getString(R.string.device_style12), Util.strFormat(data.getSparePartId().productSpecif)
                     , Util.strFormat(data.getSparePartId().productModel)), new HtmlTagHandler());
             sparePartSpecificModel.setContent(modelSpecif.toString());
+
+            sum.setEditable(editable);
+            sum.getNumViewInput().setEnabled(editable);
+            remark.setEditable(editable);
+            sum.getNumViewInput().setText(data.origDemandQuity == null ? "" : data.origDemandQuity.toString());
         }
     }
 }

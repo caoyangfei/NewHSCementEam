@@ -94,6 +94,16 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
                     itemFlowLineRight.setVisibility(View.GONE);
                     itemFlowTime.setVisibility(View.GONE);
                 }
+            }else if (Constant.TableStatus_CH.REVIEW.equals(data.flowProcess) || Constant.TableStatus_CH.CONFIRM.equals(data.flowProcess)) {
+                if (data.isFinish) {
+                    itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_review_end));
+                    itemFlowLineRight.setVisibility(View.VISIBLE);
+                    itemFlowTime.setVisibility(View.VISIBLE);
+                } else {
+                    itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_review_ing));
+                    itemFlowLineRight.setVisibility(View.GONE);
+                    itemFlowTime.setVisibility(View.GONE);
+                }
             } else if (Constant.TableStatus_CH.PRE_ACCEPT.equals(data.flowProcess) || Constant.TableStatus_CH.ACCEPT.equals(data.flowProcess)) {
                 if (data.isFinish) {
                     itemFlowDot.setImageDrawable(context.getDrawable(R.drawable.ic_check_end));
@@ -116,7 +126,8 @@ public class FlowProcessAdapter extends BaseListDataRecyclerViewAdapter<FlowProc
                     itemFlowTime.setVisibility(View.GONE);
                 }
             } else {
-
+                itemFlowLineRight.setVisibility(View.GONE);
+                itemFlowTime.setVisibility(View.GONE);
             }
             itemFlowName.setText(data.flowProcess);
             itemFlowStaff.setText(data.dealStaff);

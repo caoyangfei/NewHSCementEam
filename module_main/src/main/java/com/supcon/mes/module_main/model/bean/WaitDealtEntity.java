@@ -39,6 +39,8 @@ public class WaitDealtEntity extends BaseEntity {
 
     public String tableno;
 
+    public String workTableno; // 海螺使用
+
     public String openurl;
 
     public String entrflag;

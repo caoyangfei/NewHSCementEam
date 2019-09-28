@@ -19,6 +19,8 @@ public class ProcessedEntity extends BaseEntity {
     public Long tableid;
     public String processkey; // 单据流程关键字
     public String openurl; // 打开URl
+    public Long workcreatetime; // 创建时间，（注：最终统一使用）
+    public String worktableno; // 单据编号，（注：最终统一使用）
 
     public EamType getEamid() {
         if (eamid == null) {

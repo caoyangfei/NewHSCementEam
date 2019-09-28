@@ -14,5 +14,5 @@ public interface DealInfoAPI {
      * @description 获取单据处理意见
      * @author user 2019/9/25
      */
-    void listDealInfo(String moduleName, String tableName, long tableInfoId);
+    void listDealInfo(String moduleName, String tableName, Long tableInfoId);
 }

@@ -104,24 +104,30 @@ public class ProcessedAdapter extends BaseListDataRecyclerViewAdapter<ProcessedE
         @Override
         protected void update(ProcessedEntity data) {
 
-            // 只处理工单、隐患单、验收单、运行记录
+            // 只处理工单、隐患单、验收单、运行记录、备件领用申请
             if((Constant.ProcessKey.WORK.equals(data.processkey) || Constant.ProcessKey.FAULT_INFO.equals(data.processkey)
-                    || Constant.ProcessKey.CHECK_APPLY_FW.equals(data.processkey) || Constant.ProcessKey.RUN_STATE_WF.equals(data.processkey))
-                    && !TextUtils.isEmpty(data.openurl)){
+                    || Constant.ProcessKey.CHECK_APPLY_FW.equals(data.processkey) || Constant.ProcessKey.RUN_STATE_WF.equals(data.processkey)
+                    || Constant.ProcessKey.SPARE_PART_APPLY.equals(data.processkey)) && !TextUtils.isEmpty(data.openurl)){
                 dealInfoController = new DealInfoController(context,flowProcessView,data);
                 dealInfoController.getDealInfoList();
                 flowProcessView.setVisibility(View.VISIBLE);
             }else {
                 flowProcessView.setVisibility(View.GONE);
             }
-            processTableNo.setText(Util.strFormat2(data.tableno));
+            if (EamApplication.isHailuo()){
+                processTableNo.setText(Util.strFormat2(data.worktableno));
+                processTime.setContent(data.workcreatetime != null ? DateUtil.dateFormat(data.workcreatetime, Constant.TimeString.YEAR_MONTH_DAY_HOUR_MIN_SEC) : "");
+            }else {
+                processTableNo.setText(Util.strFormat2(data.tableno));
+                processTime.setContent(data.createTime != null ? DateUtil.dateFormat(data.createTime, Constant.TimeString.YEAR_MONTH_DAY_HOUR_MIN_SEC) : "");
+            }
+
             processState.setText(Util.strFormat2(data.prostatus));
             if (!TextUtils.isEmpty(data.getEamid().name) || !TextUtils.isEmpty(data.getEamid().code)) {
                 String eam = String.format(context.getString(R.string.device_style10), data.getEamid().name
                         , data.getEamid().code);
                 processEam.setContent(HtmlParser.buildSpannedText(eam, new HtmlTagHandler()).toString());
             }
-            processTime.setContent(data.createTime != null ? DateUtil.dateFormat(data.createTime, "yyyy-MM-dd HH:mm:ss") : "");
             processStaff.setContent(Util.strFormat(data.staffname));
             if (!TextUtils.isEmpty(data.content)) {
                 processContent.setContent(data.content);
