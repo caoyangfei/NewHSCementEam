@@ -44,23 +44,23 @@ public class TxlSearchListFragment extends BaseRefreshRecyclerFragment<TxlEntity
     @BindByTag("searchView")
     CustomSearchView searchView;
     @BindByTag("departInfos")
-    TextView departInfos;
+    TextView departInfos; // 组织
     @BindByTag("refreshFrameLayout")
     PtrFrameLayout refreshFrameLayout;
     @BindByTag("sameDepart")
-    TextView sameDepart;
+    TextView sameDepart; // 同部门
     @BindByTag("allStaff")
-    TextView allStaff;
+    TextView allStaff; // 所有人
     @BindByTag("myBelongStaff")
-    TextView myBelongStaff;
+    TextView myBelongStaff; // 我的下属
     @BindByTag("ivSameDepart")
-    ImageView ivSameDepart;
+    ImageView ivSameDepart; // 同部门Iv
     @BindByTag("ivDepartInfos")
-    ImageView ivDepartInfos;
+    ImageView ivDepartInfos; // 组织Iv
     @BindByTag("ivMyBelongStaff")
-    ImageView ivMyBelongStaff;
+    ImageView ivMyBelongStaff; // 我的下属Iv
     @BindByTag("ivAllStaff")
-    ImageView ivAllStaff;
+    ImageView ivAllStaff; // 所有人Iv
     
     private TxlListAdapter mTxlListAdapter;
     
@@ -92,7 +92,7 @@ public class TxlSearchListFragment extends BaseRefreshRecyclerFragment<TxlEntity
         super.initListener();
         Bundle bundle = new Bundle();
         departInfos.setOnClickListener(v -> IntentRouter.go(context, Constant.Router.MULTI_DEPART_SELECT));
-        departInfos.setOnClickListener(v -> IntentRouter.go(context, Constant.Router.MULTI_DEPART_SELECT));
+        ivDepartInfos.setOnClickListener(v -> IntentRouter.go(context, Constant.Router.MULTI_DEPART_SELECT));
         ivSameDepart.setOnClickListener(v -> {
             bundle.putString(Constant.IntentKey.TITLE_CONTENT,"同部门" );
             IntentRouter.go(context, Constant.Router.TXL_SEARCH_CONTACT_WITH_HEADER,bundle);

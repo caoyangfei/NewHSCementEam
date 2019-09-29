@@ -18,7 +18,7 @@ public interface ITxlEntity{
     String getSex();
     String getDepartmentName();
     String getDepartmentFullPath();
-    String getStaffWork();
+    String getPositionName();
     String getStaffBirthday();
     String getDeploymentTime();
     String getCompanyName();

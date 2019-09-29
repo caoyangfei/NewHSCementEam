@@ -60,20 +60,20 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dp_10"
-                    android:id="@+id/userName"
-                    android:tag="userName"
+                    android:id="@+id/staffName"
+                    android:tag="staffName"
                     android:gravity="center"
-                    android:text="赵梦蕾"
+                    android:text="人员"
                     android:textColor="@color/white"
                     android:textSize="@dimen/fontSize_18sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/userWork"
-                    android:tag="userWork"
+                    android:id="@+id/positionName"
+                    android:tag="positionName"
                     android:gravity="center"
-                    android:text="开发工程师"
+                    android:text="岗位"
                     android:textColor="@color/white"
                     android:textSize="@dimen/dp_12" />
             </LinearLayout>

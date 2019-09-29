@@ -34,10 +34,10 @@ import java.io.Serializable;
  */
 @Presenter(value = StaffPicPresenter.class)
 public class TxlListItemViewController extends BaseViewController implements ILayoutProvider, IDataInjector<ITxlEntity>, StaffPicDownloadContract.View {
-    @BindByTag("userName")
-    TextView userName;
-    @BindByTag("userJob")
-    TextView userJob;
+    @BindByTag("staffName")
+    TextView staffName;
+    @BindByTag("positionName")
+    TextView positionName;
     @BindByTag("company")
     TextView company;
     @BindByTag("department")
@@ -87,8 +87,8 @@ public class TxlListItemViewController extends BaseViewController implements ILa
         initListener();
         userIcon.setImageDrawable(null);
         presenterRouter.create(StaffPicDownloadAPI.class).getStaffPic(data.getStaffId());
-        userName.setText(data.getStaffName());
-        userJob.setText(data.getStaffWork());
+        staffName.setText(data.getStaffName());
+        positionName.setText(data.getPositionName());
         company.setText(data.getCompanyName());
         department.setText(data.getDepartmentName());
     }

@@ -57,7 +57,6 @@
             <TextView
                 android:id="@+id/sameDepart"
                 android:tag="sameDepart"
-
                 style="@style/txl_select_text"
                 android:text="同部门" />
 

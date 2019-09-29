@@ -47,10 +47,10 @@ public class TxlListMainFragment extends BasePresenterFragment {
     CustomTextView department;
     @BindByTag("flow")
     CustomTextView flow;
-    @BindByTag("userName")
-    TextView userName;
-    @BindByTag("userWork")
-    TextView userWork;
+    @BindByTag("staffName")
+    TextView staffName;
+    @BindByTag("positionName")
+    TextView positionName;
     private TxlEntity mData;
     @Override
     protected int getLayoutID() {
@@ -80,8 +80,8 @@ public class TxlListMainFragment extends BasePresenterFragment {
     protected void initData() {
         super.initData();
 //        tvTelephone.setContent(mData.getClass());
-        userName.setText(mData.getStaffName());
-        userWork.setText(mData.getStaffWork());
+        staffName.setText(mData.getStaffName());
+        positionName.setText(mData.getPositionName());
         tvTelephone.setContent(mData.getMOBILE());
         phone.setContent(mData.getMOBILE());
         otherPhone.setContent(mData.getMOBILE());

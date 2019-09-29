@@ -54,10 +54,10 @@ public class TxlViewActivity extends BasePresenterActivity {
     CustomTextView department;
     @BindByTag("flow")
     CustomTextView flow;
-    @BindByTag("userName")
-    TextView userName;
-    @BindByTag("userWork")
-    TextView userWork;
+    @BindByTag("staffName")
+    TextView staffName;
+    @BindByTag("positionName")
+    TextView positionName;
     @BindByTag("ivTelphone")
     ImageView ivTelphone;
     @BindByTag("ivSms")
@@ -115,8 +115,8 @@ public class TxlViewActivity extends BasePresenterActivity {
     protected void initData() {
         super.initData();
 //        tvTelephone.setContent(mData.getClass());
-        userName.setText(mData.getStaffName());
-        userWork.setText(mData.getStaffWork());
+        staffName.setText(mData.getStaffName());
+        positionName.setText(mData.getPositionName());
         tvTelephone.setContent((String) mData.getMOBILE());
         phone.setContent((String) mData.getMOBILE());
         otherPhone.setContent((String) mData.getMOBILE());
