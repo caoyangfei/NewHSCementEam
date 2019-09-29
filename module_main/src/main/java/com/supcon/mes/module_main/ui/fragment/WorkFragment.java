@@ -337,15 +337,17 @@ public class WorkFragment extends BaseControllerFragment implements WaitDealtCon
     protected void initListener() {
         super.initListener();
 
-        workName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putLong(Constant.IntentKey.TABLE_ID,1008);
-                bundle.putLong(Constant.IntentKey.PENDING_ID,24517);
-                IntentRouter.go(context,Constant.Router.SPARE_PART_APPLY_EDIT,bundle);
-            }
-        });
+        if (EamApplication.isHailuo()){
+            workName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Bundle bundle = new Bundle();
+                    bundle.putLong(Constant.IntentKey.TABLE_ID,1008);
+                    bundle.putLong(Constant.IntentKey.PENDING_ID,24517);
+                    IntentRouter.go(context,Constant.Router.SPARE_PART_APPLY_EDIT,bundle);
+                }
+            });
+        }
 
         workAdapter.setOnItemChildViewClickListener(new OnItemChildViewClickListener() {
             @Override

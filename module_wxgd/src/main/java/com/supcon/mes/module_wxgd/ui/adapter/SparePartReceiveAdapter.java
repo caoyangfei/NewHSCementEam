@@ -33,6 +33,9 @@ import org.greenrobot.eventbus.EventBus;
 import java.math.BigDecimal;
 import java.util.List;
 
+/**
+ * 备件领用申请明细Adapter
+ */
 public class SparePartReceiveAdapter extends BaseListDataRecyclerViewAdapter<SparePartReceiveEntity> {
 
     private boolean editable;
